@@ -1,17 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 const links = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/analytics", label: "Analytics" },
   { href: "/dashboard/setup", label: "Setup" },
   { href: "/dashboard/embed", label: "Embed" },
+  { href: "/dashboard/billing", label: "Billing" },
 ];
 
 export default function DashboardNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setEmail(data.session?.user?.email || "");
+    });
+  }, []);
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
+  const initials = email ? email[0].toUpperCase() : "U";
 
   return (
     <nav className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 bg-zinc-950">
@@ -43,8 +61,19 @@ export default function DashboardNav() {
         })}
       </div>
 
-      <div className="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center text-zinc-300 text-xs font-medium">
-        U
+      <div className="flex items-center gap-3">
+        {email && (
+          <span className="text-zinc-500 text-xs hidden md:block">{email}</span>
+        )}
+        <button
+          onClick={signOut}
+          className="text-xs text-zinc-500 hover:text-white border border-zinc-800 hover:border-zinc-700 px-3 py-1.5 rounded-lg transition-all"
+        >
+          Sign out
+        </button>
+        <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
+          {initials}
+        </div>
       </div>
     </nav>
   );
