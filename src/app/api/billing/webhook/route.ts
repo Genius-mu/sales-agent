@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+// Do NOT init Supabase at module level — init inside the handler
+function getSupabase() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+}
 
 function getPlanFromVariant(variantId: string): string {
   if (variantId === process.env.LEMONSQUEEZY_STARTER_VARIANT_ID)
@@ -16,10 +19,10 @@ function getPlanFromVariant(variantId: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = getSupabase();
   const rawBody = await req.text();
   const signature = req.headers.get("x-signature");
 
-  // Verify webhook signature
   const hmac = crypto
     .createHmac("sha256", process.env.LEMONSQUEEZY_WEBHOOK_SECRET!)
     .update(rawBody)
@@ -68,10 +71,7 @@ export async function POST(req: NextRequest) {
     case "subscription_expired":
       await supabase
         .from("businesses")
-        .update({
-          plan: "free",
-          subscription_status: "cancelled",
-        })
+        .update({ plan: "free", subscription_status: "cancelled" })
         .eq("id", businessId);
       break;
 
