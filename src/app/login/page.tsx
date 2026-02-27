@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,9 +18,13 @@ export default function LoginPage() {
     setTimeout(() => setVisible(true), 50);
 
     // Redirect if already logged in
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.push("/dashboard");
-    });
+    async function checkSession() {
+      const {
+        data: { session },
+      } = await getSupabase().auth.getSession();
+      if (session) router.push("/dashboard");
+    }
+    checkSession();
   }, []);
 
   const handleSubmit = async () => {
@@ -33,7 +37,7 @@ export default function LoginPage() {
     setLoading(true);
 
     if (mode === "signup") {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await getSupabase().auth.signUp({
         email,
         password,
       });
@@ -41,21 +45,21 @@ export default function LoginPage() {
         setError(signUpError.message);
       } else if (data.user) {
         // Create a business row for the new user
-        await supabase.from("businesses").insert({
-          user_id: data.user.id,
-          name: email.split("@")[0], // default name from email
-          agent_persona: "friendly and professional",
-          plan: "free",
-        });
+        await getSupabase()
+          .from("businesses")
+          .insert({
+            user_id: data.user.id,
+            name: email.split("@")[0], // default name from email
+            agent_persona: "friendly and professional",
+            plan: "free",
+          });
         setSuccess(
           "Account created! Check your email to confirm, then log in.",
         );
       }
     } else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error: signInError } =
+        await getSupabase().auth.signInWithPassword({ email, password });
       if (signInError) {
         setError(signInError.message);
       } else {

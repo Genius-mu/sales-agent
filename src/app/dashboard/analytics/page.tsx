@@ -12,9 +12,9 @@ import {
   Legend,
 } from "recharts";
 import DashboardNav from "@/app/components/DashboardNav";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
-const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
+const BUSINESS_ID = "your-business-id-here";
 
 type Range = 7 | 30 | 90;
 
@@ -96,7 +96,7 @@ export default function AnalyticsPage() {
       const since = new Date();
       since.setDate(since.getDate() - range);
 
-      const { data: conversations } = await supabase
+      const { data: conversations } = await getSupabase()
         .from("conversations")
         .select("created_at, lead_email, messages")
         .eq("business_id", BUSINESS_ID)
@@ -104,23 +104,32 @@ export default function AnalyticsPage() {
 
       const days = buildEmptyDays(range);
 
-      conversations?.forEach((convo) => {
-        const dateStr = new Date(convo.created_at).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        });
-        const day = days.find((d) => d.date === dateStr);
-        if (!day) return;
+      conversations?.forEach(
+        (convo: {
+          created_at: string;
+          lead_email: string | null;
+          messages: unknown[];
+        }) => {
+          const dateStr = new Date(convo.created_at).toLocaleDateString(
+            "en-US",
+            {
+              month: "short",
+              day: "numeric",
+            },
+          );
+          const day = days.find((d) => d.date === dateStr);
+          if (!day) return;
 
-        day.conversations += 1;
-        if (convo.lead_email) day.leads += 1;
+          day.conversations += 1;
+          if (convo.lead_email) day.leads += 1;
 
-        const msgs = Array.isArray(convo.messages) ? convo.messages : [];
-        day.messages += msgs.length;
+          const msgs = Array.isArray(convo.messages) ? convo.messages : [];
+          day.messages += msgs.length;
 
-        // Active session = conversation with 4+ messages
-        if (msgs.length >= 4) day.activeSessions += 1;
-      });
+          // Active session = conversation with 4+ messages
+          if (msgs.length >= 4) day.activeSessions += 1;
+        },
+      );
 
       setData(days);
       setLoading(false);

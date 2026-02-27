@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import DashboardNav from "@/app/components/DashboardNav";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
 
@@ -68,18 +68,19 @@ export default function BillingPage() {
   const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
-    supabase
-      .from("businesses")
-      .select("plan, subscription_status")
-      .eq("id", BUSINESS_ID)
-      .single()
-      .then(({ data }) => {
-        if (data) {
-          setCurrentPlan(data.plan || "free");
-          setSubscriptionStatus(data.subscription_status || "inactive");
-        }
-        setPageLoading(false);
-      });
+    async function loadPlan() {
+      const { data } = await getSupabase()
+        .from("businesses")
+        .select("plan, subscription_status")
+        .eq("id", BUSINESS_ID)
+        .single();
+      if (data) {
+        setCurrentPlan(data.plan || "free");
+        setSubscriptionStatus(data.subscription_status || "inactive");
+      }
+      setPageLoading(false);
+    }
+    loadPlan();
 
     // Load Lemon Squeezy embed script
     if (!document.getElementById("lemon-js")) {

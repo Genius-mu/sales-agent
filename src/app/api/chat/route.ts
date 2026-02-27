@@ -1,10 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@supabase/supabase-js";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export async function OPTIONS() {
+  return new NextResponse(null, { headers: corsHeaders });
+}
 
 export async function POST(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+  );
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
   const { message, sessionId, businessId } = await req.json();
 
   if (!message || !sessionId || !businessId) {
@@ -14,7 +28,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Fetch business context
   const { data: business, error: businessError } = await supabase
     .from("businesses")
     .select("scraped_content, agent_persona, name")
@@ -25,7 +38,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Business not found" }, { status: 404 });
   }
 
-  // Fetch existing conversation history
   const { data: convo } = await supabase
     .from("conversations")
     .select("messages")
@@ -70,7 +82,6 @@ LEAD_EMAIL: their@email.com`;
     const rawReply =
       response.content[0].type === "text" ? response.content[0].text : "";
 
-    // Extract lead email if captured
     const emailMatch = rawReply.match(/LEAD_EMAIL:\s*(\S+@\S+\.\S+)/);
     const leadEmail = emailMatch ? emailMatch[1] : null;
     const cleanReply = rawReply.replace(/LEAD_EMAIL:.*$/m, "").trim();
@@ -80,7 +91,6 @@ LEAD_EMAIL: their@email.com`;
       { role: "assistant" as const, content: cleanReply },
     ];
 
-    // Upsert conversation (insert or update by session_id)
     await supabase.from("conversations").upsert(
       {
         session_id: sessionId,
@@ -90,12 +100,6 @@ LEAD_EMAIL: their@email.com`;
       },
       { onConflict: "session_id" },
     );
-
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
 
     return NextResponse.json(
       {
@@ -112,14 +116,4 @@ LEAD_EMAIL: their@email.com`;
       { status: 500 },
     );
   }
-}
-
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    },
-  });
 }

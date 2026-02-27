@@ -1,18 +1,26 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-// Single browser client instance for use in client components
-export const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+let _client: ReturnType<typeof createBrowserClient> | null = null;
 
-// Helper: get the business ID for the currently logged-in user
+export function getSupabase() {
+  if (!_client) {
+    _client = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    );
+  }
+  return _client;
+}
+
 export async function getBusinessId(): Promise<string | null> {
-  const { data: session } = await supabase.auth.getSession();
-  const userId = session?.session?.user?.id;
+  const sb = getSupabase();
+  const {
+    data: { session },
+  } = await sb.auth.getSession();
+  const userId = session?.user?.id;
   if (!userId) return null;
 
-  const { data } = await supabase
+  const { data } = await sb
     .from("businesses")
     .select("id")
     .eq("user_id", userId)

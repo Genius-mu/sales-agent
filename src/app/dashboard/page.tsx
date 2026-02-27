@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import DashboardNav from "@/app/components/DashboardNav";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
 
@@ -135,23 +135,33 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function load() {
-      const [{ data: business }, { data: conversations }] = await Promise.all([
-        supabase
+      const sb = getSupabase();
+      const [{ data: bizData }, { data: convoData }] = await Promise.all([
+        sb
           .from("businesses")
           .select("name, website_url, scraped_content")
           .eq("id", BUSINESS_ID)
           .single(),
-        supabase
+        sb
           .from("conversations")
           .select("id, lead_email")
           .eq("business_id", BUSINESS_ID),
       ]);
+      const business = bizData as {
+        name: string;
+        website_url: string;
+        scraped_content: string | null;
+      } | null;
+      const conversations = (convoData ?? []) as {
+        id: string;
+        lead_email: string | null;
+      }[];
       setStats({
         businessName: business?.name || "Unnamed Business",
         websiteUrl: business?.website_url || "",
         agentReady: !!business?.scraped_content,
-        conversations: conversations?.length || 0,
-        leads: conversations?.filter((c) => c.lead_email).length || 0,
+        conversations: conversations.length,
+        leads: conversations.filter((c) => c.lead_email).length,
       });
       setLoading(false);
     }

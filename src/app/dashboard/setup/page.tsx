@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
 import { Button } from "@/app/components/Button";
 import { Input } from "@/app/components/Input";
-import { supabase } from "@/lib/supabase";
-
+import { getSupabase } from "@/lib/supabase";
 
 const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
 
@@ -28,22 +27,23 @@ export default function SetupPage() {
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    supabase
-      .from("businesses")
-      .select("name, website_url, agent_persona, scraped_content")
-      .eq("id", BUSINESS_ID)
-      .single()
-      .then(({ data }) => {
-        if (data) {
-          setName(data.name || "");
-          setUrl(data.website_url || "");
-          setPersona(data.agent_persona || PERSONAS[0].value);
-          if (data.scraped_content) {
-            setScraped(true);
-            setPreview(data.scraped_content.slice(0, 200));
-          }
+    async function loadBusiness() {
+      const { data } = await getSupabase()
+        .from("businesses")
+        .select("name, website_url, agent_persona, scraped_content")
+        .eq("id", BUSINESS_ID)
+        .single();
+      if (data) {
+        setName(data.name || "");
+        setUrl(data.website_url || "");
+        setPersona(data.agent_persona || PERSONAS[0].value);
+        if (data.scraped_content) {
+          setScraped(true);
+          setPreview(data.scraped_content.slice(0, 200));
         }
-      });
+      }
+    }
+    loadBusiness();
   }, []);
 
   const handleScrape = async () => {
@@ -75,7 +75,7 @@ export default function SetupPage() {
     setError("");
     setSuccess("");
     setSaving(true);
-    const { error } = await supabase
+    const { error } = await getSupabase()
       .from("businesses")
       .update({ name, agent_persona: persona })
       .eq("id", BUSINESS_ID);

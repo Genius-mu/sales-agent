@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getSupabase } from "@/lib/supabase";
 
 const links = [
   { href: "/dashboard", label: "Overview" },
@@ -19,13 +19,17 @@ export default function DashboardNav() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setEmail(data.session?.user?.email || "");
-    });
+    async function loadUser() {
+      const {
+        data: { session },
+      } = await getSupabase().auth.getSession();
+      setEmail(session?.user?.email || "");
+    }
+    loadUser();
   }, []);
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await getSupabase().auth.signOut();
     router.push("/login");
   };
 
