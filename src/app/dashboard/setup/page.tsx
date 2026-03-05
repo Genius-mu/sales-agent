@@ -258,9 +258,7 @@ export default function SetupPage() {
                     <label className="block text-sm font-semibold text-zinc-200">
                       Website Content
                     </label>
-                    <p className="text-zinc-600 text-xs">
-                      We'll read your site and use it to train the agent
-                    </p>
+                    <p className="text-zinc-600 text-xs">We'll read your site and use it to train the agent</p>                    
                   </div>
                 </div>
 
