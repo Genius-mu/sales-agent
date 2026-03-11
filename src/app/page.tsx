@@ -51,14 +51,60 @@ const STEPS = [
   },
 ];
 
-const PRICING_FEATURES = [
-  "1 AI sales agent",
-  "Unlimited conversations",
-  "Lead capture & dashboard",
-  "Website scraper & auto-training",
-  "One-line embed for any site",
-  "14-day free trial",
-  "Email support",
+const PLANS = [
+  {
+    name: "Starter",
+    price: "$49",
+    desc: "For solo founders testing the waters",
+    color: "from-zinc-900 to-zinc-950",
+    border: "border-zinc-800",
+    accent: "#52525b",
+    popular: false,
+    features: [
+      "1 AI sales agent",
+      "500 conversations/mo",
+      "Lead capture & dashboard",
+      "Embed on 1 site",
+      "Email support",
+    ],
+    cta: "Start free trial",
+  },
+  {
+    name: "Pro",
+    price: "$99",
+    desc: "For businesses serious about growth",
+    color: "from-blue-950/80 to-zinc-950",
+    border: "border-blue-500/40",
+    accent: "#3b82f6",
+    popular: true,
+    features: [
+      "3 AI sales agents",
+      "Unlimited conversations",
+      "Lead capture + CRM export",
+      "Embed on 5 sites",
+      "Analytics dashboard",
+      "Priority support",
+    ],
+    cta: "Start free trial",
+  },
+  {
+    name: "Scale",
+    price: "$199",
+    desc: "For agencies running at full speed",
+    color: "from-zinc-900 to-zinc-950",
+    border: "border-zinc-800",
+    accent: "#52525b",
+    popular: false,
+    features: [
+      "Unlimited agents",
+      "Unlimited conversations",
+      "White-label widget",
+      "Unlimited sites",
+      "Custom AI persona",
+      "Dedicated support",
+    ],
+    cta: "Contact us",
+  },
 ];
 
 const CHAT = [
@@ -108,8 +154,6 @@ export default function LandingPage() {
           </div>
           <span className="font-bold text-sm tracking-tight">SalesAgent</span>
         </div>
-
-        {/* Desktop nav links — hidden on mobile */}
         <div className="hidden md:flex items-center gap-8">
           <a
             href="#features"
@@ -130,7 +174,6 @@ export default function LandingPage() {
             Pricing
           </a>
         </div>
-
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/login"
@@ -155,7 +198,6 @@ export default function LandingPage() {
               <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
               <span>Powered by Claude AI · Live on 200+ sites</span>
             </div>
-
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05] mb-5 sm:mb-7">
               Your AI sales agent,
               <br />
@@ -163,13 +205,11 @@ export default function LandingPage() {
                 live in minutes
               </span>
             </h1>
-
             <p className="text-zinc-400 text-base sm:text-xl max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed">
               Paste your website URL. We train an AI agent on your business. It
               qualifies leads, answers questions, and books meetings —{" "}
               <span className="text-zinc-300">24/7, on autopilot.</span>
             </p>
-
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-5 sm:mb-6">
               <Link
                 href="/login"
@@ -212,12 +252,10 @@ export default function LandingPage() {
             />
             <div className="absolute -top-4 -right-4 w-8 h-8 bg-blue-500/20 rounded-full blur-lg" />
             <div className="absolute -bottom-4 -left-4 w-6 h-6 bg-cyan-500/20 rounded-full blur-lg" />
-
             <div
               className="relative flex flex-col rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/10"
               style={{ border: "1px solid rgba(255,255,255,0.08)" }}
             >
-              {/* Header */}
               <div className="bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-3.5 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="relative">
@@ -244,8 +282,6 @@ export default function LandingPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Messages */}
               <div className="bg-zinc-950/90 backdrop-blur-sm p-4 space-y-3">
                 {CHAT.map((msg, i) => (
                   <div
@@ -253,11 +289,7 @@ export default function LandingPage() {
                     className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${
-                        msg.from === "user"
-                          ? "bg-blue-600 text-white rounded-br-sm"
-                          : "bg-zinc-800/80 text-zinc-200 rounded-bl-sm border border-zinc-700/50"
-                      }`}
+                      className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${msg.from === "user" ? "bg-blue-600 text-white rounded-br-sm" : "bg-zinc-800/80 text-zinc-200 rounded-bl-sm border border-zinc-700/50"}`}
                     >
                       {msg.text}
                     </div>
@@ -280,7 +312,6 @@ export default function LandingPage() {
                   </div>
                 </div>
               </div>
-
               <div className="bg-zinc-900/90 border-t border-zinc-800/60 px-3 py-3 flex gap-2 backdrop-blur-sm">
                 <div className="flex-1 bg-zinc-800/60 border border-zinc-700/50 rounded-xl px-3 py-2 text-xs text-zinc-600">
                   Type a message...
@@ -311,8 +342,6 @@ export default function LandingPage() {
               Set up in under 5 minutes. No engineers required.
             </p>
           </div>
-
-          {/* 1 col mobile, 2 cols sm, 3 cols lg */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {FEATURES.map((f) => (
               <div
@@ -357,7 +386,6 @@ export default function LandingPage() {
             </h2>
             <p className="text-zinc-500">No technical knowledge needed.</p>
           </div>
-
           <div className="space-y-0">
             {STEPS.map((step, i) => (
               <div key={step.n} className="flex gap-5 sm:gap-6">
@@ -389,63 +417,103 @@ export default function LandingPage() {
         {/* ── PRICING ── */}
         <section
           id="pricing"
-          className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-sm mx-auto text-center"
+          className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-5xl mx-auto text-center"
         >
           <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-5 sm:mb-6">
             <span className="w-1 h-1 bg-amber-400 rounded-full" />
             Pricing
           </div>
           <h2 className="text-3xl sm:text-5xl font-bold tracking-tight mb-3">
-            Simple pricing
+            Simple, honest pricing
           </h2>
-          <p className="text-zinc-500 mb-8 sm:mb-10">
-            One plan. Everything included.
+          <p className="text-zinc-500 mb-10 sm:mb-14">
+            No hidden fees. Start free for 14 days.
           </p>
 
-          <div className="relative bg-zinc-900/80 border border-blue-500/30 rounded-2xl p-6 sm:p-8 overflow-hidden backdrop-blur-sm">
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
-            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-48 h-40 bg-blue-500/8 blur-3xl" />
-
-            <div className="relative mb-6 sm:mb-7">
-              <div className="flex items-end justify-center gap-1.5 mb-1">
-                <span className="text-5xl sm:text-6xl font-bold tracking-tight">
-                  $49
-                </span>
-                <span className="text-zinc-500 text-sm mb-2">/mo</span>
-              </div>
-              <p className="text-zinc-500 text-xs">
-                Billed monthly · No contracts
-              </p>
-            </div>
-
-            <div className="h-px bg-zinc-800/80 mb-6 sm:mb-7" />
-
-            <ul className="text-left space-y-3 mb-7 sm:mb-8">
-              {PRICING_FEATURES.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-center gap-3 text-sm text-zinc-300"
-                >
-                  <div className="w-4 h-4 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                    <span className="text-emerald-400 text-xs font-bold">
-                      ✓
+          {/* 1 col mobile, 3 cols md+ */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-8">
+            {PLANS.map((plan) => (
+              <div key={plan.name} className="relative">
+                {plan.popular && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20">
+                    <span className="bg-blue-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-xl shadow-blue-500/30 tracking-wide whitespace-nowrap">
+                      Most Popular
                     </span>
                   </div>
-                  {item}
-                </li>
-              ))}
-            </ul>
+                )}
+                <div
+                  className={`relative h-full bg-gradient-to-b ${plan.color} border ${plan.border} rounded-2xl p-6 flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl text-left ${plan.popular ? "hover:border-blue-400/50 hover:shadow-blue-500/10" : "hover:border-zinc-700 hover:shadow-black/60"}`}
+                >
+                  {plan.popular && (
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
+                  )}
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl"
+                    style={{
+                      background: `radial-gradient(300px circle at 50% 0%, ${plan.accent}12, transparent 70%)`,
+                    }}
+                  />
 
-            <Link
-              href="/login"
-              className="group relative block w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl text-sm transition-all active:scale-95 shadow-lg shadow-blue-600/25 overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 opacity-0 group-hover:opacity-30 transition-opacity duration-300" />
-              <span className="relative">Start free trial →</span>
-            </Link>
-            <p className="text-zinc-700 text-xs mt-3">
-              No credit card required
-            </p>
+                  <div className="relative mb-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-zinc-400 text-xs font-bold tracking-[0.2em] uppercase">
+                        {plan.name}
+                      </p>
+                      {plan.popular && (
+                        <span className="text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                          Best value
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-end gap-1.5 mb-1">
+                      <span className="text-5xl font-bold tracking-tight">
+                        {plan.price}
+                      </span>
+                      <span className="text-zinc-500 text-sm mb-1.5">/mo</span>
+                    </div>
+                    <p className="text-zinc-500 text-xs">{plan.desc}</p>
+                  </div>
+
+                  <div className="h-px bg-zinc-800/80 mb-5" />
+
+                  <ul className="space-y-2.5 flex-1 mb-6">
+                    {plan.features.map((f) => (
+                      <li
+                        key={f}
+                        className="flex items-start gap-2.5 text-xs text-zinc-300"
+                      >
+                        <span className="text-emerald-400 mt-0.5 shrink-0 font-bold">
+                          ✓
+                        </span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    href="/login"
+                    className={`relative block w-full py-3 rounded-xl text-sm font-bold text-center transition-all duration-200 active:scale-95 overflow-hidden ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25" : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"}`}
+                  >
+                    {plan.cta} →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
+            {[
+              "14-day free trial",
+              "No credit card required",
+              "Cancel anytime",
+            ].map((text, i) => (
+              <div key={text} className="flex items-center gap-3 sm:gap-6">
+                {i > 0 && (
+                  <div className="w-1 h-1 bg-zinc-700 rounded-full hidden sm:block" />
+                )}
+                <span className="text-zinc-600 text-xs">{text}</span>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -454,7 +522,6 @@ export default function LandingPage() {
           <div className="relative bg-gradient-to-b from-zinc-900/80 to-zinc-950 border border-zinc-800/60 rounded-3xl px-6 sm:px-8 py-14 sm:py-20 overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
             <div className="absolute inset-0 bg-blue-600/3 rounded-3xl" />
-
             <div className="relative">
               <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-6 sm:mb-8">
                 <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
