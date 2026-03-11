@@ -193,13 +193,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#080809] text-white overflow-x-hidden">
-      {/* Rich layered background */}
+      {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        {/* Primary orbs */}
         <div className="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-blue-600/6 rounded-full blur-[140px]" />
         <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/4 rounded-full blur-[100px]" />
-        {/* Grid texture */}
         <div
           className="absolute inset-0 opacity-[0.015]"
           style={{
@@ -208,7 +206,6 @@ export default function DashboardPage() {
             backgroundSize: "64px 64px",
           }}
         />
-        {/* Vignette */}
         <div
           className="absolute inset-0"
           style={{
@@ -221,10 +218,10 @@ export default function DashboardPage() {
       <div className="relative z-10">
         <DashboardNav />
 
-        <div className="max-w-5xl mx-auto px-8 py-12">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Header row */}
           <div
-            className="flex items-start justify-between mb-12"
+            className="flex items-start justify-between mb-8 sm:mb-12"
             style={{
               opacity: headerVisible ? 1 : 0,
               transform: headerVisible ? "translateY(0)" : "translateY(-16px)",
@@ -232,23 +229,23 @@ export default function DashboardPage() {
                 "opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)",
             }}
           >
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                 <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-medium">
                   Dashboard
                 </p>
               </div>
-              <h1 className="text-5xl font-bold tracking-tight leading-none">
+              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-none truncate">
                 {loading ? (
-                  <span className="inline-block w-56 h-12 bg-zinc-800/80 rounded-xl animate-pulse" />
+                  <span className="inline-block w-40 sm:w-56 h-9 sm:h-12 bg-zinc-800/80 rounded-xl animate-pulse" />
                 ) : (
                   <span>{stats?.businessName}</span>
                 )}
               </h1>
             </div>
-            {/* Live clock */}
-            <div className="text-right mt-1">
+            {/* Live clock — hidden on mobile */}
+            <div className="text-right mt-1 hidden sm:block shrink-0 ml-4">
               <p className="text-zinc-600 text-xs mb-1 tracking-widest uppercase">
                 Local time
               </p>
@@ -260,10 +257,10 @@ export default function DashboardPage() {
 
           {/* Warning banner */}
           {!loading && !stats?.agentReady && (
-            <AnimatedCard delay={150} className="mb-8">
-              <div className="relative overflow-hidden flex items-center justify-between bg-amber-500/5 border border-amber-500/20 rounded-2xl px-6 py-4">
+            <AnimatedCard delay={150} className="mb-6 sm:mb-8">
+              <div className="relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl px-4 sm:px-6 py-4">
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent" />
-                <div className="relative flex items-center gap-4">
+                <div className="relative flex items-center gap-3 sm:gap-4">
                   <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center text-amber-400 text-base shrink-0">
                     ⚠
                   </div>
@@ -278,7 +275,7 @@ export default function DashboardPage() {
                 </div>
                 <Link
                   href="/dashboard/setup"
-                  className="relative text-xs bg-amber-500 hover:bg-amber-400 text-black font-bold px-5 py-2.5 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-amber-500/20 shrink-0"
+                  className="relative text-xs bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-amber-500/20 shrink-0 w-full sm:w-auto text-center"
                 >
                   Configure now →
                 </Link>
@@ -286,8 +283,8 @@ export default function DashboardPage() {
             </AnimatedCard>
           )}
 
-          {/* Stat cards */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          {/* Stat cards — 1 col mobile, 3 cols sm+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[
               {
                 label: "Conversations",
@@ -323,8 +320,7 @@ export default function DashboardPage() {
                 delay={card.delay}
                 className="group"
               >
-                <div className="relative bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-6 h-full overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 backdrop-blur-sm">
-                  {/* Subtle inner glow on hover */}
+                <div className="relative bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 backdrop-blur-sm">
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
                     style={{
@@ -332,10 +328,9 @@ export default function DashboardPage() {
                         "radial-gradient(400px circle at 50% -20%, rgba(59,130,246,0.04), transparent 60%)",
                     }}
                   />
-
                   <div className="relative">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
+                    <div className="flex items-start justify-between mb-4 sm:mb-6">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform duration-300">
                         {card.icon}
                       </div>
                       {card.highlight !== undefined ? (
@@ -353,9 +348,9 @@ export default function DashboardPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-4xl font-bold mb-2 tabular-nums tracking-tight">
+                    <p className="text-3xl sm:text-4xl font-bold mb-2 tabular-nums tracking-tight">
                       {card.value === null ? (
-                        <span className="inline-block w-16 h-9 bg-zinc-800 rounded-lg animate-pulse" />
+                        <span className="inline-block w-16 h-8 sm:h-9 bg-zinc-800 rounded-lg animate-pulse" />
                       ) : (
                         card.value
                       )}
@@ -370,8 +365,8 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Quick actions */}
-          <div className="grid grid-cols-2 gap-4 mb-16">
+          {/* Quick actions — stacked on mobile, 2 cols on sm+ */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-12 sm:mb-16">
             {[
               {
                 href: "/dashboard/setup",
@@ -395,7 +390,7 @@ export default function DashboardPage() {
               <AnimatedCard key={item.href} delay={item.delay}>
                 <Link
                   href={item.href}
-                  className="group relative block bg-zinc-900/60 border border-zinc-800/80 hover:border-blue-500/30 rounded-2xl p-6 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/5 backdrop-blur-sm h-full"
+                  className="group relative block bg-zinc-900/60 border border-zinc-800/80 hover:border-blue-500/30 rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/5 backdrop-blur-sm h-full"
                 >
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
@@ -405,18 +400,18 @@ export default function DashboardPage() {
                     }}
                   />
                   <div className="relative">
-                    <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center justify-between mb-4 sm:mb-5">
                       <span className="text-zinc-600 text-xs tracking-[0.2em] font-semibold">
                         {item.label}
                       </span>
-                      <div className="w-9 h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-base sm:text-lg group-hover:scale-110 transition-transform duration-300">
                         {item.icon}
                       </div>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2 tracking-tight">
                       {item.title}
                     </h3>
-                    <p className="text-zinc-500 text-sm leading-relaxed mb-5">
+                    <p className="text-zinc-500 text-sm leading-relaxed mb-4 sm:mb-5">
                       {item.desc}
                     </p>
                     <span className="inline-flex items-center gap-2 text-blue-400 text-sm font-medium group-hover:gap-3 transition-all duration-300">
@@ -442,10 +437,10 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Pricing section */}
+          {/* Pricing section label */}
           <AnimatedCard delay={550}>
-            <div className="mb-10 text-center">
-              <div className="flex items-center gap-4 mb-8">
+            <div className="mb-8 sm:mb-10 text-center">
+              <div className="flex items-center gap-4 mb-6 sm:mb-8">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-zinc-800" />
                 <div className="flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full">
                   <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
@@ -455,7 +450,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-zinc-800" />
               </div>
-              <h2 className="text-3xl font-bold tracking-tight mb-2">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">
                 Simple, honest pricing
               </h2>
               <p className="text-zinc-500 text-sm">
@@ -464,7 +459,8 @@ export default function DashboardPage() {
             </div>
           </AnimatedCard>
 
-          <div className="grid grid-cols-3 gap-5 mb-8">
+          {/* Pricing cards — 1 col mobile, 3 cols md+ */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-6 sm:mb-8">
             {PLANS.map((plan, i) => (
               <AnimatedCard
                 key={plan.name}
@@ -479,14 +475,11 @@ export default function DashboardPage() {
                   </div>
                 )}
                 <div
-                  className={`relative bg-gradient-to-b ${plan.color} border ${plan.border} rounded-2xl p-6 h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl ${plan.popular ? "hover:shadow-blue-500/10 hover:border-blue-400/50" : "hover:shadow-black/60 hover:border-zinc-700"}`}
+                  className={`relative bg-gradient-to-b ${plan.color} border ${plan.border} rounded-2xl p-5 sm:p-6 h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl ${plan.popular ? "hover:shadow-blue-500/10 hover:border-blue-400/50" : "hover:shadow-black/60 hover:border-zinc-700"}`}
                 >
-                  {/* Top accent line for popular */}
                   {plan.popular && (
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
                   )}
-
-                  {/* Hover glow */}
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl"
                     style={{
@@ -494,8 +487,8 @@ export default function DashboardPage() {
                     }}
                   />
 
-                  <div className="relative mb-6">
-                    <div className="flex items-start justify-between mb-4">
+                  <div className="relative mb-5 sm:mb-6">
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
                       <p className="text-zinc-400 text-xs font-bold tracking-[0.2em] uppercase">
                         {plan.name}
                       </p>
@@ -506,7 +499,7 @@ export default function DashboardPage() {
                       )}
                     </div>
                     <div className="flex items-end gap-1.5">
-                      <span className="text-5xl font-bold tracking-tight">
+                      <span className="text-4xl sm:text-5xl font-bold tracking-tight">
                         {plan.price}
                       </span>
                       <span className="text-zinc-500 text-sm mb-1.5">
@@ -518,9 +511,9 @@ export default function DashboardPage() {
                     </p>
                   </div>
 
-                  <div className="relative h-px bg-zinc-800/80 mb-5" />
+                  <div className="relative h-px bg-zinc-800/80 mb-4 sm:mb-5" />
 
-                  <ul className="relative space-y-3 flex-1 mb-6">
+                  <ul className="relative space-y-2.5 flex-1 mb-5 sm:mb-6">
                     {plan.features.map((f) => (
                       <li
                         key={f}
@@ -535,11 +528,7 @@ export default function DashboardPage() {
                   </ul>
 
                   <button
-                    className={`relative w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 tracking-wide ${
-                      plan.popular
-                        ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-500/40"
-                        : "bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"
-                    }`}
+                    className={`relative w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 tracking-wide ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-500/40" : "bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"}`}
                   >
                     {plan.cta}
                   </button>
@@ -548,16 +537,17 @@ export default function DashboardPage() {
             ))}
           </div>
 
+          {/* Footer guarantee — wraps on mobile */}
           <AnimatedCard delay={1050}>
-            <div className="flex items-center justify-center gap-6 pb-8">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pb-6 sm:pb-8">
               {[
                 "14-day free trial",
                 "No credit card required",
                 "Cancel anytime",
               ].map((text, i) => (
-                <div key={text} className="flex items-center gap-4">
+                <div key={text} className="flex items-center gap-3 sm:gap-4">
                   {i > 0 && (
-                    <div className="w-1 h-1 bg-zinc-700 rounded-full" />
+                    <div className="w-1 h-1 bg-zinc-700 rounded-full hidden sm:block" />
                   )}
                   <span className="text-zinc-600 text-xs">{text}</span>
                 </div>

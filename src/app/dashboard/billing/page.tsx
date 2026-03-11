@@ -172,10 +172,10 @@ function BillingContent() {
     subscriptionStatus === "active" || subscriptionStatus === "on_trial";
 
   return (
-    <div className="max-w-5xl mx-auto px-8 py-12">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
       {/* Header */}
       <div
-        className="mb-12"
+        className="mb-8 sm:mb-12"
         style={{
           opacity: headerVisible ? 1 : 0,
           transform: headerVisible ? "translateY(0)" : "translateY(-12px)",
@@ -189,7 +189,7 @@ function BillingContent() {
             Billing
           </p>
         </div>
-        <h1 className="text-5xl font-bold tracking-tight leading-none">
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none">
           Your Plan
         </h1>
       </div>
@@ -197,7 +197,7 @@ function BillingContent() {
       {/* Success banner */}
       {success && (
         <AnimatedSection delay={0}>
-          <div className="relative mb-8 flex items-center gap-4 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl px-6 py-4 overflow-hidden">
+          <div className="relative mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4 bg-emerald-500/8 border border-emerald-500/20 rounded-2xl px-4 sm:px-6 py-4 overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
             <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-base shrink-0">
               ✓
@@ -217,9 +217,9 @@ function BillingContent() {
 
       {/* Current plan card */}
       <AnimatedSection delay={150}>
-        <div className="relative bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-6 mb-10 overflow-hidden backdrop-blur-sm">
+        <div className="relative bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-4 sm:p-6 mb-8 sm:mb-10 overflow-hidden backdrop-blur-sm">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-zinc-700/50 to-transparent" />
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-zinc-600 text-xs mb-2 tracking-widest uppercase font-medium">
                 Current plan
@@ -230,12 +230,12 @@ function BillingContent() {
                   <div className="w-16 h-6 bg-zinc-800 rounded-full animate-pulse" />
                 </div>
               ) : (
-                <div className="flex items-center gap-3">
-                  <p className="text-3xl font-bold capitalize tracking-tight">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <p className="text-2xl sm:text-3xl font-bold capitalize tracking-tight">
                     {currentPlan}
                   </p>
                   <span
-                    className={`text-xs px-3 py-1 rounded-full font-semibold border flex items-center gap-1.5 ${isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800 text-zinc-500 border-zinc-700"}`}
+                    className={`text-xs px-2.5 sm:px-3 py-1 rounded-full font-semibold border flex items-center gap-1.5 ${isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800 text-zinc-500 border-zinc-700"}`}
                   >
                     {isActive && (
                       <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
@@ -249,14 +249,14 @@ function BillingContent() {
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
               {isActive && (
-                <button className="text-xs text-zinc-500 hover:text-red-400 transition-colors border border-zinc-800 hover:border-red-500/20 px-4 py-2.5 rounded-xl">
-                  Cancel plan
+                <button className="text-xs text-zinc-500 hover:text-red-400 transition-colors border border-zinc-800 hover:border-red-500/20 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl whitespace-nowrap">
+                  Cancel
                 </button>
               )}
               {!pageLoading && (
-                <div className="w-12 h-12 rounded-2xl bg-zinc-800/80 border border-zinc-700 flex items-center justify-center text-2xl">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-zinc-800/80 border border-zinc-700 flex items-center justify-center text-xl sm:text-2xl">
                   {currentPlan === "pro"
                     ? "⚡"
                     : currentPlan === "scale"
@@ -271,7 +271,7 @@ function BillingContent() {
 
       {/* Section label */}
       <AnimatedSection delay={250}>
-        <div className="flex items-center gap-4 mb-6">
+        <div className="flex items-center gap-4 mb-5 sm:mb-6">
           <h2 className="text-base font-semibold text-zinc-300 shrink-0">
             {isActive ? "Change your plan" : "Choose a plan"}
           </h2>
@@ -279,8 +279,8 @@ function BillingContent() {
         </div>
       </AnimatedSection>
 
-      {/* Pricing grid */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
+      {/* Pricing grid — 1 col mobile, 3 cols md+ */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 sm:mb-8">
         {PLANS.map((plan, i) => {
           const isCurrent = currentPlan === plan.key && isActive;
           const isLoading = loadingPlan === plan.key;
@@ -295,14 +295,11 @@ function BillingContent() {
                   </div>
                 )}
                 <div
-                  className={`relative h-full bg-gradient-to-b ${plan.gradient} border ${plan.border} ${isCurrent ? "ring-2 ring-emerald-500/25" : ""} rounded-2xl p-6 flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl ${plan.popular ? "hover:border-blue-400/50 hover:shadow-blue-500/8" : "hover:border-zinc-700 hover:shadow-black/60"}`}
+                  className={`relative h-full bg-gradient-to-b ${plan.gradient} border ${plan.border} ${isCurrent ? "ring-2 ring-emerald-500/25" : ""} rounded-2xl p-5 sm:p-6 flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${plan.popular ? "hover:border-blue-400/50 hover:shadow-blue-500/8" : "hover:border-zinc-700 hover:shadow-black/60"}`}
                 >
-                  {/* Top glow line for popular */}
                   {plan.popular && (
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
                   )}
-
-                  {/* Hover shimmer */}
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl"
                     style={{
@@ -310,7 +307,6 @@ function BillingContent() {
                     }}
                   />
 
-                  {/* Current badge */}
                   {isCurrent && (
                     <div className="absolute top-4 right-4">
                       <span className="text-xs bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-semibold flex items-center gap-1.5">
@@ -320,9 +316,9 @@ function BillingContent() {
                     </div>
                   )}
 
-                  {/* Plan info */}
-                  <div className="relative mb-5">
-                    <div className="flex items-center justify-between mb-4">
+                  {/* Plan info — horizontal layout on mobile for non-popular */}
+                  <div className="relative mb-4 sm:mb-5">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
                       <p className="text-zinc-500 text-xs font-bold tracking-[0.2em] uppercase">
                         {plan.name}
                       </p>
@@ -333,7 +329,7 @@ function BillingContent() {
                       )}
                     </div>
                     <div className="flex items-end gap-1.5 mb-1">
-                      <span className="text-5xl font-bold tracking-tight">
+                      <span className="text-4xl sm:text-5xl font-bold tracking-tight">
                         {plan.price}
                       </span>
                       <span className="text-zinc-500 text-sm mb-1.5">/mo</span>
@@ -341,15 +337,14 @@ function BillingContent() {
                     <p className="text-zinc-600 text-xs">{plan.desc}</p>
                   </div>
 
-                  {/* Divider */}
-                  <div className="relative h-px bg-zinc-800/80 mb-5" />
+                  <div className="relative h-px bg-zinc-800/80 mb-4 sm:mb-5" />
 
-                  {/* Features */}
-                  <ul className="relative space-y-2.5 flex-1 mb-6">
+                  {/* Features — 2 cols on mobile to save space */}
+                  <ul className="relative grid grid-cols-1 sm:grid-cols-1 gap-2 sm:space-y-0 flex-1 mb-5 sm:mb-6">
                     {plan.features.map((f) => (
                       <li
                         key={f}
-                        className="flex items-start gap-2.5 text-xs text-zinc-300"
+                        className="flex items-start gap-2 text-xs text-zinc-300"
                       >
                         <span className="text-emerald-400 mt-0.5 shrink-0 font-bold">
                           ✓
@@ -359,7 +354,6 @@ function BillingContent() {
                     ))}
                   </ul>
 
-                  {/* CTA */}
                   <button
                     onClick={() => !isCurrent && handleUpgrade(plan.key)}
                     disabled={isCurrent || isLoading}
@@ -407,16 +401,18 @@ function BillingContent() {
         })}
       </div>
 
-      {/* Footer guarantee */}
+      {/* Footer guarantee — stacks on mobile */}
       <AnimatedSection delay={700}>
-        <div className="flex items-center justify-center gap-6 pb-4">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pb-4">
           {[
             "14-day free trial",
             "Cancel anytime",
             "Secure via Lemon Squeezy",
           ].map((text, i) => (
-            <div key={text} className="flex items-center gap-6">
-              {i > 0 && <div className="w-1 h-1 bg-zinc-700 rounded-full" />}
+            <div key={text} className="flex items-center gap-3 sm:gap-6">
+              {i > 0 && (
+                <div className="w-1 h-1 bg-zinc-700 rounded-full hidden sm:block" />
+              )}
               <span className="text-zinc-600 text-xs">{text}</span>
             </div>
           ))}
@@ -452,7 +448,7 @@ export default function BillingPage() {
         <DashboardNav />
         <Suspense
           fallback={
-            <div className="max-w-5xl mx-auto px-8 py-12">
+            <div className="max-w-5xl mx-auto px-4 sm:px-8 py-12">
               <div className="w-48 h-12 bg-zinc-800 rounded-xl animate-pulse mb-4" />
               <div className="w-full h-32 bg-zinc-900 rounded-2xl animate-pulse" />
             </div>

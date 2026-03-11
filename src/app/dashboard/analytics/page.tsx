@@ -13,7 +13,7 @@ import {
 import DashboardNav from "@/app/components/DashboardNav";
 import { getSupabase } from "@/lib/supabase";
 
-const BUSINESS_ID = "your-business-id-here";
+const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
 
 type Range = 7 | 30 | 90;
 
@@ -31,35 +31,20 @@ const METRICS: {
   key: MetricKey;
   label: string;
   color: string;
-  gradient: string;
   icon: string;
 }[] = [
   {
     key: "conversations",
     label: "Conversations",
     color: "#3b82f6",
-    gradient: "from-blue-500/20 to-transparent",
     icon: "💬",
   },
-  {
-    key: "leads",
-    label: "Leads Captured",
-    color: "#22c55e",
-    gradient: "from-green-500/20 to-transparent",
-    icon: "🎯",
-  },
-  {
-    key: "messages",
-    label: "Messages Sent",
-    color: "#a78bfa",
-    gradient: "from-violet-500/20 to-transparent",
-    icon: "✉️",
-  },
+  { key: "leads", label: "Leads Captured", color: "#22c55e", icon: "🎯" },
+  { key: "messages", label: "Messages Sent", color: "#a78bfa", icon: "✉️" },
   {
     key: "activeSessions",
     label: "Active Sessions",
     color: "#f59e0b",
-    gradient: "from-amber-500/20 to-transparent",
     icon: "⚡",
   },
 ];
@@ -176,7 +161,6 @@ export default function AnalyticsPage() {
       setLoading(true);
       const since = new Date();
       since.setDate(since.getDate() - range);
-
       const sb = getSupabase();
       const { data: conversations } = await sb
         .from("conversations")
@@ -221,10 +205,6 @@ export default function AnalyticsPage() {
     { conversations: 0, leads: 0, messages: 0, activeSessions: 0 },
   );
 
-  // Single active metric for gradient area chart
-  const primaryMetric =
-    METRICS.find((m) => activeMetrics[0] === m.key) || METRICS[0];
-
   return (
     <div className="min-h-screen bg-[#080809] text-white">
       {/* Background */}
@@ -251,10 +231,10 @@ export default function AnalyticsPage() {
       <div className="relative z-10">
         <DashboardNav />
 
-        <div className="max-w-6xl mx-auto px-8 py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Header */}
           <div
-            className="flex items-end justify-between mb-12"
+            className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12"
             style={{
               opacity: headerVisible ? 1 : 0,
               transform: headerVisible ? "translateY(0)" : "translateY(-12px)",
@@ -269,7 +249,7 @@ export default function AnalyticsPage() {
                   Analytics
                 </p>
               </div>
-              <h1 className="text-5xl font-bold tracking-tight leading-none mb-2">
+              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none mb-2">
                 Performance
               </h1>
               <p className="text-zinc-500 text-sm">
@@ -278,12 +258,12 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Range selector */}
-            <div className="flex items-center bg-zinc-900/80 border border-zinc-800 rounded-xl p-1 gap-1 backdrop-blur-sm">
+            <div className="flex items-center bg-zinc-900/80 border border-zinc-800 rounded-xl p-1 gap-1 backdrop-blur-sm self-start sm:self-auto">
               {([7, 30, 90] as Range[]).map((r) => (
                 <button
                   key={r}
                   onClick={() => setRange(r)}
-                  className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${range === r ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}`}
+                  className={`px-4 sm:px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${range === r ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}`}
                 >
                   {r}d
                 </button>
@@ -291,15 +271,15 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          {/* Stat cards */}
-          <div className="grid grid-cols-4 gap-4 mb-8">
+          {/* Stat cards — 2 cols on mobile, 4 on desktop */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {METRICS.map((m, i) => {
               const isActive = activeMetrics.includes(m.key);
               return (
                 <AnimatedCard key={m.key} delay={100 + i * 80}>
                   <button
                     onClick={() => toggleMetric(m.key)}
-                    className={`group w-full text-left relative bg-zinc-900/60 border rounded-2xl p-5 overflow-hidden transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-sm ${isActive ? "border-zinc-700 hover:border-zinc-600" : "border-zinc-800/50 opacity-50 hover:opacity-70"}`}
+                    className={`group w-full text-left relative bg-zinc-900/60 border rounded-2xl p-4 sm:p-5 overflow-hidden transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-sm ${isActive ? "border-zinc-700 hover:border-zinc-600" : "border-zinc-800/50 opacity-50 hover:opacity-70"}`}
                   >
                     {/* Top color bar */}
                     <div
@@ -310,8 +290,8 @@ export default function AnalyticsPage() {
                       }}
                     />
 
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-9 h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-base">
+                    <div className="flex items-start justify-between mb-3 sm:mb-4">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-sm sm:text-base">
                         {m.icon}
                       </div>
                       <div
@@ -323,15 +303,19 @@ export default function AnalyticsPage() {
                       />
                     </div>
 
-                    <p className="text-3xl font-bold tabular-nums tracking-tight mb-1">
+                    <p className="text-2xl sm:text-3xl font-bold tabular-nums tracking-tight mb-1">
                       {loading ? (
                         <span className="inline-block w-10 h-7 bg-zinc-800 rounded animate-pulse" />
                       ) : (
                         totals[m.key].toLocaleString()
                       )}
                     </p>
-                    <p className="text-zinc-400 text-xs font-medium">
+                    {/* Full label on md+, short on mobile */}
+                    <p className="text-zinc-400 text-xs font-medium hidden sm:block">
                       {m.label}
+                    </p>
+                    <p className="text-zinc-400 text-xs font-medium sm:hidden">
+                      {m.label.split(" ")[0]}
                     </p>
                     <p className="text-zinc-600 text-xs mt-0.5">
                       Last {range}d
@@ -345,29 +329,35 @@ export default function AnalyticsPage() {
           {/* Chart */}
           <AnimatedCard delay={450}>
             <div className="relative bg-zinc-900/60 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-sm">
-              {/* Chart header */}
-              <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-zinc-800/60">
+              {/* Chart header — stacks on mobile */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-zinc-800/60 gap-3">
                 <div>
                   <h2 className="font-semibold text-white text-base">
                     Performance over time
                   </h2>
                   <p className="text-zinc-500 text-xs mt-0.5">
-                    Click metric cards above to toggle visibility
+                    Tap metric cards to toggle visibility
                   </p>
                 </div>
-                {/* Active metric pills */}
-                <div className="flex items-center gap-2">
+                {/* Active metric pills — wraps on mobile */}
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {METRICS.filter((m) => activeMetrics.includes(m.key)).map(
                     (m) => (
                       <div
                         key={m.key}
-                        className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-zinc-700/80 bg-zinc-800/60"
+                        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium border border-zinc-700/80 bg-zinc-800/60"
                       >
                         <div
                           className="w-1.5 h-1.5 rounded-full"
                           style={{ backgroundColor: m.color }}
                         />
-                        <span className="text-zinc-300">{m.label}</span>
+                        {/* Only show label on sm+ */}
+                        <span className="text-zinc-300 hidden sm:inline">
+                          {m.label}
+                        </span>
+                        <span className="text-zinc-300 sm:hidden">
+                          {m.label.split(" ")[0]}
+                        </span>
                       </div>
                     ),
                   )}
@@ -375,19 +365,19 @@ export default function AnalyticsPage() {
               </div>
 
               {/* Chart body */}
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {loading ? (
-                  <div className="flex flex-col items-center justify-center h-72 gap-3">
+                  <div className="flex flex-col items-center justify-center h-48 sm:h-72 gap-3">
                     <div className="w-8 h-8 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
                     <p className="text-zinc-600 text-sm">
                       Loading chart data...
                     </p>
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={300}>
+                  <ResponsiveContainer width="100%" height={260}>
                     <AreaChart
                       data={data}
-                      margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                      margin={{ top: 10, right: 4, left: -24, bottom: 0 }}
                     >
                       <defs>
                         {METRICS.map((m) => (
@@ -422,7 +412,7 @@ export default function AnalyticsPage() {
                         tick={{ fill: "#52525b", fontSize: 10 }}
                         tickLine={false}
                         axisLine={false}
-                        interval={range === 7 ? 0 : range === 30 ? 4 : 9}
+                        interval={range === 7 ? 0 : range === 30 ? 6 : 13}
                       />
                       <YAxis
                         tick={{ fill: "#52525b", fontSize: 10 }}
@@ -458,21 +448,26 @@ export default function AnalyticsPage() {
                 )}
               </div>
 
-              {/* Bottom summary bar */}
+              {/* Bottom summary bar — 2x2 on mobile, row on desktop */}
               {!loading && (
-                <div className="flex items-center justify-between px-6 py-4 border-t border-zinc-800/60 bg-zinc-950/30">
+                <div className="grid grid-cols-2 sm:grid-cols-4 px-4 sm:px-6 py-4 border-t border-zinc-800/60 bg-zinc-950/30 gap-3 sm:gap-0">
                   {METRICS.map((m) => (
                     <div
                       key={m.key}
                       className={`text-center transition-opacity duration-300 ${activeMetrics.includes(m.key) ? "opacity-100" : "opacity-30"}`}
                     >
                       <p
-                        className="text-lg font-bold tabular-nums"
+                        className="text-base sm:text-lg font-bold tabular-nums"
                         style={{ color: m.color }}
                       >
                         {totals[m.key].toLocaleString()}
                       </p>
-                      <p className="text-zinc-600 text-xs">{m.label}</p>
+                      <p className="text-zinc-600 text-xs hidden sm:block">
+                        {m.label}
+                      </p>
+                      <p className="text-zinc-600 text-xs sm:hidden">
+                        {m.label.split(" ")[0]}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -483,7 +478,7 @@ export default function AnalyticsPage() {
           {/* Empty state */}
           {!loading && totals.conversations === 0 && (
             <AnimatedCard delay={600}>
-              <div className="mt-6 flex flex-col items-center justify-center py-12 bg-zinc-900/40 border border-zinc-800/60 rounded-2xl text-center">
+              <div className="mt-6 flex flex-col items-center justify-center py-10 sm:py-12 bg-zinc-900/40 border border-zinc-800/60 rounded-2xl text-center px-4">
                 <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-2xl mb-4">
                   📭
                 </div>

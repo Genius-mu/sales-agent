@@ -170,10 +170,10 @@ export default function SetupPage() {
       <div className="relative z-10">
         <DashboardNav />
 
-        <div className="max-w-2xl mx-auto px-8 py-12">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Header */}
           <div
-            className="mb-12"
+            className="mb-8 sm:mb-12"
             style={{
               opacity: headerVisible ? 1 : 0,
               transform: headerVisible ? "translateY(0)" : "translateY(-12px)",
@@ -187,7 +187,7 @@ export default function SetupPage() {
                 Configuration
               </p>
             </div>
-            <h1 className="text-5xl font-bold tracking-tight leading-none mb-3">
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none mb-3">
               Agent Setup
             </h1>
             <p className="text-zinc-500 text-sm leading-relaxed">
@@ -196,37 +196,45 @@ export default function SetupPage() {
             </p>
           </div>
 
-          {/* Step indicators */}
+          {/* Step indicators — scrollable on very small screens */}
           <AnimatedSection delay={100}>
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8 overflow-x-auto pb-1 scrollbar-none">
               {[
                 { n: "1", label: "Business Name", done: !!name },
                 { n: "2", label: "Website Content", done: scraped },
                 { n: "3", label: "Personality", done: true },
               ].map((step, i) => (
-                <div key={step.n} className="flex items-center gap-3">
+                <div
+                  key={step.n}
+                  className="flex items-center gap-2 sm:gap-3 shrink-0"
+                >
                   <div
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-300 ${step.done ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}
+                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-300 whitespace-nowrap ${step.done ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}
                   >
                     <span
-                      className={`w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold ${step.done ? "bg-emerald-500 text-white" : "bg-zinc-800 text-zinc-500"}`}
+                      className={`w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${step.done ? "bg-emerald-500 text-white" : "bg-zinc-800 text-zinc-500"}`}
                     >
                       {step.done ? "✓" : step.n}
                     </span>
-                    {step.label}
+                    {/* Hide label text on xs, show on sm+ */}
+                    <span className="hidden xs:inline sm:inline">
+                      {step.label}
+                    </span>
                   </div>
-                  {i < 2 && <div className="w-6 h-px bg-zinc-800" />}
+                  {i < 2 && (
+                    <div className="w-4 sm:w-6 h-px bg-zinc-800 shrink-0" />
+                  )}
                 </div>
               ))}
             </div>
           </AnimatedSection>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {/* Business Name */}
             <AnimatedSection delay={200}>
-              <div className="group bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-6 transition-all duration-300 backdrop-blur-sm">
+              <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
                     🏢
                   </div>
                   <div>
@@ -242,27 +250,30 @@ export default function SetupPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Acme Inc."
-                  className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800 focus:shadow-lg focus:shadow-blue-500/5"
+                  className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800"
                 />
               </div>
             </AnimatedSection>
 
             {/* Website URL */}
             <AnimatedSection delay={300}>
-              <div className="group bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-6 transition-all duration-300 backdrop-blur-sm">
+              <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
                     🌐
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-zinc-200">
                       Website Content
                     </label>
-                    <p className="text-zinc-600 text-xs">We'll read your site and use it to train the agent</p>                    
+                    <p className="text-zinc-600 text-xs">
+                      We'll read your site and use it to train the agent
+                    </p>
                   </div>
                 </div>
 
-                <div className="flex gap-2 mb-4">
+                {/* Stack on mobile, row on sm+ */}
+                <div className="flex flex-col sm:flex-row gap-2 mb-4">
                   <input
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
@@ -273,7 +284,7 @@ export default function SetupPage() {
                   <button
                     onClick={handleScrape}
                     disabled={scraping || !url}
-                    className="px-5 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20 whitespace-nowrap disabled:cursor-not-allowed flex items-center gap-2"
+                    className="sm:w-auto w-full px-5 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20 whitespace-nowrap disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {scraping ? (
                       <>
@@ -317,7 +328,7 @@ export default function SetupPage() {
                         </p>
                       </div>
                       <span className="text-zinc-600 text-xs">
-                        {charCount.toLocaleString()} characters
+                        {charCount.toLocaleString()} chars
                       </span>
                     </div>
                     <p className="text-zinc-500 text-xs leading-relaxed line-clamp-3">
@@ -330,9 +341,9 @@ export default function SetupPage() {
 
             {/* Persona */}
             <AnimatedSection delay={400}>
-              <div className="group bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-6 transition-all duration-300 backdrop-blur-sm">
+              <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm">
+                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
                     🎭
                   </div>
                   <div>
@@ -344,21 +355,24 @@ export default function SetupPage() {
                     </p>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                {/* 1 col on mobile, 2 cols on sm+ */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {PERSONAS.map((p) => {
                     const active = persona === p.value;
                     return (
                       <button
                         key={p.value}
                         onClick={() => setPersona(p.value)}
-                        className={`relative group/btn text-left px-4 py-3.5 rounded-xl text-sm transition-all duration-200 border overflow-hidden ${active ? "bg-blue-600/15 border-blue-500/50 text-white" : "bg-zinc-800/60 border-zinc-700/60 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300 hover:bg-zinc-800"}`}
+                        className={`relative text-left px-4 py-3.5 rounded-xl text-sm transition-all duration-200 border overflow-hidden ${active ? "bg-blue-600/15 border-blue-500/50 text-white" : "bg-zinc-800/60 border-zinc-700/60 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300 hover:bg-zinc-800"}`}
                       >
                         {active && (
                           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
                         )}
                         <div className="flex items-start gap-3">
-                          <span className="text-base mt-0.5">{p.icon}</span>
-                          <div>
+                          <span className="text-base mt-0.5 shrink-0">
+                            {p.icon}
+                          </span>
+                          <div className="min-w-0">
                             <p
                               className={`font-semibold text-xs mb-0.5 ${active ? "text-blue-300" : "text-zinc-300"}`}
                             >
