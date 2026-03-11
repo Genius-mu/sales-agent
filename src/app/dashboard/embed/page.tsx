@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
 
-const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
+const BUSINESS_ID = "YOUR-BUSINESS-ID-HERE";
 
 function AnimatedSection({
   children,
