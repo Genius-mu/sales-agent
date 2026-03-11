@@ -75,7 +75,6 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
-  manifest: "/site.webmanifest",
   alternates: {
     canonical: APP_URL,
   },
