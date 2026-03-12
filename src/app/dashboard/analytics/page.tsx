@@ -13,8 +13,6 @@ import {
 import DashboardNav from "@/app/components/DashboardNav";
 import { getSupabase } from "@/lib/supabase";
 
-const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
-
 type Range = 7 | 30 | 90;
 
 interface DayData {
@@ -130,6 +128,7 @@ const CustomTooltip = ({
 };
 
 export default function AnalyticsPage() {
+  const [businessId, setBusinessId] = useState<string | null>(null);
   const [range, setRange] = useState<Range>(30);
   const [data, setData] = useState<DayData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,6 +156,24 @@ export default function AnalyticsPage() {
   };
 
   useEffect(() => {
+    async function loadBiz() {
+      const sb = getSupabase();
+      const {
+        data: { session },
+      } = await sb.auth.getSession();
+      if (!session?.user) return;
+      const { data } = await sb
+        .from("businesses")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+      if (data) setBusinessId((data as { id: string }).id);
+    }
+    loadBiz();
+  }, []);
+
+  useEffect(() => {
+    if (!businessId) return;
     async function load() {
       setLoading(true);
       const since = new Date();
@@ -165,7 +182,7 @@ export default function AnalyticsPage() {
       const { data: conversations } = await sb
         .from("conversations")
         .select("created_at, lead_email, messages")
-        .eq("business_id", BUSINESS_ID)
+        .eq("business_id", businessId)
         .gte("created_at", since.toISOString());
 
       const days = buildEmptyDays(range);
@@ -193,7 +210,7 @@ export default function AnalyticsPage() {
       setLoading(false);
     }
     load();
-  }, [range]);
+  }, [businessId, range]);
 
   const totals = data.reduce(
     (acc, d) => ({
@@ -207,7 +224,6 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-[#080809] text-white">
-      {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[130px]" />
         <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-violet-600/4 rounded-full blur-[110px]" />
@@ -256,8 +272,6 @@ export default function AnalyticsPage() {
                 Real-time insights into your agent's activity
               </p>
             </div>
-
-            {/* Range selector */}
             <div className="flex items-center bg-zinc-900/80 border border-zinc-800 rounded-xl p-1 gap-1 backdrop-blur-sm self-start sm:self-auto">
               {([7, 30, 90] as Range[]).map((r) => (
                 <button
@@ -271,7 +285,7 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          {/* Stat cards — 2 cols on mobile, 4 on desktop */}
+          {/* Stat cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {METRICS.map((m, i) => {
               const isActive = activeMetrics.includes(m.key);
@@ -281,7 +295,6 @@ export default function AnalyticsPage() {
                     onClick={() => toggleMetric(m.key)}
                     className={`group w-full text-left relative bg-zinc-900/60 border rounded-2xl p-4 sm:p-5 overflow-hidden transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-sm ${isActive ? "border-zinc-700 hover:border-zinc-600" : "border-zinc-800/50 opacity-50 hover:opacity-70"}`}
                   >
-                    {/* Top color bar */}
                     <div
                       className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl transition-opacity duration-300"
                       style={{
@@ -289,7 +302,6 @@ export default function AnalyticsPage() {
                         opacity: isActive ? 1 : 0,
                       }}
                     />
-
                     <div className="flex items-start justify-between mb-3 sm:mb-4">
                       <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-sm sm:text-base">
                         {m.icon}
@@ -302,7 +314,6 @@ export default function AnalyticsPage() {
                         }}
                       />
                     </div>
-
                     <p className="text-2xl sm:text-3xl font-bold tabular-nums tracking-tight mb-1">
                       {loading ? (
                         <span className="inline-block w-10 h-7 bg-zinc-800 rounded animate-pulse" />
@@ -310,7 +321,6 @@ export default function AnalyticsPage() {
                         totals[m.key].toLocaleString()
                       )}
                     </p>
-                    {/* Full label on md+, short on mobile */}
                     <p className="text-zinc-400 text-xs font-medium hidden sm:block">
                       {m.label}
                     </p>
@@ -329,7 +339,6 @@ export default function AnalyticsPage() {
           {/* Chart */}
           <AnimatedCard delay={450}>
             <div className="relative bg-zinc-900/60 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-sm">
-              {/* Chart header — stacks on mobile */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-zinc-800/60 gap-3">
                 <div>
                   <h2 className="font-semibold text-white text-base">
@@ -339,7 +348,6 @@ export default function AnalyticsPage() {
                     Tap metric cards to toggle visibility
                   </p>
                 </div>
-                {/* Active metric pills — wraps on mobile */}
                 <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                   {METRICS.filter((m) => activeMetrics.includes(m.key)).map(
                     (m) => (
@@ -351,7 +359,6 @@ export default function AnalyticsPage() {
                           className="w-1.5 h-1.5 rounded-full"
                           style={{ backgroundColor: m.color }}
                         />
-                        {/* Only show label on sm+ */}
                         <span className="text-zinc-300 hidden sm:inline">
                           {m.label}
                         </span>
@@ -364,7 +371,6 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              {/* Chart body */}
               <div className="p-4 sm:p-6">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center h-48 sm:h-72 gap-3">
@@ -448,7 +454,6 @@ export default function AnalyticsPage() {
                 )}
               </div>
 
-              {/* Bottom summary bar — 2x2 on mobile, row on desktop */}
               {!loading && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 px-4 sm:px-6 py-4 border-t border-zinc-800/60 bg-zinc-950/30 gap-3 sm:gap-0">
                   {METRICS.map((m) => (

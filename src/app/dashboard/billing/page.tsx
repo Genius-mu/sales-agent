@@ -5,8 +5,6 @@ import { useSearchParams } from "next/navigation";
 import DashboardNav from "@/app/components/DashboardNav";
 import { getSupabase } from "@/lib/supabase";
 
-const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
-
 const PLANS = [
   {
     key: "starter",
@@ -95,6 +93,7 @@ function BillingContent() {
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
 
+  const [businessId, setBusinessId] = useState<string | null>(null);
   const [currentPlan, setCurrentPlan] = useState("free");
   const [subscriptionStatus, setSubscriptionStatus] = useState("inactive");
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -109,13 +108,28 @@ function BillingContent() {
 
   useEffect(() => {
     async function loadPlan() {
-      const { data } = await getSupabase()
+      const sb = getSupabase();
+      const {
+        data: { session },
+      } = await sb.auth.getSession();
+      if (!session?.user) {
+        setPageLoading(false);
+        return;
+      }
+
+      const { data } = await sb
         .from("businesses")
-        .select("plan, subscription_status")
-        .eq("id", BUSINESS_ID)
+        .select("id, plan, subscription_status")
+        .eq("user_id", session.user.id)
         .single();
+
       if (data) {
-        const d = data as { plan: string; subscription_status: string };
+        const d = data as {
+          id: string;
+          plan: string;
+          subscription_status: string;
+        };
+        setBusinessId(d.id);
         setCurrentPlan(d.plan || "free");
         setSubscriptionStatus(d.subscription_status || "inactive");
       }
@@ -149,12 +163,13 @@ function BillingContent() {
   }, [checkoutUrl]);
 
   const handleUpgrade = async (planKey: string) => {
+    if (!businessId) return;
     setLoadingPlan(planKey);
     try {
       const res = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planKey, businessId: BUSINESS_ID }),
+        body: JSON.stringify({ plan: planKey, businessId }),
       });
       const data = await res.json();
       if (data.checkoutUrl) setCheckoutUrl(data.checkoutUrl);
@@ -279,7 +294,7 @@ function BillingContent() {
         </div>
       </AnimatedSection>
 
-      {/* Pricing grid — 1 col mobile, 3 cols md+ */}
+      {/* Pricing grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 sm:mb-8">
         {PLANS.map((plan, i) => {
           const isCurrent = currentPlan === plan.key && isActive;
@@ -295,7 +310,7 @@ function BillingContent() {
                   </div>
                 )}
                 <div
-                  className={`relative h-full bg-gradient-to-b ${plan.gradient} border ${plan.border} ${isCurrent ? "ring-2 ring-emerald-500/25" : ""} rounded-2xl p-5 sm:p-6 flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${plan.popular ? "hover:border-blue-400/50 hover:shadow-blue-500/8" : "hover:border-zinc-700 hover:shadow-black/60"}`}
+                  className={`relative h-full bg-gradient-to-b ${plan.gradient} border ${plan.border} ${isCurrent ? "ring-2 ring-emerald-500/25" : ""} rounded-2xl p-5 sm:p-6 flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl ${plan.popular ? "hover:border-blue-400/50" : "hover:border-zinc-700"}`}
                 >
                   {plan.popular && (
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
@@ -316,7 +331,6 @@ function BillingContent() {
                     </div>
                   )}
 
-                  {/* Plan info — horizontal layout on mobile for non-popular */}
                   <div className="relative mb-4 sm:mb-5">
                     <div className="flex items-center justify-between mb-3 sm:mb-4">
                       <p className="text-zinc-500 text-xs font-bold tracking-[0.2em] uppercase">
@@ -339,8 +353,7 @@ function BillingContent() {
 
                   <div className="relative h-px bg-zinc-800/80 mb-4 sm:mb-5" />
 
-                  {/* Features — 2 cols on mobile to save space */}
-                  <ul className="relative grid grid-cols-1 sm:grid-cols-1 gap-2 sm:space-y-0 flex-1 mb-5 sm:mb-6">
+                  <ul className="relative grid grid-cols-1 gap-2 flex-1 mb-5 sm:mb-6">
                     {plan.features.map((f) => (
                       <li
                         key={f}
@@ -356,12 +369,12 @@ function BillingContent() {
 
                   <button
                     onClick={() => !isCurrent && handleUpgrade(plan.key)}
-                    disabled={isCurrent || isLoading}
+                    disabled={isCurrent || isLoading || !businessId}
                     className={`relative w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 disabled:cursor-not-allowed overflow-hidden ${
                       isCurrent
                         ? "bg-zinc-800/80 text-zinc-500 border border-zinc-700"
                         : plan.popular
-                          ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25 hover:shadow-blue-500/30"
+                          ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/25"
                           : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"
                     }`}
                   >
@@ -401,7 +414,7 @@ function BillingContent() {
         })}
       </div>
 
-      {/* Footer guarantee — stacks on mobile */}
+      {/* Footer */}
       <AnimatedSection delay={700}>
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pb-4">
           {[

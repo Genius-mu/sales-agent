@@ -48,7 +48,7 @@ export default function DashboardNav() {
           {/* Logo */}
           <div className="flex items-center gap-2 shrink-0">
             <div className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-blue-500/30">
-              S
+              <Link href="/">S</Link>
             </div>
             <span className="text-white font-bold text-sm tracking-tight">
               SalesAgent

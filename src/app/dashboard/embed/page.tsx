@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
-
-const BUSINESS_ID = "YOUR-BUSINESS-ID-HERE";
+import { getSupabase } from "@/lib/supabase";
 
 function AnimatedSection({
   children,
@@ -83,6 +82,7 @@ const STEPS = [
 ];
 
 export default function EmbedPage() {
+  const [businessId, setBusinessId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(false);
 
@@ -91,20 +91,40 @@ export default function EmbedPage() {
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    async function load() {
+      const sb = getSupabase();
+      const {
+        data: { session },
+      } = await sb.auth.getSession();
+      if (!session?.user) return;
+      const { data } = await sb
+        .from("businesses")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .single();
+      if (data) setBusinessId((data as { id: string }).id);
+    }
+    load();
+  }, []);
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourapp.com";
+
   const embedCode = `<!-- SalesAgent Widget -->
 <script>
   window.SalesAgentConfig = {
-    businessId: "${BUSINESS_ID}"
+    businessId: "${businessId ?? "loading..."}"
   };
   (function(d, s) {
     var js = d.createElement(s);
-    js.src = "https://yourapp.com/widget.js";
+    js.src = "${appUrl}/widget.js";
     js.async = true;
     d.body.appendChild(js);
   })(document, "script");
 </script>`;
 
   const copy = () => {
+    if (!businessId) return;
     navigator.clipboard.writeText(embedCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -112,7 +132,6 @@ export default function EmbedPage() {
 
   return (
     <div className="min-h-screen bg-[#080809] text-white">
-      {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-0 left-1/2 w-[600px] h-[400px] bg-blue-600/5 rounded-full blur-[140px]" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-600/4 rounded-full blur-[120px]" />
@@ -185,7 +204,8 @@ export default function EmbedPage() {
                   </div>
                   <button
                     onClick={copy}
-                    className={`flex items-center gap-1.5 sm:gap-2 text-xs px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition-all duration-300 active:scale-95 ${copied ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400" : "bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600 text-zinc-300"}`}
+                    disabled={!businessId}
+                    className={`flex items-center gap-1.5 sm:gap-2 text-xs px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed ${copied ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400" : "bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600 text-zinc-300"}`}
                   >
                     {copied ? (
                       <>
@@ -235,7 +255,7 @@ export default function EmbedPage() {
                   </button>
                 </div>
 
-                {/* Code — horizontally scrollable on mobile */}
+                {/* Code */}
                 <div className="overflow-x-auto">
                   <pre className="p-4 sm:p-6 text-xs font-mono leading-relaxed min-w-0">
                     <code>
@@ -271,12 +291,16 @@ export default function EmbedPage() {
 
                 {/* Business ID badge */}
                 <div className="flex items-center gap-2 px-4 sm:px-6 py-3 border-t border-zinc-800/60 bg-zinc-950/40 overflow-hidden">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${businessId ? "bg-blue-400" : "bg-zinc-600 animate-pulse"}`}
+                  />
                   <span className="text-zinc-600 text-xs shrink-0">
                     Business ID:
                   </span>
-                  <code className="text-blue-400 text-xs font-mono truncate">
-                    {BUSINESS_ID}
+                  <code
+                    className={`text-xs font-mono truncate ${businessId ? "text-blue-400" : "text-zinc-600"}`}
+                  >
+                    {businessId ?? "Loading..."}
                   </code>
                 </div>
               </div>
@@ -356,7 +380,6 @@ export default function EmbedPage() {
                         <span className="text-zinc-200 text-xs font-semibold">
                           {p.name}
                         </span>
-                        {/* Full path on sm+, truncated on mobile */}
                         <p className="text-zinc-600 text-xs mt-0.5 font-mono truncate hidden sm:block">
                           {p.path}
                         </p>

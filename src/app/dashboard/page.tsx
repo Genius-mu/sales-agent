@@ -5,8 +5,6 @@ import Link from "next/link";
 import DashboardNav from "@/app/components/DashboardNav";
 import { getSupabase } from "@/lib/supabase";
 
-const BUSINESS_ID = "3f6505b0-ac65-487e-8dee-f3b2cd9d73fa";
-
 interface Stats {
   conversations: number;
   leads: number;
@@ -141,16 +139,14 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    const tick = () => {
-      const now = new Date();
+    const tick = () =>
       setTime(
-        now.toLocaleTimeString("en-US", {
+        new Date().toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
         }),
       );
-    };
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
@@ -159,30 +155,47 @@ export default function DashboardPage() {
   useEffect(() => {
     async function load() {
       const sb = getSupabase();
-      const [{ data: bizData }, { data: convoData }] = await Promise.all([
-        sb
-          .from("businesses")
-          .select("name, website_url, scraped_content")
-          .eq("id", BUSINESS_ID)
-          .single(),
-        sb
-          .from("conversations")
-          .select("id, lead_email")
-          .eq("business_id", BUSINESS_ID),
-      ]);
-      const business = bizData as {
+      const {
+        data: { session },
+      } = await sb.auth.getSession();
+      if (!session?.user) {
+        setLoading(false);
+        return;
+      }
+
+      const { data: bizData } = await sb
+        .from("businesses")
+        .select("id, name, website_url, scraped_content, description")
+        .eq("user_id", session.user.id)
+        .single();
+
+      if (!bizData) {
+        setLoading(false);
+        return;
+      }
+
+      const biz = bizData as {
+        id: string;
         name: string;
         website_url: string;
         scraped_content: string | null;
-      } | null;
+        description: string | null;
+      };
+
+      const { data: convoData } = await sb
+        .from("conversations")
+        .select("id, lead_email")
+        .eq("business_id", biz.id);
+
       const conversations = (convoData ?? []) as {
         id: string;
         lead_email: string | null;
       }[];
+
       setStats({
-        businessName: business?.name || "Unnamed Business",
-        websiteUrl: business?.website_url || "",
-        agentReady: !!business?.scraped_content,
+        businessName: biz.name || "Unnamed Business",
+        websiteUrl: biz.website_url || "",
+        agentReady: !!(biz.scraped_content || biz.description),
         conversations: conversations.length,
         leads: conversations.filter((c) => c.lead_email).length,
       });
@@ -193,7 +206,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#080809] text-white overflow-x-hidden">
-      {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-blue-600/6 rounded-full blur-[140px]" />
         <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px]" />
@@ -219,7 +231,7 @@ export default function DashboardPage() {
         <DashboardNav />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          {/* Header row */}
+          {/* Header */}
           <div
             className="flex items-start justify-between mb-8 sm:mb-12"
             style={{
@@ -244,7 +256,6 @@ export default function DashboardPage() {
                 )}
               </h1>
             </div>
-            {/* Live clock — hidden on mobile */}
             <div className="text-right mt-1 hidden sm:block shrink-0 ml-4">
               <p className="text-zinc-600 text-xs mb-1 tracking-widest uppercase">
                 Local time
@@ -269,7 +280,8 @@ export default function DashboardPage() {
                       Agent not configured
                     </p>
                     <p className="text-zinc-500 text-xs mt-0.5">
-                      Add your website URL so the agent knows what to say
+                      Add a description or website URL so the agent knows what
+                      to say
                     </p>
                   </div>
                 </div>
@@ -283,7 +295,7 @@ export default function DashboardPage() {
             </AnimatedCard>
           )}
 
-          {/* Stat cards — 1 col mobile, 3 cols sm+ */}
+          {/* Stat cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[
               {
@@ -310,7 +322,7 @@ export default function DashboardPage() {
                     ? "Active"
                     : "Offline",
                 icon: "🤖",
-                sub: stats?.agentReady ? "Trained on your site" : "Needs setup",
+                sub: stats?.agentReady ? "Trained & ready" : "Needs setup",
                 highlight: stats?.agentReady,
                 delay: 300,
               },
@@ -365,7 +377,7 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Quick actions — stacked on mobile, 2 cols on sm+ */}
+          {/* Quick actions */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-12 sm:mb-16">
             {[
               {
@@ -437,7 +449,7 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Pricing section label */}
+          {/* Pricing label */}
           <AnimatedCard delay={550}>
             <div className="mb-8 sm:mb-10 text-center">
               <div className="flex items-center gap-4 mb-6 sm:mb-8">
@@ -459,7 +471,7 @@ export default function DashboardPage() {
             </div>
           </AnimatedCard>
 
-          {/* Pricing cards — 1 col mobile, 3 cols md+ */}
+          {/* Pricing cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-6 sm:mb-8">
             {PLANS.map((plan, i) => (
               <AnimatedCard
@@ -486,7 +498,6 @@ export default function DashboardPage() {
                       background: `radial-gradient(300px circle at 50% 0%, ${plan.accent}12, transparent 70%)`,
                     }}
                   />
-
                   <div className="relative mb-5 sm:mb-6">
                     <div className="flex items-start justify-between mb-3 sm:mb-4">
                       <p className="text-zinc-400 text-xs font-bold tracking-[0.2em] uppercase">
@@ -510,9 +521,7 @@ export default function DashboardPage() {
                       {plan.desc}
                     </p>
                   </div>
-
                   <div className="relative h-px bg-zinc-800/80 mb-4 sm:mb-5" />
-
                   <ul className="relative space-y-2.5 flex-1 mb-5 sm:mb-6">
                     {plan.features.map((f) => (
                       <li
@@ -526,18 +535,18 @@ export default function DashboardPage() {
                       </li>
                     ))}
                   </ul>
-
-                  <button
-                    className={`relative w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 tracking-wide ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 hover:shadow-blue-500/40" : "bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"}`}
+                  <Link
+                    href="/dashboard/billing"
+                    className={`relative w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 tracking-wide text-center block ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30" : "bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"}`}
                   >
                     {plan.cta}
-                  </button>
+                  </Link>
                 </div>
               </AnimatedCard>
             ))}
           </div>
 
-          {/* Footer guarantee — wraps on mobile */}
+          {/* Footer */}
           <AnimatedCard delay={1050}>
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pb-6 sm:pb-8">
               {[

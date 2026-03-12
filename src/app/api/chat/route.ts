@@ -28,9 +28,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Now also fetches description
   const { data: business, error: businessError } = await supabase
     .from("businesses")
-    .select("scraped_content, agent_persona, name")
+    .select("name, agent_persona, description, scraped_content")
     .eq("id", businessId)
     .single();
 
@@ -47,12 +48,28 @@ export async function POST(req: NextRequest) {
   const history: { role: "user" | "assistant"; content: string }[] =
     convo?.messages || [];
 
+  // Build knowledge base from both description and scraped content
+  const knowledgeParts: string[] = [];
+
+  if (business.description) {
+    knowledgeParts.push(`BUSINESS OVERVIEW:\n${business.description}`);
+  }
+
+  if (business.scraped_content) {
+    knowledgeParts.push(`WEBSITE CONTENT:\n${business.scraped_content}`);
+  }
+
+  const knowledge =
+    knowledgeParts.length > 0
+      ? knowledgeParts.join("\n\n")
+      : "No business information available yet.";
+
   const systemPrompt = `You are a helpful AI sales assistant for ${business.name || "this company"}.
 Your persona: ${business.agent_persona || "friendly and professional"}.
 
 Here is everything you know about the business:
 ---
-${business.scraped_content || "No information available yet."}
+${knowledge}
 ---
 
 Your goals:

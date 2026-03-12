@@ -24,7 +24,51 @@ export async function GET(req: NextRequest) {
         },
       },
     );
+
     await supabase.auth.exchangeCodeForSession(code);
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (session?.user) {
+      const userId = session.user.id;
+      const email = session.user.email ?? "";
+
+      // Check if this user already has a business
+      const { data: existing } = await supabase
+        .from("businesses")
+        .select("id")
+        .eq("user_id", userId)
+        .single();
+
+      if (!existing) {
+        // Check if there's an unclaimed business (user_id is null)
+        // This handles the case where a business was created manually in Supabase
+        const { data: unclaimed } = await supabase
+          .from("businesses")
+          .select("id")
+          .is("user_id", null)
+          .limit(1)
+          .single();
+
+        if (unclaimed) {
+          // Claim the existing unclaimed business
+          await supabase
+            .from("businesses")
+            .update({ user_id: userId })
+            .eq("id", unclaimed.id);
+        } else {
+          // Create a brand new business for this user
+          await supabase.from("businesses").insert({
+            user_id: userId,
+            name: email.split("@")[0],
+            plan: "free",
+            subscription_status: "inactive",
+          });
+        }
+      }
+    }
   }
 
   return NextResponse.redirect(`${origin}/dashboard`);
