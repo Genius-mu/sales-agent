@@ -113,7 +113,8 @@ export default function EmbedPage() {
   const embedCode = `<!-- SalesAgent Widget -->
 <script>
   window.SalesAgentConfig = {
-    businessId: "${businessId ?? "loading..."}"
+    businessId: "${businessId ?? "loading..."}",
+    baseUrl: "${appUrl}"
   };
   (function(d, s) {
     var js = d.createElement(s);
