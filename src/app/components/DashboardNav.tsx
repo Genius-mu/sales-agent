@@ -8,6 +8,7 @@ import { getSupabase } from "@/lib/supabase";
 const links = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/analytics", label: "Analytics" },
+  { href: "/dashboard/conversations", label: "Conversations" },
   { href: "/dashboard/setup", label: "Setup" },
   { href: "/dashboard/embed", label: "Embed" },
   { href: "/dashboard/billing", label: "Billing" },

@@ -108,15 +108,34 @@ LEAD_EMAIL: their@email.com`;
       { role: "assistant" as const, content: cleanReply },
     ];
 
-    await supabase.from("conversations").upsert(
-      {
-        session_id: sessionId,
-        business_id: businessId,
-        messages: finalHistory,
-        ...(leadEmail && { lead_email: leadEmail }),
-      },
-      { onConflict: "session_id" },
-    );
+    // Check if conversation already exists for this session
+    const { data: existing } = await supabase
+      .from("conversations")
+      .select("id")
+      .eq("session_id", sessionId)
+      .maybeSingle();
+
+    if (existing?.id) {
+      const { error: updateError } = await supabase
+        .from("conversations")
+        .update({
+          messages: finalHistory,
+          ...(leadEmail && { lead_email: leadEmail }),
+        })
+        .eq("id", existing.id);
+      if (updateError) console.error("Conversation update error:", updateError);
+    } else {
+      const { error: insertError } = await supabase
+        .from("conversations")
+        .insert({
+          session_id: sessionId,
+          business_id: businessId,
+          messages: finalHistory,
+          created_at: new Date().toISOString(),
+          ...(leadEmail && { lead_email: leadEmail }),
+        });
+      if (insertError) console.error("Conversation insert error:", insertError);
+    }
 
     return NextResponse.json(
       {
