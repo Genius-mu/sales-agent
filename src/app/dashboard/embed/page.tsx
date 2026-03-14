@@ -118,7 +118,7 @@ export default function EmbedPage() {
   };
   (function(d, s) {
     var js = d.createElement(s);
-    js.src = "${appUrl}/widget.js";
+    js.src = "${appUrl}widget.js";
     js.async = true;
     d.body.appendChild(js);
   })(document, "script");
