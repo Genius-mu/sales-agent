@@ -114,7 +114,7 @@ export default function EmbedPage() {
 <script>
   window.SaimConfig = {
     businessId: "${businessId ?? "loading..."}",
-    baseUrl: "${appUrl}"gi
+    baseUrl: "${appUrl}"
   };
   (function(d, s) {
     var js = d.createElement(s);

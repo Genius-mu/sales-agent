@@ -168,10 +168,23 @@
         })
         .then(function (data) {
           hideTyping();
-          messages.push({
-            role: "assistant",
-            content: data.reply || "Sorry, I couldn't get a response.",
-          });
+          if (data.limitReached) {
+            var upgradeUrl =
+              data.upgradeUrl ||
+              "https://sales-agent-jet.vercel.app/dashboard/billing";
+            messages.push({
+              role: "assistant",
+              content:
+                'This assistant has reached its monthly conversation limit. <a href="' +
+                upgradeUrl +
+                '" target="_blank" style="color:#2563eb;font-weight:600;">Upgrade to continue →</a>',
+            });
+          } else {
+            messages.push({
+              role: "assistant",
+              content: data.reply || "Sorry, I couldn't get a response.",
+            });
+          }
           renderMessages();
         })
         .catch(function () {

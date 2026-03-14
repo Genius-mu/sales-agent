@@ -12,6 +12,64 @@ export async function OPTIONS() {
   return new NextResponse(null, { headers: corsHeaders });
 }
 
+const PLAN_LIMITS: Record<string, number> = {
+  free: 50,
+  starter: 500,
+  pro: Infinity,
+  scale: Infinity,
+};
+
+async function sendLimitEmail(
+  businessEmail: string,
+  businessName: string,
+  appUrl: string,
+) {
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Saim <noreply@adegbitemustapha73@gmail.com>",
+        to: businessEmail,
+        subject:
+          "You've reached your conversation limit — upgrade to keep going",
+        html: `
+          <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:520px;margin:0 auto;padding:40px 24px;background:#fff;">
+            <div style="margin-bottom:32px;">
+              <div style="width:36px;height:36px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                <span style="color:#fff;font-size:16px;font-weight:800;">S</span>
+              </div>
+              <h1 style="font-size:22px;font-weight:700;color:#18181b;margin:0 0 8px;">You've hit your monthly limit</h1>
+              <p style="color:#71717a;font-size:14px;line-height:1.6;margin:0;">
+                Hi there — your Saim agent for <strong style="color:#18181b;">${businessName}</strong> has reached its 50 free conversations this month. Your widget is now paused until you upgrade.
+              </p>
+            </div>
+            <div style="background:#f4f4f5;border-radius:12px;padding:20px;margin-bottom:24px;">
+              <p style="color:#18181b;font-size:13px;font-weight:600;margin:0 0 12px;">What you get on Starter ($49/mo):</p>
+              <ul style="color:#52525b;font-size:13px;line-height:2;margin:0;padding-left:16px;">
+                <li>500 conversations/month</li>
+                <li>Lead capture & dashboard</li>
+                <li>Priority email support</li>
+              </ul>
+            </div>
+            <a href="${appUrl}/dashboard/billing" style="display:inline-block;background:#2563eb;color:#fff;font-size:14px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;">
+              Upgrade now →
+            </a>
+            <p style="color:#a1a1aa;font-size:12px;margin-top:24px;">
+              You're receiving this because you have a Saim account. <a href="${appUrl}/dashboard" style="color:#a1a1aa;">Manage your account</a>
+            </p>
+          </div>
+        `,
+      }),
+    });
+  } catch (e) {
+    console.error("Failed to send limit email:", e);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,15 +86,59 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Now also fetches description
+  // Fetch business including plan and owner email
   const { data: business, error: businessError } = await supabase
     .from("businesses")
-    .select("name, agent_persona, description, scraped_content")
+    .select("name, agent_persona, description, scraped_content, plan, user_id")
     .eq("id", businessId)
     .single();
 
   if (businessError || !business) {
     return NextResponse.json({ error: "Business not found" }, { status: 404 });
+  }
+
+  const plan = (business.plan as string) || "free";
+  const limit = PLAN_LIMITS[plan] ?? 50;
+
+  // Count conversations this month
+  if (limit !== Infinity) {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const { count } = await supabase
+      .from("conversations")
+      .select("id", { count: "exact", head: true })
+      .eq("business_id", businessId)
+      .gte("created_at", startOfMonth.toISOString());
+
+    const used = count ?? 0;
+
+    if (used >= limit) {
+      // Send email on first hit (when used === limit exactly)
+      if (used === limit && business.user_id) {
+        const { data: userData } = await supabase.auth.admin.getUserById(
+          business.user_id,
+        );
+        const email = userData?.user?.email;
+        if (email) {
+          const appUrl =
+            process.env.NEXT_PUBLIC_APP_URL ||
+            "https://sales-agent-jet.vercel.app";
+          await sendLimitEmail(email, business.name || "your business", appUrl);
+        }
+      }
+
+      return NextResponse.json(
+        {
+          reply: null,
+          limitReached: true,
+          plan,
+          upgradeUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app"}/dashboard/billing`,
+        },
+        { headers: corsHeaders },
+      );
+    }
   }
 
   const { data: convo } = await supabase
@@ -48,17 +150,11 @@ export async function POST(req: NextRequest) {
   const history: { role: "user" | "assistant"; content: string }[] =
     convo?.messages || [];
 
-  // Build knowledge base from both description and scraped content
   const knowledgeParts: string[] = [];
-
-  if (business.description) {
+  if (business.description)
     knowledgeParts.push(`BUSINESS OVERVIEW:\n${business.description}`);
-  }
-
-  if (business.scraped_content) {
+  if (business.scraped_content)
     knowledgeParts.push(`WEBSITE CONTENT:\n${business.scraped_content}`);
-  }
-
   const knowledge =
     knowledgeParts.length > 0
       ? knowledgeParts.join("\n\n")
@@ -98,17 +194,14 @@ LEAD_EMAIL: their@email.com`;
 
     const rawReply =
       response.content[0].type === "text" ? response.content[0].text : "";
-
     const emailMatch = rawReply.match(/LEAD_EMAIL:\s*(\S+@\S+\.\S+)/);
     const leadEmail = emailMatch ? emailMatch[1] : null;
     const cleanReply = rawReply.replace(/LEAD_EMAIL:.*$/m, "").trim();
-
     const finalHistory = [
       ...updatedHistory,
       { role: "assistant" as const, content: cleanReply },
     ];
 
-    // Check if conversation already exists for this session
     const { data: existing } = await supabase
       .from("conversations")
       .select("id")

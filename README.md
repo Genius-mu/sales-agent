@@ -1,4 +1,4 @@
-# Sales Agent
+# Saim
 
 An AI-powered sales assistant that engages website visitors, answers questions about your business, qualifies leads, and captures email addresses for follow-up.
 

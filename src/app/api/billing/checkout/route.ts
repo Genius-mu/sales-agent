@@ -1,67 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const VARIANT_MAP: Record<string, string> = {
-  starter: process.env.LEMONSQUEEZY_STARTER_VARIANT_ID!,
-  pro: process.env.LEMONSQUEEZY_PRO_VARIANT_ID!,
-  scale: process.env.LEMONSQUEEZY_SCALE_VARIANT_ID!,
+const VARIANT_IDS: Record<string, string> = {
+  starter: "1329122",
+  scale: "1329125",
+  pro: "1329127",
 };
 
 export async function POST(req: NextRequest) {
-  const { plan, businessId, email } = await req.json();
+  const { plan, businessId } = await req.json();
 
-  if (!plan || !businessId) {
-    return NextResponse.json(
-      { error: "plan and businessId are required" },
-      { status: 400 },
-    );
-  }
-
-  const variantId = VARIANT_MAP[plan.toLowerCase()];
+  const variantId = VARIANT_IDS[plan];
   if (!variantId) {
     return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app";
+
   try {
-    const response = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
+    const res = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
       method: "POST",
       headers: {
         Accept: "application/vnd.api+json",
         "Content-Type": "application/vnd.api+json",
-        Authorization: `Bearer ${process.env.LEMONSQUEEZY_API_KEY}`,
+        Authorization: `Bearer ${process.env.LEMON_SQUEEZY_API_KEY}`,
       },
       body: JSON.stringify({
         data: {
           type: "checkouts",
           attributes: {
             checkout_data: {
-              email: email || undefined,
               custom: { business_id: businessId },
             },
             product_options: {
-              redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/billing?success=true`,
-            },
-            checkout_options: {
-              embed: true,
-              media: false,
-              logo: true,
+              redirect_url: `${appUrl}/dashboard/billing?success=true`,
             },
           },
           relationships: {
             store: {
-              data: { type: "stores", id: process.env.LEMONSQUEEZY_STORE_ID },
+              data: {
+                type: "stores",
+                id: process.env.LEMON_SQUEEZY_STORE_ID,
+              },
             },
             variant: {
-              data: { type: "variants", id: variantId },
+              data: {
+                type: "variants",
+                id: variantId,
+              },
             },
           },
         },
       }),
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    if (!response.ok) {
-      console.error("Lemon Squeezy error:", data);
+    if (!res.ok) {
+      console.error("Lemon Squeezy checkout error:", data);
       return NextResponse.json(
         { error: "Failed to create checkout" },
         { status: 500 },
@@ -69,9 +65,12 @@ export async function POST(req: NextRequest) {
     }
 
     const checkoutUrl = data?.data?.attributes?.url;
-    return NextResponse.json({ checkoutUrl });
+    return NextResponse.json({ url: checkoutUrl });
   } catch (err) {
     console.error("Checkout error:", err);
-    return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create checkout" },
+      { status: 500 },
+    );
   }
 }
