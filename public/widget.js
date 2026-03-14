@@ -1,12 +1,12 @@
 (function () {
   "use strict";
 
-  var config = window.SalesAgentConfig || {};
+  var config = window.SaimConfig || {};
   var businessId = config.businessId;
   var baseUrl = config.baseUrl || "https://sales-agent-jet.vercel.app";
 
   if (!businessId) {
-    console.warn("[SalesAgent] No businessId provided in SalesAgentConfig.");
+    console.warn("[Saim] No businessId provided in SaimConfig.");
     return;
   }
 
@@ -17,7 +17,6 @@
     { role: "assistant", content: "Hi! 👋 How can I help you today?" },
   ];
 
-  // ─── Launcher button (lives on host page, minimal surface area) ────────────
   var launcherStyle = document.createElement("style");
   launcherStyle.textContent =
     "#sa-launcher{position:fixed;bottom:24px;right:24px;z-index:2147483647;width:52px;height:52px;border-radius:50%;background:#2563eb;border:none;cursor:pointer;box-shadow:0 4px 24px rgba(37,99,235,0.45);display:flex;align-items:center;justify-content:center;transition:transform 0.2s,box-shadow 0.2s;outline:none;padding:0;}#sa-launcher:hover{transform:scale(1.08);box-shadow:0 6px 32px rgba(37,99,235,0.55);}#sa-iframe-wrap{position:fixed;bottom:88px;right:24px;z-index:2147483646;width:370px;height:530px;border:none;border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,0.22);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),opacity 0.2s;overflow:hidden;}";
@@ -30,17 +29,15 @@
   launcher.innerHTML = iconChat();
   document.body.appendChild(launcher);
 
-  // ─── iframe wrapper ────────────────────────────────────────────────────────
   var iframeWrap = document.createElement("iframe");
   iframeWrap.id = "sa-iframe-wrap";
-  iframeWrap.setAttribute("title", "Sales Assistant");
+  iframeWrap.setAttribute("title", "Saim Assistant");
   iframeWrap.setAttribute("frameborder", "0");
   iframeWrap.style.transform = "scale(0.92) translateY(12px)";
   iframeWrap.style.opacity = "0";
   iframeWrap.style.pointerEvents = "none";
   document.body.appendChild(iframeWrap);
 
-  // ─── Widget HTML injected into iframe ─────────────────────────────────────
   var widgetCSS = [
     "*{box-sizing:border-box;margin:0;padding:0;}",
     "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;display:flex;flex-direction:column;height:100vh;overflow:hidden;}",
@@ -79,16 +76,11 @@
     '<div id="sa-messages"></div>' +
     '<div id="sa-footer"><input id="sa-input" type="text" placeholder="Ask me anything..." autocomplete="off" />' +
     '<button id="sa-send" type="button"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path fill="#fff" d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z"/></svg></button></div>' +
-    '<div id="sa-branding">Powered by SalesAgent</div>' +
+    '<div id="sa-branding">Powered by Saim</div>' +
     "</body></html>";
 
-  // Write into iframe once it's in DOM
-  iframeWrap.addEventListener("load", function () {
-    // already written via srcdoc, this is a fallback
-  });
   iframeWrap.srcdoc = widgetHTML;
 
-  // ─── Wait for iframe to be ready, then wire it up ─────────────────────────
   function getIframeDoc() {
     return iframeWrap.contentDocument || iframeWrap.contentWindow.document;
   }
@@ -208,7 +200,6 @@
     });
   });
 
-  // ─── Toggle ────────────────────────────────────────────────────────────────
   function openWidget() {
     isOpen = true;
     iframeWrap.style.transform = "scale(1) translateY(0)";

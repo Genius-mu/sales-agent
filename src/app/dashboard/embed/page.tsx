@@ -110,11 +110,11 @@ export default function EmbedPage() {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourapp.com";
 
-  const embedCode = `<!-- SalesAgent Widget -->
+  const embedCode = `<!-- Saim Widget -->
 <script>
-  window.SalesAgentConfig = {
+  window.SaimConfig = {
     businessId: "${businessId ?? "loading..."}",
-    baseUrl: "${appUrl}"
+    baseUrl: "${appUrl}"gi
   };
   (function(d, s) {
     var js = d.createElement(s);

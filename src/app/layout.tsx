@@ -12,14 +12,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const APP_URL =
-  process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app/";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://yourdomain.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: "SalesAgent — AI Sales Agent for Your Website",
-    template: "%s | SalesAgent",
+    default: "Saim — AI Sales Agent for Your Website",
+    template: "%s | Saim",
   },
   description:
     "Deploy an AI sales agent on your website in minutes. Trained on your business, it qualifies leads, answers questions, and captures emails 24/7 — powered by Claude AI.",
@@ -33,14 +32,14 @@ export const metadata: Metadata = {
     "embeddable chat widget",
     "B2B sales tool",
   ],
-  authors: [{ name: "SalesAgent" }],
-  creator: "SalesAgent",
+  authors: [{ name: "Saim" }],
+  creator: "Saim",
   openGraph: {
     type: "website",
     locale: "en_US",
     url: APP_URL,
-    siteName: "SalesAgent",
-    title: "SalesAgent — AI Sales Agent for Your Website",
+    siteName: "Saim",
+    title: "Saim — AI Sales Agent for Your Website",
     description:
       "Deploy an AI sales agent on your website in minutes. Qualifies leads, answers questions, and captures emails 24/7.",
     images: [
@@ -48,13 +47,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SalesAgent — AI Sales Agent",
+        alt: "Saim — AI Sales Agent",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SalesAgent — AI Sales Agent for Your Website",
+    title: "Saim — AI Sales Agent for Your Website",
     description:
       "Deploy an AI sales agent on your website in minutes. Powered by Claude AI.",
     images: ["/og-image.png"],
@@ -71,10 +70,14 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    shortcut: "/favicon.svg",
     apple: "/apple-touch-icon.png",
   },
+  manifest: "/site.webmanifest",
   alternates: {
     canonical: APP_URL,
   },

@@ -30,7 +30,6 @@ export default function DashboardNav() {
     loadUser();
   }, []);
 
-  // Close menu on route change
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
@@ -52,7 +51,7 @@ export default function DashboardNav() {
               <Link href="/">S</Link>
             </div>
             <span className="text-white font-bold text-sm tracking-tight">
-              SalesAgent
+              Saim
             </span>
           </div>
 
@@ -78,14 +77,12 @@ export default function DashboardNav() {
 
           {/* Right side */}
           <div className="flex items-center gap-2.5">
-            {/* Email — hidden on small */}
             {email && (
               <span className="text-zinc-600 text-xs hidden lg:block truncate max-w-[160px]">
                 {email}
               </span>
             )}
 
-            {/* Sign out — hidden on mobile */}
             <button
               onClick={signOut}
               className="hidden md:block text-xs text-zinc-500 hover:text-white border border-zinc-800 hover:border-zinc-700 px-3 py-1.5 rounded-lg transition-all"
@@ -93,12 +90,10 @@ export default function DashboardNav() {
               Sign out
             </button>
 
-            {/* Avatar */}
             <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
               {initials}
             </div>
 
-            {/* Hamburger — mobile only */}
             <button
               onClick={() => setMenuOpen((p) => !p)}
               className="md:hidden flex flex-col justify-center items-center w-8 h-8 gap-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
@@ -117,7 +112,7 @@ export default function DashboardNav() {
           </div>
         </div>
 
-        {/* Mobile menu dropdown */}
+        {/* Mobile menu */}
         <div
           className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
         >
@@ -141,11 +136,7 @@ export default function DashboardNav() {
                 </Link>
               );
             })}
-
-            {/* Divider */}
             <div className="h-px bg-zinc-800/60 my-2" />
-
-            {/* Email + sign out in mobile menu */}
             {email && (
               <p className="px-4 py-1 text-zinc-600 text-xs truncate">
                 {email}

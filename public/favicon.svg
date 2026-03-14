@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background -->
+  <rect width="32" height="32" rx="8" fill="#2563eb"/>
+  <!-- Chat bubble S mark -->
+  <path d="M16 7C10.477 7 6 10.925 6 15.75c0 2.412 1.064 4.343 2.793 5.9L8 25l3.578-1.183C12.944 24.166 14.43 24.5 16 24.5c5.523 0 10-3.925 10-8.75S21.523 7 16 7Z" fill="white" opacity="0.15"/>
+  <!-- Letter S -->
+  <text x="16" y="21" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="14" font-weight="800" fill="white">S</text>
+</svg>

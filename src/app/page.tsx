@@ -152,7 +152,7 @@ export default function LandingPage() {
           <div className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-blue-500/30">
             S
           </div>
-          <span className="font-bold text-sm tracking-tight">SalesAgent</span>
+          <span className="font-bold text-sm tracking-tight">Saim</span>
         </div>
         <div className="hidden md:flex items-center gap-8">
           <a
@@ -558,7 +558,7 @@ export default function LandingPage() {
             <div className="w-5 h-5 rounded-md bg-blue-500 flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-blue-500/30">
               S
             </div>
-            <span className="text-zinc-500 font-medium">SalesAgent</span>
+            <span className="text-zinc-500 font-medium">Saim</span>
           </div>
           <div className="flex items-center gap-5 sm:gap-6 text-zinc-700">
             <a
@@ -581,7 +581,7 @@ export default function LandingPage() {
             </Link>
           </div>
           <p className="text-center sm:text-right">
-            © 2026 SalesAgent. All rights reserved.
+            © 2026 Saim. All rights reserved.
           </p>
         </footer>
       </div>
