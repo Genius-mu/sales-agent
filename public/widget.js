@@ -79,7 +79,48 @@
     '<div id="sa-branding">Powered by Saim</div>' +
     "</body></html>";
 
-  iframeWrap.srcdoc = widgetHTML;
+  // Fetch widget config (agent name + color) then inject
+  fetch(baseUrl + "/api/widget-config?businessId=" + businessId)
+    .then(function (r) {
+      return r.json();
+    })
+    .catch(function () {
+      return { agent_name: "Sales Assistant", widget_color: "#2563eb" };
+    })
+    .then(function (cfg) {
+      var agentName = cfg.agent_name || "Sales Assistant";
+      var color = cfg.widget_color || "#2563eb";
+
+      // Apply color + agent name to HTML
+      var html = widgetHTML
+        .replace(/#2563eb/g, color)
+        .replace(/#1d4ed8/g, darkenColor(color))
+        .replace("Sales Assistant", agentName);
+
+      iframeWrap.srcdoc = html;
+
+      // Also update launcher color
+      launcherStyle.textContent = launcherStyle.textContent
+        .replace(/#2563eb/g, color)
+        .replace(/#1d4ed8/g, darkenColor(color));
+    });
+
+  function darkenColor(hex) {
+    var r = parseInt(hex.slice(1, 3), 16);
+    var g = parseInt(hex.slice(3, 5), 16);
+    var b = parseInt(hex.slice(5, 7), 16);
+    r = Math.max(0, r - 30);
+    g = Math.max(0, g - 30);
+    b = Math.max(0, b - 30);
+    return (
+      "#" +
+      [r, g, b]
+        .map(function (x) {
+          return x.toString(16).padStart(2, "0");
+        })
+        .join("")
+    );
+  }
 
   function getIframeDoc() {
     return iframeWrap.contentDocument || iframeWrap.contentWindow.document;

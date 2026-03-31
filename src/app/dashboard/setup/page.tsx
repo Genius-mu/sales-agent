@@ -63,6 +63,8 @@ export default function SetupPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [persona, setPersona] = useState(PERSONAS[0].value);
+  const [agentName, setAgentName] = useState("Sales Assistant");
+  const [widgetColor, setWidgetColor] = useState("#2563eb");
   const [scraping, setScraping] = useState(false);
   const [saving, setSaving] = useState(false);
   const [scraped, setScraped] = useState(false);
@@ -108,6 +110,12 @@ export default function SetupPage() {
         setUrl(d.website_url || "");
         setPersona(d.agent_persona || PERSONAS[0].value);
         setDescription(d.description || "");
+        setAgentName(
+          (d as { agent_name?: string }).agent_name || "Sales Assistant",
+        );
+        setWidgetColor(
+          (d as { widget_color?: string }).widget_color || "#2563eb",
+        );
         if (d.scraped_content) {
           setScraped(true);
           setPreview(d.scraped_content.slice(0, 300));
@@ -153,7 +161,13 @@ export default function SetupPage() {
     setSaving(true);
     const { error } = await getSupabase()
       .from("businesses")
-      .update({ name, agent_persona: persona, description })
+      .update({
+        name,
+        agent_persona: persona,
+        description,
+        agent_name: agentName,
+        widget_color: widgetColor,
+      })
       .eq("id", businessId);
     if (error) setError("Failed to save settings.");
     else setSuccess("Settings saved successfully!");
@@ -407,6 +421,114 @@ export default function SetupPage() {
                       </p>
                     </div>
                   )}
+                </div>
+              </AnimatedSection>
+
+              {/* Agent Name */}
+              <AnimatedSection delay={400}>
+                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
+                      💬
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-zinc-200">
+                        Agent Name
+                      </label>
+                      <p className="text-zinc-600 text-xs">
+                        What should the chat widget call your agent?
+                      </p>
+                    </div>
+                  </div>
+                  <input
+                    value={agentName}
+                    onChange={(e) => setAgentName(e.target.value)}
+                    placeholder="Sales Assistant"
+                    className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800"
+                  />
+                </div>
+              </AnimatedSection>
+
+              {/* Widget Color */}
+              <AnimatedSection delay={420}>
+                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
+                      🎨
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-zinc-200">
+                        Widget Color
+                      </label>
+                      <p className="text-zinc-600 text-xs">
+                        Pick the main color for your chat widget
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <input
+                        type="color"
+                        value={widgetColor}
+                        onChange={(e) => setWidgetColor(e.target.value)}
+                        className="w-12 h-12 rounded-xl cursor-pointer border-2 border-zinc-700 bg-transparent p-0.5"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2 flex-1">
+                      {[
+                        "#2563eb",
+                        "#7c3aed",
+                        "#dc2626",
+                        "#059669",
+                        "#d97706",
+                        "#0891b2",
+                        "#db2777",
+                        "#000000",
+                      ].map((c) => (
+                        <button
+                          key={c}
+                          onClick={() => setWidgetColor(c)}
+                          className="w-7 h-7 rounded-lg border-2 transition-all hover:scale-110 active:scale-95 shrink-0"
+                          style={{
+                            backgroundColor: c,
+                            borderColor:
+                              widgetColor === c ? "#fff" : "transparent",
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <code className="text-zinc-400 text-xs font-mono">
+                      {widgetColor}
+                    </code>
+                  </div>
+                  {/* Preview */}
+                  <div className="mt-4 flex items-center gap-3 p-3 bg-zinc-800/40 rounded-xl">
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
+                      style={{ backgroundColor: widgetColor }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          fill="#fff"
+                          d="M12 3C6.477 3 2 6.925 2 11.75c0 2.412 1.064 4.593 2.793 6.15L4 21l3.578-1.433C8.944 20.166 10.43 20.5 12 20.5c5.523 0 10-3.925 10-8.75S17.523 3 12 3Z"
+                        />
+                      </svg>
+                    </div>
+                    <div
+                      className="flex-1 h-7 rounded-lg flex items-center px-3"
+                      style={{ backgroundColor: widgetColor }}
+                    >
+                      <span className="text-white text-xs font-semibold">
+                        {agentName}
+                      </span>
+                    </div>
+                    <span className="text-zinc-600 text-xs">Preview</span>
+                  </div>
                 </div>
               </AnimatedSection>
 
