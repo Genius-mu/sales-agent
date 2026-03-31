@@ -24,7 +24,7 @@ export async function getBusinessId(): Promise<string | null> {
     .from("businesses")
     .select("id")
     .eq("user_id", userId)
-    .single();
+    .maybeSingle();
 
-  return data?.id || null;
+  return data?.id ?? null;
 }

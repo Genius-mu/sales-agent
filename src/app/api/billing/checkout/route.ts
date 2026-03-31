@@ -14,8 +14,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
   }
 
-  const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app";
+  const appUrl = (
+    process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app"
+  ).replace(/\/+$/, "");
 
   try {
     const res = await fetch("https://api.lemonsqueezy.com/v1/checkouts", {
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
       headers: {
         Accept: "application/vnd.api+json",
         "Content-Type": "application/vnd.api+json",
-        Authorization: `Bearer ${process.env.LEMON_SQUEEZY_API_KEY}`,
+        Authorization: `Bearer ${process.env.LEMONSQUEEZY_API_KEY}`,
       },
       body: JSON.stringify({
         data: {
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
             store: {
               data: {
                 type: "stores",
-                id: process.env.LEMON_SQUEEZY_STORE_ID,
+                id: process.env.LEMONSQUEEZY_STORE_ID,
               },
             },
             variant: {

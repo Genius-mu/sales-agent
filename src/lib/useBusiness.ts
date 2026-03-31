@@ -19,7 +19,7 @@ export function useBusiness() {
         .from("businesses")
         .select("id")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       setBusinessId(data?.id ?? null);
       setLoading(false);

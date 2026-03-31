@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,6 +9,8 @@ export async function GET(req: NextRequest) {
 
   if (code) {
     const cookieStore = await cookies();
+
+    // Auth client (anon key) — just for session exchange
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -35,17 +38,22 @@ export async function GET(req: NextRequest) {
       const userId = session.user.id;
       const email = session.user.email ?? "";
 
+      // Admin client (service role) — bypasses RLS for business creation
+      const adminSupabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      );
+
       // Check if this user already has a business
-      const { data: existing } = await supabase
+      const { data: existing } = await adminSupabase
         .from("businesses")
         .select("id")
         .eq("user_id", userId)
         .single();
 
       if (!existing) {
-        // Check if there's an unclaimed business (user_id is null)
-        // This handles the case where a business was created manually in Supabase
-        const { data: unclaimed } = await supabase
+        // Check for unclaimed business (manually created rows)
+        const { data: unclaimed } = await adminSupabase
           .from("businesses")
           .select("id")
           .is("user_id", null)
@@ -53,14 +61,13 @@ export async function GET(req: NextRequest) {
           .single();
 
         if (unclaimed) {
-          // Claim the existing unclaimed business
-          await supabase
+          await adminSupabase
             .from("businesses")
             .update({ user_id: userId })
             .eq("id", unclaimed.id);
         } else {
-          // Create a brand new business for this user
-          await supabase.from("businesses").insert({
+          // Create fresh business row for new user
+          await adminSupabase.from("businesses").insert({
             user_id: userId,
             name: email.split("@")[0],
             plan: "free",

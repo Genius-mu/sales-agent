@@ -13,11 +13,11 @@ interface Stats {
   websiteUrl: string;
 }
 
-function useCountUp(target: number, duration = 1400) {
+function useCountUp(target: number, duration = 1200) {
   const [value, setValue] = useState(0);
   useEffect(() => {
     if (target === 0) return;
-    const steps = 50;
+    const steps = 40;
     const increment = target / steps;
     let current = 0;
     const timer = setInterval(() => {
@@ -43,8 +43,8 @@ function AnimatedCard({
 }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setVisible(true), delay);
+    return () => clearTimeout(t);
   }, [delay]);
   return (
     <div
@@ -53,7 +53,7 @@ function AnimatedCard({
         opacity: visible ? 1 : 0,
         transform: visible
           ? "translateY(0) scale(1)"
-          : "translateY(24px) scale(0.98)",
+          : "translateY(20px) scale(0.98)",
         transition: `opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1)`,
       }}
     >
@@ -67,60 +67,57 @@ const PLANS = [
     name: "Starter",
     price: "$49",
     period: "/mo",
-    desc: "For solo founders testing the waters",
+    desc: "For founders ready to stop losing leads",
     color: "from-zinc-900 to-zinc-950",
     border: "border-zinc-800",
     accent: "#52525b",
     badge: null,
+    popular: false,
     features: [
-      "1 AI sales agent",
       "500 conversations/mo",
-      "Lead capture",
-      "Embed on 1 site",
+      "Lead capture & dashboard",
+      "1 site embed",
       "Email support",
     ],
-    cta: "Get started",
-    popular: false,
+    cta: "Upgrade to Starter",
   },
   {
     name: "Pro",
     price: "$99",
     period: "/mo",
-    desc: "For businesses serious about growth",
-    color: "from-blue-950/80 to-zinc-950",
+    desc: "For businesses that can't afford to miss a sale",
+    color: "from-blue-950/70 to-zinc-950",
     border: "border-blue-500/40",
     accent: "#3b82f6",
     badge: "Most Popular",
+    popular: true,
     features: [
-      "3 AI sales agents",
       "Unlimited conversations",
       "Lead capture + CRM export",
-      "Embed on 5 sites",
+      "5 site embeds",
       "Analytics dashboard",
       "Priority support",
     ],
-    cta: "Start free trial",
-    popular: true,
+    cta: "Upgrade to Pro",
   },
   {
     name: "Scale",
     price: "$199",
     period: "/mo",
-    desc: "For agencies running at full speed",
+    desc: "For agencies running multiple client sites",
     color: "from-zinc-900 to-zinc-950",
     border: "border-zinc-800",
     accent: "#52525b",
     badge: null,
+    popular: false,
     features: [
       "Unlimited agents",
       "Unlimited conversations",
       "White-label widget",
       "Unlimited sites",
       "Custom AI persona",
-      "Dedicated support",
     ],
-    cta: "Contact us",
-    popular: false,
+    cta: "Upgrade to Scale",
   },
 ];
 
@@ -193,7 +190,7 @@ export default function DashboardPage() {
       }[];
 
       setStats({
-        businessName: biz.name || "Unnamed Business",
+        businessName: biz.name || "Your Business",
         websiteUrl: biz.website_url || "",
         agentReady: !!(biz.scraped_content || biz.description),
         conversations: conversations.length,
@@ -204,25 +201,31 @@ export default function DashboardPage() {
     load();
   }, []);
 
+  const conversionRate =
+    stats?.conversations && stats.conversations > 0
+      ? Math.round((stats.leads / stats.conversations) * 100)
+      : 0;
+
   return (
-    <div className="min-h-screen bg-[#080809] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#060608] text-white overflow-x-hidden">
+      {/* Background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-32 left-1/3 w-[600px] h-[600px] bg-blue-600/6 rounded-full blur-[140px]" />
-        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/4 rounded-full blur-[100px]" />
+        <div className="absolute -top-32 left-1/3 w-[700px] h-[500px] bg-blue-600/6 rounded-full blur-[160px]" />
+        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] bg-indigo-600/4 rounded-full blur-[130px]" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-600/3 rounded-full blur-[110px]" />
         <div
           className="absolute inset-0 opacity-[0.015]"
           style={{
             backgroundImage:
               "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
+            backgroundSize: "72px 72px",
           }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 40%, #080809 100%)",
+              "radial-gradient(ellipse at center, transparent 40%, #060608 100%)",
           }}
         />
       </div>
@@ -233,7 +236,7 @@ export default function DashboardPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Header */}
           <div
-            className="flex items-start justify-between mb-8 sm:mb-12"
+            className="flex items-start justify-between mb-8 sm:mb-10"
             style={{
               opacity: headerVisible ? 1 : 0,
               transform: headerVisible ? "translateY(0)" : "translateY(-16px)",
@@ -242,54 +245,64 @@ export default function DashboardPage() {
             }}
           >
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-medium">
-                  Dashboard
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-semibold">
+                  Revenue Dashboard
                 </p>
               </div>
-              <h1 className="text-3xl sm:text-5xl font-bold tracking-tight leading-none truncate">
+              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-none mb-1">
                 {loading ? (
-                  <span className="inline-block w-40 sm:w-56 h-9 sm:h-12 bg-zinc-800/80 rounded-xl animate-pulse" />
+                  <span className="inline-block w-48 h-10 sm:h-12 bg-zinc-800/80 rounded-xl animate-pulse" />
                 ) : (
-                  <span>{stats?.businessName}</span>
+                  stats?.businessName
                 )}
               </h1>
+              {!loading && stats?.websiteUrl && (
+                <a
+                  href={stats.websiteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-zinc-600 text-xs hover:text-zinc-400 transition-colors mt-1 inline-block truncate max-w-xs"
+                >
+                  {stats.websiteUrl}
+                </a>
+              )}
             </div>
-            <div className="text-right mt-1 hidden sm:block shrink-0 ml-4">
-              <p className="text-zinc-600 text-xs mb-1 tracking-widest uppercase">
-                Local time
+            <div className="text-right hidden sm:block shrink-0 ml-6">
+              <p className="text-zinc-700 text-xs mb-1 tracking-widest uppercase font-medium">
+                Live
               </p>
-              <p className="text-zinc-300 text-lg font-mono tabular-nums">
+              <p className="text-zinc-300 text-xl font-mono tabular-nums font-bold">
                 {time}
               </p>
             </div>
           </div>
 
-          {/* Warning banner */}
+          {/* Agent not configured warning */}
           {!loading && !stats?.agentReady && (
-            <AnimatedCard delay={150} className="mb-6 sm:mb-8">
-              <div className="relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl px-4 sm:px-6 py-4">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent" />
-                <div className="relative flex items-center gap-3 sm:gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center text-amber-400 text-base shrink-0">
+            <AnimatedCard delay={100} className="mb-6 sm:mb-8">
+              <div className="relative overflow-hidden flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-red-500/5 border border-red-500/15 rounded-2xl px-5 sm:px-6 py-5">
+                <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent" />
+                <div className="relative flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 text-lg shrink-0">
                     ⚠
                   </div>
                   <div>
-                    <p className="text-amber-200 font-semibold text-sm">
-                      Agent not configured
+                    <p className="text-red-300 font-bold text-sm">
+                      Your agent is offline — you're losing leads right now
                     </p>
                     <p className="text-zinc-500 text-xs mt-0.5">
-                      Add a description or website URL so the agent knows what
-                      to say
+                      Add a description or website URL to activate your agent
+                      and start capturing leads.
                     </p>
                   </div>
                 </div>
                 <Link
                   href="/dashboard/setup"
-                  className="relative text-xs bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-amber-500/20 shrink-0 w-full sm:w-auto text-center"
+                  className="relative text-xs bg-red-500 hover:bg-red-400 text-white font-black px-5 py-2.5 rounded-xl transition-all active:scale-95 shadow-lg shadow-red-500/20 shrink-0 w-full sm:w-auto text-center"
                 >
-                  Configure now →
+                  Activate now →
                 </Link>
               </div>
             </AnimatedCard>
@@ -299,11 +312,15 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[
               {
-                label: "Conversations",
+                label: "Total Conversations",
                 value: loading ? null : convCount,
                 icon: "💬",
-                sub: "All time total",
-                trend: "+12%",
+                sub: "All time",
+                badge:
+                  stats?.conversations && stats.conversations > 0
+                    ? `+${stats.conversations} total`
+                    : "Waiting for traffic",
+                badgeColor: "text-blue-400 bg-blue-500/10 border-blue-500/20",
                 delay: 100,
               },
               {
@@ -311,7 +328,14 @@ export default function DashboardPage() {
                 value: loading ? null : leadsCount,
                 icon: "🎯",
                 sub: "Emails collected",
-                trend: "+8%",
+                badge:
+                  stats?.leads && stats.leads > 0
+                    ? `${conversionRate}% conversion`
+                    : "No leads yet",
+                badgeColor:
+                  stats?.leads && stats.leads > 0
+                    ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                    : "text-zinc-500 bg-zinc-800 border-zinc-700",
                 delay: 200,
               },
               {
@@ -322,9 +346,15 @@ export default function DashboardPage() {
                     ? "Active"
                     : "Offline",
                 icon: "🤖",
-                sub: stats?.agentReady ? "Trained & ready" : "Needs setup",
-                highlight: stats?.agentReady,
+                sub: stats?.agentReady
+                  ? "Responding to visitors"
+                  : "Configuration needed",
+                badge: stats?.agentReady ? "Online" : "Setup required",
+                badgeColor: stats?.agentReady
+                  ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                  : "text-amber-400 bg-amber-500/10 border-amber-500/20",
                 delay: 300,
+                pulse: stats?.agentReady,
               },
             ].map((card) => (
               <AnimatedCard
@@ -332,45 +362,39 @@ export default function DashboardPage() {
                 delay={card.delay}
                 className="group"
               >
-                <div className="relative bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 backdrop-blur-sm">
+                <div className="relative bg-zinc-900/50 border border-zinc-800/70 hover:border-zinc-700 rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50">
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
                     style={{
                       background:
-                        "radial-gradient(400px circle at 50% -20%, rgba(59,130,246,0.04), transparent 60%)",
+                        "radial-gradient(350px circle at 50% -20%, rgba(59,130,246,0.05), transparent 60%)",
                     }}
                   />
                   <div className="relative">
-                    <div className="flex items-start justify-between mb-4 sm:mb-6">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-lg sm:text-xl group-hover:scale-110 transition-transform duration-300">
+                    <div className="flex items-start justify-between mb-5">
+                      <div className="w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-300">
                         {card.icon}
                       </div>
-                      {card.highlight !== undefined ? (
-                        <span
-                          className={`text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1.5 border ${card.highlight ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800 text-zinc-500 border-zinc-700"}`}
-                        >
-                          {card.highlight && (
-                            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                          )}
-                          {card.highlight ? "Online" : "Offline"}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">
-                          {card.trend}
-                        </span>
-                      )}
+                      <span
+                        className={`text-xs px-2.5 py-1 rounded-full font-semibold border flex items-center gap-1.5 ${card.badgeColor}`}
+                      >
+                        {card.pulse && (
+                          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                        )}
+                        {card.badge}
+                      </span>
                     </div>
-                    <p className="text-3xl sm:text-4xl font-bold mb-2 tabular-nums tracking-tight">
+                    <p className="text-3xl sm:text-4xl font-black mb-1.5 tabular-nums tracking-tight">
                       {card.value === null ? (
-                        <span className="inline-block w-16 h-8 sm:h-9 bg-zinc-800 rounded-lg animate-pulse" />
+                        <span className="inline-block w-20 h-9 bg-zinc-800 rounded-lg animate-pulse" />
                       ) : (
                         card.value
                       )}
                     </p>
-                    <p className="text-zinc-300 text-sm font-medium">
+                    <p className="text-zinc-200 text-sm font-bold">
                       {card.label}
                     </p>
-                    <p className="text-zinc-600 text-xs mt-1">{card.sub}</p>
+                    <p className="text-zinc-600 text-xs mt-0.5">{card.sub}</p>
                   </div>
                 </div>
               </AnimatedCard>
@@ -384,49 +408,57 @@ export default function DashboardPage() {
                 href: "/dashboard/setup",
                 icon: "⚙️",
                 label: "CONFIGURE",
-                title: "Set Up Agent",
-                desc: "Connect your website and teach the agent your business inside out.",
+                title: "Train Your Agent",
+                desc: "Tell Saim about your business. The more it knows, the better it sells.",
                 cta: "Open Setup",
-                delay: 350,
+                delay: 400,
+                urgent: !stats?.agentReady && !loading,
               },
               {
                 href: "/dashboard/embed",
-                icon: "🔌",
+                icon: "🚀",
                 label: "DEPLOY",
-                title: "Embed on Site",
-                desc: "One script tag is all it takes to activate your AI agent anywhere.",
-                cta: "Get Code",
-                delay: 450,
+                title: "Go Live on Your Site",
+                desc: "One script tag. Paste it anywhere. Your agent starts capturing leads instantly.",
+                cta: "Get Embed Code",
+                delay: 500,
+                urgent: false,
               },
             ].map((item) => (
               <AnimatedCard key={item.href} delay={item.delay}>
                 <Link
                   href={item.href}
-                  className="group relative block bg-zinc-900/60 border border-zinc-800/80 hover:border-blue-500/30 rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/5 backdrop-blur-sm h-full"
+                  className={`group relative block rounded-2xl p-5 sm:p-6 overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl h-full ${item.urgent ? "bg-blue-950/40 border border-blue-500/30 hover:border-blue-400/50 hover:shadow-blue-500/10" : "bg-zinc-900/50 border border-zinc-800/70 hover:border-zinc-700 hover:shadow-black/50"}`}
                 >
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
                     style={{
-                      background:
-                        "radial-gradient(400px circle at 0% 100%, rgba(59,130,246,0.04), transparent 60%)",
+                      background: `radial-gradient(350px circle at 0% 100%, rgba(59,130,246,0.05), transparent 60%)`,
                     }}
                   />
+                  {item.urgent && (
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
+                  )}
                   <div className="relative">
-                    <div className="flex items-center justify-between mb-4 sm:mb-5">
-                      <span className="text-zinc-600 text-xs tracking-[0.2em] font-semibold">
+                    <div className="flex items-center justify-between mb-4">
+                      <span
+                        className={`text-xs tracking-[0.2em] font-black uppercase ${item.urgent ? "text-blue-400" : "text-zinc-600"}`}
+                      >
                         {item.label}
                       </span>
-                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-base sm:text-lg group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-9 h-9 rounded-xl bg-zinc-800/60 border border-zinc-700/50 flex items-center justify-center text-lg group-hover:scale-110 transition-transform duration-300">
                         {item.icon}
                       </div>
                     </div>
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2 tracking-tight">
+                    <h3 className="text-lg sm:text-xl font-black text-white mb-2">
                       {item.title}
                     </h3>
-                    <p className="text-zinc-500 text-sm leading-relaxed mb-4 sm:mb-5">
+                    <p className="text-zinc-500 text-sm leading-relaxed mb-5">
                       {item.desc}
                     </p>
-                    <span className="inline-flex items-center gap-2 text-blue-400 text-sm font-medium group-hover:gap-3 transition-all duration-300">
+                    <span
+                      className={`inline-flex items-center gap-2 text-sm font-bold group-hover:gap-3 transition-all duration-300 ${item.urgent ? "text-blue-400" : "text-zinc-400 group-hover:text-white"}`}
+                    >
                       {item.cta}
                       <svg
                         width="14"
@@ -436,7 +468,7 @@ export default function DashboardPage() {
                       >
                         <path
                           stroke="currentColor"
-                          strokeWidth="2"
+                          strokeWidth="2.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           d="M5 12h14m-7-7 7 7-7 7"
@@ -449,39 +481,73 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Pricing label */}
-          <AnimatedCard delay={550}>
+          {/* Revenue insight banner */}
+          {!loading &&
+            stats?.conversations !== undefined &&
+            stats.conversations > 0 && (
+              <AnimatedCard delay={600} className="mb-12 sm:mb-16">
+                <div className="relative overflow-hidden bg-gradient-to-r from-emerald-950/40 to-zinc-950 border border-emerald-500/15 rounded-2xl px-5 sm:px-8 py-5 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent" />
+                  <div className="relative flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-xl shrink-0">
+                      📈
+                    </div>
+                    <div>
+                      <p className="text-emerald-300 font-black text-sm">
+                        Your agent is working
+                      </p>
+                      <p className="text-zinc-500 text-xs mt-0.5">
+                        {stats.conversations} conversations handled ·{" "}
+                        {stats.leads} leads captured · {conversionRate}%
+                        conversion rate
+                      </p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/dashboard/conversations"
+                    className="relative text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-bold px-4 py-2.5 rounded-xl transition-all shrink-0 w-full sm:w-auto text-center"
+                  >
+                    View all conversations →
+                  </Link>
+                </div>
+              </AnimatedCard>
+            )}
+
+          {/* Pricing */}
+          <AnimatedCard delay={700}>
             <div className="mb-8 sm:mb-10 text-center">
-              <div className="flex items-center gap-4 mb-6 sm:mb-8">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-zinc-800" />
-                <div className="flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full">
-                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                  <span className="text-zinc-400 text-xs tracking-[0.2em] uppercase font-medium">
-                    Pricing
+              <div className="flex items-center gap-4 mb-8">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-zinc-800/60" />
+                <div className="flex items-center gap-2 px-4 py-1.5 bg-zinc-900/80 border border-zinc-800 rounded-full">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <span className="text-zinc-400 text-xs tracking-[0.2em] uppercase font-semibold">
+                    Upgrade
                   </span>
                 </div>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-zinc-800" />
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-zinc-800/60" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">
-                Simple, honest pricing
+              <h2 className="text-2xl sm:text-4xl font-black tracking-tight mb-2 leading-tight">
+                Less than one lost deal.
+                <br />
+                <span className="text-zinc-500">Every month.</span>
               </h2>
               <p className="text-zinc-500 text-sm">
-                No hidden fees. No surprises. Start free for 14 days.
+                If Saim captures one extra lead per month, it pays for itself
+                10x over.
               </p>
             </div>
           </AnimatedCard>
 
-          {/* Pricing cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-6 sm:mb-8">
             {PLANS.map((plan, i) => (
               <AnimatedCard
                 key={plan.name}
-                delay={650 + i * 120}
+                delay={800 + i * 100}
                 className="relative"
               >
                 {plan.badge && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20">
-                    <span className="bg-blue-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-xl shadow-blue-500/30 tracking-wide">
+                    <span className="bg-blue-600 text-white text-xs font-black px-4 py-1.5 rounded-full shadow-xl shadow-blue-600/40 tracking-wide uppercase">
                       {plan.badge}
                     </span>
                   </div>
@@ -495,22 +561,22 @@ export default function DashboardPage() {
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl"
                     style={{
-                      background: `radial-gradient(300px circle at 50% 0%, ${plan.accent}12, transparent 70%)`,
+                      background: `radial-gradient(280px circle at 50% 0%, ${plan.accent}15, transparent 70%)`,
                     }}
                   />
-                  <div className="relative mb-5 sm:mb-6">
-                    <div className="flex items-start justify-between mb-3 sm:mb-4">
-                      <p className="text-zinc-400 text-xs font-bold tracking-[0.2em] uppercase">
+                  <div className="relative mb-5">
+                    <div className="flex items-start justify-between mb-3">
+                      <p className="text-zinc-500 text-xs font-black tracking-[0.2em] uppercase">
                         {plan.name}
                       </p>
                       {plan.popular && (
-                        <span className="text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full">
+                        <span className="text-xs text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-full font-semibold">
                           Best value
                         </span>
                       )}
                     </div>
                     <div className="flex items-end gap-1.5">
-                      <span className="text-4xl sm:text-5xl font-bold tracking-tight">
+                      <span className="text-4xl sm:text-5xl font-black tracking-tight">
                         {plan.price}
                       </span>
                       <span className="text-zinc-500 text-sm mb-1.5">
@@ -521,23 +587,23 @@ export default function DashboardPage() {
                       {plan.desc}
                     </p>
                   </div>
-                  <div className="relative h-px bg-zinc-800/80 mb-4 sm:mb-5" />
-                  <ul className="relative space-y-2.5 flex-1 mb-5 sm:mb-6">
+                  <div className="h-px bg-zinc-800/80 mb-4 sm:mb-5" />
+                  <ul className="space-y-2.5 flex-1 mb-5 sm:mb-6">
                     {plan.features.map((f) => (
                       <li
                         key={f}
                         className="flex items-start gap-2.5 text-xs text-zinc-300"
                       >
-                        <span className="mt-0.5 flex-shrink-0 text-emerald-400 font-bold">
+                        <span className="mt-0.5 shrink-0 text-emerald-400 font-black">
                           ✓
                         </span>
-                        <span>{f}</span>
+                        {f}
                       </li>
                     ))}
                   </ul>
                   <Link
                     href="/dashboard/billing"
-                    className={`relative w-full py-3 rounded-xl text-sm font-bold transition-all duration-200 active:scale-95 tracking-wide text-center block ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30" : "bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"}`}
+                    className={`w-full py-3 rounded-xl text-sm font-black transition-all duration-200 active:scale-95 text-center block ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30" : "bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600"}`}
                   >
                     {plan.cta}
                   </Link>
@@ -546,19 +612,18 @@ export default function DashboardPage() {
             ))}
           </div>
 
-          {/* Footer */}
-          <AnimatedCard delay={1050}>
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pb-6 sm:pb-8">
+          <AnimatedCard delay={1100}>
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pb-8">
               {[
                 "14-day free trial",
                 "No credit card required",
                 "Cancel anytime",
               ].map((text, i) => (
-                <div key={text} className="flex items-center gap-3 sm:gap-4">
+                <div key={text} className="flex items-center gap-4">
                   {i > 0 && (
-                    <div className="w-1 h-1 bg-zinc-700 rounded-full hidden sm:block" />
+                    <div className="w-1 h-1 bg-zinc-800 rounded-full hidden sm:block" />
                   )}
-                  <span className="text-zinc-600 text-xs">{text}</span>
+                  <span className="text-zinc-700 text-xs">{text}</span>
                 </div>
               ))}
             </div>

@@ -21,7 +21,7 @@ function verifySignature(
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
   const signature = req.headers.get("x-signature") ?? "";
-  const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET ?? "";
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET ?? "";
 
   if (!verifySignature(rawBody, signature, secret)) {
     console.error("Invalid webhook signature");

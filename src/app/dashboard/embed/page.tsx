@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, getBusinessId } from "@/lib/supabase";
 
 function AnimatedSection({
   children,
@@ -92,20 +92,9 @@ export default function EmbedPage() {
   }, []);
 
   useEffect(() => {
-    async function load() {
-      const sb = getSupabase();
-      const {
-        data: { session },
-      } = await sb.auth.getSession();
-      if (!session?.user) return;
-      const { data } = await sb
-        .from("businesses")
-        .select("id")
-        .eq("user_id", session.user.id)
-        .single();
-      if (data) setBusinessId((data as { id: string }).id);
-    }
-    load();
+    getBusinessId().then((id) => {
+      if (id) setBusinessId(id);
+    });
   }, []);
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourapp.com";
@@ -118,7 +107,7 @@ export default function EmbedPage() {
   };
   (function(d, s) {
     var js = d.createElement(s);
-    js.src = "${appUrl}widget.js";
+    js.src = "${appUrl}/widget.js";
     js.async = true;
     d.body.appendChild(js);
   })(document, "script");

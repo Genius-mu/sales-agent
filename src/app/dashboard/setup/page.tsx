@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
-import { getSupabase } from "@/lib/supabase";
+import { getSupabase, getBusinessId } from "@/lib/supabase";
 
 const PERSONAS = [
   {
@@ -80,21 +80,19 @@ export default function SetupPage() {
 
   useEffect(() => {
     async function loadBusiness() {
-      const sb = getSupabase();
-      const {
-        data: { session },
-      } = await sb.auth.getSession();
-      if (!session?.user) {
+      const id = await getBusinessId();
+      if (!id) {
         setLoadingBiz(false);
         return;
       }
+      setBusinessId(id);
 
-      const { data } = await sb
+      const { data } = await getSupabase()
         .from("businesses")
         .select(
           "id, name, website_url, agent_persona, scraped_content, description",
         )
-        .eq("user_id", session.user.id)
+        .eq("id", id)
         .single();
 
       if (data) {
@@ -106,7 +104,6 @@ export default function SetupPage() {
           scraped_content: string | null;
           description: string | null;
         };
-        setBusinessId(d.id);
         setName(d.name || "");
         setUrl(d.website_url || "");
         setPersona(d.agent_persona || PERSONAS[0].value);
@@ -311,7 +308,13 @@ export default function SetupPage() {
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="We are a SaaS company that helps e-commerce brands automate their customer support using AI. Our main product is a chat widget that integrates with Shopify and reduces support tickets by 60%..."
                     rows={5}
-                    className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800 resize-none leading-relaxed"
+                    className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800 resize-none leading-relaxed overflow-hidden"
+                    style={{ minHeight: "120px" }}
+                    onInput={(e) => {
+                      const t = e.currentTarget;
+                      t.style.height = "auto";
+                      t.style.height = t.scrollHeight + "px";
+                    }}
                   />
                   <div className="flex items-center justify-between mt-2">
                     <p className="text-zinc-700 text-xs">
@@ -497,7 +500,7 @@ export default function SetupPage() {
               <AnimatedSection delay={520}>
                 <button
                   onClick={handleSave}
-                  disabled={saving || !businessId}
+                  disabled={saving}
                   className="w-full relative bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 active:scale-[0.98] hover:shadow-xl hover:shadow-blue-500/20 disabled:cursor-not-allowed overflow-hidden group"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
