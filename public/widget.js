@@ -19,7 +19,7 @@
 
   var launcherStyle = document.createElement("style");
   launcherStyle.textContent =
-    "#sa-launcher{position:fixed;bottom:20px;right:20px;z-index:2147483647;width:52px;height:52px;border-radius:50%;background:#2563eb;border:none;cursor:pointer;box-shadow:0 4px 24px rgba(37,99,235,0.45);display:flex;align-items:center;justify-content:center;transition:transform 0.2s,box-shadow 0.2s;outline:none;padding:0;}#sa-launcher:hover{transform:scale(1.08);box-shadow:0 6px 32px rgba(37,99,235,0.55);}#sa-iframe-wrap{position:fixed;bottom:80px;right:16px;z-index:2147483646;width:min(360px,calc(100vw - 32px));height:min(530px,calc(100vh - 100px));border:none;border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,0.22);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),opacity 0.2s;overflow:hidden;}@media(max-width:480px){#sa-iframe-wrap{right:0;left:0;width:100%;bottom:0;height:calc(100vh - 0px);border-radius:20px 20px 0 0;}#sa-launcher{bottom:20px;right:20px;}}";
+    "#sa-launcher{position:fixed;bottom:20px;right:20px;z-index:2147483647;width:52px;height:52px;border-radius:50%;background:#2563eb;border:none;cursor:pointer;box-shadow:0 4px 24px rgba(37,99,235,0.45);display:flex;align-items:center;justify-content:center;transition:transform 0.2s,box-shadow 0.2s;outline:none;padding:0;}#sa-launcher:hover{transform:scale(1.08);box-shadow:0 6px 32px rgba(37,99,235,0.55);}#sa-iframe-wrap{position:fixed;bottom:80px;right:16px;z-index:2147483646;width:min(360px,calc(100vw - 32px));height:min(530px,calc(100vh - 100px));border:none;border-radius:16px;box-shadow:0 24px 64px rgba(0,0,0,0.22);transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1),opacity 0.2s;overflow:hidden;}@media(max-width:480px){#sa-iframe-wrap{right:0;left:0;width:100%;bottom:0;height:calc(100vh - 80px);border-radius:20px 20px 0 0;}#sa-launcher{bottom:20px;right:20px;}}";
   document.head.appendChild(launcherStyle);
 
   var launcher = document.createElement("button");
@@ -270,6 +270,10 @@
     iframeWrap.style.opacity = "1";
     iframeWrap.style.pointerEvents = "all";
     launcher.innerHTML = iconClose();
+    // Hide launcher on mobile since close btn is inside widget
+    if (window.innerWidth <= 480) {
+      launcher.style.display = "none";
+    }
     setTimeout(function () {
       try {
         getIframeDoc().getElementById("sa-input").focus();
@@ -283,6 +287,7 @@
     iframeWrap.style.opacity = "0";
     iframeWrap.style.pointerEvents = "none";
     launcher.innerHTML = iconChat();
+    launcher.style.display = "flex";
   }
 
   launcher.addEventListener("click", function (e) {
