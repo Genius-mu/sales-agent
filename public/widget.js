@@ -40,8 +40,10 @@
 
   var widgetCSS = [
     "*{box-sizing:border-box;margin:0;padding:0;}",
-    "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;display:flex;flex-direction:column;height:100vh;overflow:hidden;}",
-    "#sa-header{background:#2563eb;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}",
+    "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;display:flex;flex-direction:column;height:100%;min-height:100vh;overflow:hidden;}",
+    "html{height:100%;}",
+    "@media(max-width:480px){#sa-header{padding:16px;}#sa-messages{padding:12px;}#sa-footer{padding:10px 10px 12px;}.msg{max-width:90%;font-size:14px;}}",
+    "#sa-header{background:#2563eb;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;justify-content:space-between;}",
     "#sa-header-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;flex-shrink:0;}",
     "@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}",
     "#sa-header-title{color:#fff;font-size:14px;font-weight:600;}",
