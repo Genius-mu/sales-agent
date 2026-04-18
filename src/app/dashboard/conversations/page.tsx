@@ -37,8 +37,11 @@ function AnimatedCard({
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0) scale(1)" : "translateY(20px) scale(0.98)",
-        transition: "opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1)",
+        transform: visible
+          ? "translateY(0) scale(1)"
+          : "translateY(20px) scale(0.98)",
+        transition:
+          "opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1)",
       }}
     >
       {children}
@@ -55,7 +58,10 @@ function timeAgo(dateStr: string) {
   if (mins < 60) return `${mins}m ago`;
   if (hours < 24) return `${hours}h ago`;
   if (days < 7) return `${days}d ago`;
-  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function ConversationDrawer({
@@ -66,7 +72,9 @@ function ConversationDrawer({
   onClose: () => void;
 }) {
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
@@ -85,7 +93,9 @@ function ConversationDrawer({
           <div>
             <div className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              <p className="text-xs text-zinc-500 font-mono tracking-wider uppercase">Session</p>
+              <p className="text-xs text-zinc-500 font-mono tracking-wider uppercase">
+                Session
+              </p>
             </div>
             <p className="text-zinc-400 text-xs font-mono mt-0.5 truncate max-w-[260px]">
               {convo.session_id}
@@ -96,7 +106,12 @@ function ConversationDrawer({
             className="w-8 h-8 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 border border-zinc-700/60 flex items-center justify-center transition-colors"
           >
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24">
-              <path stroke="#a1a1aa" strokeWidth="2.5" strokeLinecap="round" d="M6 6l12 12M6 18L18 6" />
+              <path
+                stroke="#a1a1aa"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                d="M6 6l12 12M6 18L18 6"
+              />
             </svg>
           </button>
         </div>
@@ -105,22 +120,53 @@ function ConversationDrawer({
         <div className="flex items-center gap-3 px-5 py-3 border-b border-zinc-800/40 flex-shrink-0 flex-wrap">
           <div className="flex items-center gap-1.5">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
-              <path stroke="#71717a" strokeWidth="1.5" strokeLinecap="round" d="M12 6v6l4 2" />
-              <circle cx="12" cy="12" r="9" stroke="#71717a" strokeWidth="1.5" />
+              <path
+                stroke="#71717a"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                d="M12 6v6l4 2"
+              />
+              <circle
+                cx="12"
+                cy="12"
+                r="9"
+                stroke="#71717a"
+                strokeWidth="1.5"
+              />
             </svg>
-            <span className="text-zinc-500 text-xs">{timeAgo(convo.created_at)}</span>
+            <span className="text-zinc-500 text-xs">
+              {timeAgo(convo.created_at)}
+            </span>
           </div>
           <div className="flex items-center gap-1.5">
             <svg width="12" height="12" fill="none" viewBox="0 0 24 24">
-              <path stroke="#71717a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" d="M8 12h8M8 8h4" />
-              <rect x="3" y="3" width="18" height="18" rx="4" stroke="#71717a" strokeWidth="1.5" />
+              <path
+                stroke="#71717a"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8 12h8M8 8h4"
+              />
+              <rect
+                x="3"
+                y="3"
+                width="18"
+                height="18"
+                rx="4"
+                stroke="#71717a"
+                strokeWidth="1.5"
+              />
             </svg>
-            <span className="text-zinc-500 text-xs">{convo.messages.length} messages</span>
+            <span className="text-zinc-500 text-xs">
+              {convo.messages.length} messages
+            </span>
           </div>
           {convo.lead_email && (
             <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span className="text-emerald-400 text-xs font-medium">{convo.lead_email}</span>
+              <span className="text-emerald-400 text-xs font-medium">
+                {convo.lead_email}
+              </span>
             </div>
           )}
         </div>
@@ -167,13 +213,15 @@ export default function ConversationsPage() {
   useEffect(() => {
     async function load() {
       const sb = getSupabase();
-      const { data: { session } } = await sb.auth.getSession();
+      const {
+        data: { session },
+      } = await sb.auth.getSession();
       if (!session?.user) return;
       const { data } = await sb
         .from("businesses")
         .select("id")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
       if (data) setBusinessId((data as { id: string }).id);
     }
     load();
@@ -210,7 +258,10 @@ export default function ConversationsPage() {
   });
 
   const totalLeads = conversations.filter((c) => c.lead_email).length;
-  const totalMessages = conversations.reduce((sum, c) => sum + c.messages.length, 0);
+  const totalMessages = conversations.reduce(
+    (sum, c) => sum + c.messages.length,
+    0,
+  );
 
   return (
     <div className="min-h-screen bg-[#080809] text-white">
@@ -229,7 +280,8 @@ export default function ConversationsPage() {
         <div
           className="absolute inset-0"
           style={{
-            background: "radial-gradient(ellipse at center, transparent 40%, #080809 100%)",
+            background:
+              "radial-gradient(ellipse at center, transparent 40%, #080809 100%)",
           }}
         />
       </div>
@@ -238,41 +290,64 @@ export default function ConversationsPage() {
         <DashboardNav />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-
           {/* Header */}
           <div
             className="mb-8 sm:mb-10"
             style={{
               opacity: headerVisible ? 1 : 0,
               transform: headerVisible ? "translateY(0)" : "translateY(-12px)",
-              transition: "opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)",
+              transition:
+                "opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)",
             }}
           >
             <div className="flex items-center gap-2 mb-3">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-              <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-medium">Inbox</p>
+              <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-medium">
+                Inbox
+              </p>
             </div>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none mb-3">
               Conversations
             </h1>
             <p className="text-zinc-500 text-sm leading-relaxed">
-              Every chat your AI agent has had — browse history, review leads, and read full transcripts.
+              Every chat your AI agent has had — browse history, review leads,
+              and read full transcripts.
             </p>
           </div>
 
           {/* Stats row */}
-          <AnimatedCard delay={100} className="grid grid-cols-3 gap-3 sm:gap-4 mb-6">
+          <AnimatedCard
+            delay={100}
+            className="grid grid-cols-3 gap-3 sm:gap-4 mb-6"
+          >
             {[
-              { label: "Total Chats", value: conversations.length, icon: "💬", color: "text-blue-400" },
-              { label: "Leads Captured", value: totalLeads, icon: "🎯", color: "text-emerald-400" },
-              { label: "Total Messages", value: totalMessages, icon: "✉️", color: "text-violet-400" },
+              {
+                label: "Total Chats",
+                value: conversations.length,
+                icon: "💬",
+                color: "text-blue-400",
+              },
+              {
+                label: "Leads Captured",
+                value: totalLeads,
+                icon: "🎯",
+                color: "text-emerald-400",
+              },
+              {
+                label: "Total Messages",
+                value: totalMessages,
+                icon: "✉️",
+                color: "text-violet-400",
+              },
             ].map((stat) => (
               <div
                 key={stat.label}
                 className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-4 sm:p-5 backdrop-blur-sm"
               >
                 <div className="text-lg sm:text-2xl mb-1">{stat.icon}</div>
-                <div className={`text-xl sm:text-3xl font-bold tabular-nums ${stat.color}`}>
+                <div
+                  className={`text-xl sm:text-3xl font-bold tabular-nums ${stat.color}`}
+                >
                   {loading ? "—" : stat.value}
                 </div>
                 <div className="text-zinc-600 text-xs mt-1">{stat.label}</div>
@@ -281,7 +356,10 @@ export default function ConversationsPage() {
           </AnimatedCard>
 
           {/* Filters + Search */}
-          <AnimatedCard delay={200} className="flex flex-col sm:flex-row gap-3 mb-4">
+          <AnimatedCard
+            delay={200}
+            className="flex flex-col sm:flex-row gap-3 mb-4"
+          >
             {/* Filter tabs */}
             <div className="flex items-center gap-1 p-1 bg-zinc-900/60 border border-zinc-800/80 rounded-xl backdrop-blur-sm">
               {(["all", "leads"] as const).map((f) => (
@@ -306,8 +384,19 @@ export default function ConversationsPage() {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
-                <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M21 21l-4.35-4.35" />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="8"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  d="M21 21l-4.35-4.35"
+                />
               </svg>
               <input
                 type="text"
@@ -327,7 +416,9 @@ export default function ConversationsPage() {
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-3">
                   <div className="w-8 h-8 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
-                  <p className="text-zinc-600 text-sm">Loading conversations...</p>
+                  <p className="text-zinc-600 text-sm">
+                    Loading conversations...
+                  </p>
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -335,21 +426,27 @@ export default function ConversationsPage() {
                     {filter === "leads" ? "🎯" : "💬"}
                   </div>
                   <p className="text-zinc-400 text-sm font-medium">
-                    {filter === "leads" ? "No leads captured yet" : search ? "No results found" : "No conversations yet"}
+                    {filter === "leads"
+                      ? "No leads captured yet"
+                      : search
+                        ? "No results found"
+                        : "No conversations yet"}
                   </p>
                   <p className="text-zinc-600 text-xs text-center max-w-xs">
                     {filter === "leads"
                       ? "When visitors share their email, they'll appear here."
                       : search
-                      ? "Try a different search term."
-                      : "Once visitors chat with your agent, conversations will appear here."}
+                        ? "Try a different search term."
+                        : "Once visitors chat with your agent, conversations will appear here."}
                   </p>
                 </div>
               ) : (
                 <div className="divide-y divide-zinc-800/60">
                   {filtered.map((convo, i) => {
                     const lastMsg = convo.messages[convo.messages.length - 1];
-                    const userMessages = convo.messages.filter((m) => m.role === "user").length;
+                    const userMessages = convo.messages.filter(
+                      (m) => m.role === "user",
+                    ).length;
                     return (
                       <button
                         key={convo.id}
@@ -361,7 +458,9 @@ export default function ConversationsPage() {
                       >
                         {/* Avatar */}
                         <div className="w-9 h-9 rounded-xl bg-zinc-800 border border-zinc-700/60 flex items-center justify-center flex-shrink-0 group-hover:border-zinc-600 transition-colors">
-                          <span className="text-sm">{convo.lead_email ? "🎯" : "👤"}</span>
+                          <span className="text-sm">
+                            {convo.lead_email ? "🎯" : "👤"}
+                          </span>
                         </div>
 
                         {/* Content */}
@@ -387,9 +486,13 @@ export default function ConversationsPage() {
                           </p>
 
                           <div className="flex items-center gap-3">
-                            <span className="text-zinc-700 text-xs">{convo.messages.length} messages</span>
+                            <span className="text-zinc-700 text-xs">
+                              {convo.messages.length} messages
+                            </span>
                             <span className="text-zinc-700 text-xs">·</span>
-                            <span className="text-zinc-700 text-xs">{userMessages} from visitor</span>
+                            <span className="text-zinc-700 text-xs">
+                              {userMessages} from visitor
+                            </span>
                           </div>
                         </div>
 
@@ -399,7 +502,13 @@ export default function ConversationsPage() {
                           fill="none"
                           viewBox="0 0 24 24"
                         >
-                          <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" />
+                          <path
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 18l6-6-6-6"
+                          />
                         </svg>
                       </button>
                     );
@@ -413,7 +522,10 @@ export default function ConversationsPage() {
 
       {/* Conversation drawer */}
       {selected && (
-        <ConversationDrawer convo={selected} onClose={() => setSelected(null)} />
+        <ConversationDrawer
+          convo={selected}
+          onClose={() => setSelected(null)}
+        />
       )}
     </div>
   );

@@ -166,7 +166,7 @@ export default function AnalyticsPage() {
         .from("businesses")
         .select("id")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
       if (data) setBusinessId((data as { id: string }).id);
     }
     loadBiz();
