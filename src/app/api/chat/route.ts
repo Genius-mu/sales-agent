@@ -4,12 +4,13 @@ import { createClient } from "@supabase/supabase-js";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Max-Age": "86400",
 };
 
 export async function OPTIONS() {
-  return new NextResponse(null, { headers: corsHeaders });
+  return new NextResponse(null, { status: 200, headers: corsHeaders });
 }
 
 const PLAN_LIMITS: Record<string, number> = {
@@ -67,6 +68,71 @@ async function sendLimitEmail(
     });
   } catch (e) {
     console.error("Failed to send limit email:", e);
+  }
+}
+
+async function sendLeadEmail(
+  ownerEmail: string,
+  businessName: string,
+  leadEmail: string,
+  conversation: { role: string; content: string }[],
+  appUrl: string,
+) {
+  try {
+    // Build a short transcript of the last few messages
+    const transcript = conversation
+      .slice(-6)
+      .map(
+        (m) =>
+          `<p style="margin:0 0 8px;"><strong style="color:${m.role === "user" ? "#2563eb" : "#18181b"};">${m.role === "user" ? "Visitor" : "Agent"}:</strong> <span style="color:#52525b;">${m.content.replace(/</g, "&lt;")}</span></p>`,
+      )
+      .join("");
+
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: "Saim <onboarding@resend.dev>",
+        to: ownerEmail,
+        subject: `🎯 New lead captured on ${businessName}`,
+        html: `
+          <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;padding:40px 24px;background:#fff;">
+            <div style="margin-bottom:24px;">
+              <div style="width:36px;height:36px;background:#2563eb;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                <span style="color:#fff;font-size:16px;font-weight:800;">S</span>
+              </div>
+              <h1 style="font-size:22px;font-weight:800;color:#18181b;margin:0 0 8px;">You captured a new lead! 🎯</h1>
+              <p style="color:#71717a;font-size:14px;line-height:1.6;margin:0;">
+                Your Saim agent on <strong style="color:#18181b;">${businessName}</strong> just captured a lead. Here are the details:
+              </p>
+            </div>
+
+            <div style="background:#eff6ff;border:1px solid #dbeafe;border-radius:12px;padding:18px;margin-bottom:20px;">
+              <p style="color:#71717a;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin:0 0 6px;">Lead email</p>
+              <a href="mailto:${leadEmail}" style="color:#2563eb;font-size:18px;font-weight:700;text-decoration:none;">${leadEmail}</a>
+            </div>
+
+            <div style="background:#f9fafb;border:1px solid #f0f0f0;border-radius:12px;padding:18px;margin-bottom:24px;">
+              <p style="color:#71717a;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin:0 0 12px;">Conversation</p>
+              ${transcript}
+            </div>
+
+            <a href="${appUrl}/dashboard/conversations" style="display:inline-block;background:#2563eb;color:#fff;font-size:14px;font-weight:700;padding:14px 28px;border-radius:10px;text-decoration:none;">
+              View in dashboard →
+            </a>
+
+            <p style="color:#a1a1aa;font-size:12px;margin-top:24px;">
+              Follow up quickly — leads are most likely to convert within the first hour. 🚀
+            </p>
+          </div>
+        `,
+      }),
+    });
+  } catch (e) {
+    console.error("Failed to send lead email:", e);
   }
 }
 
@@ -204,9 +270,12 @@ LEAD_EMAIL: their@email.com`;
 
     const { data: existing } = await supabase
       .from("conversations")
-      .select("id")
+      .select("id, lead_email")
       .eq("session_id", sessionId)
       .maybeSingle();
+
+    // Track whether this lead was already captured before this message
+    const leadAlreadyExisted = !!existing?.lead_email;
 
     if (existing?.id) {
       const { error: updateError } = await supabase
@@ -228,6 +297,27 @@ LEAD_EMAIL: their@email.com`;
           ...(leadEmail && { lead_email: leadEmail }),
         });
       if (insertError) console.error("Conversation insert error:", insertError);
+    }
+
+    // Send lead notification email — only when a NEW lead is captured
+    if (leadEmail && !leadAlreadyExisted && business.user_id) {
+      const { data: userData } = await supabase.auth.admin.getUserById(
+        business.user_id,
+      );
+      const ownerEmail = userData?.user?.email;
+      if (ownerEmail) {
+        const appUrl = (
+          process.env.NEXT_PUBLIC_APP_URL ||
+          "https://sales-agent-jet.vercel.app"
+        ).replace(/\/+$/, "");
+        await sendLeadEmail(
+          ownerEmail,
+          business.name || "your site",
+          leadEmail,
+          finalHistory,
+          appUrl,
+        );
+      }
     }
 
     return NextResponse.json(
