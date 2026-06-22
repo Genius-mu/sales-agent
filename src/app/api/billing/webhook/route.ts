@@ -2,81 +2,96 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
 
-// Do NOT init Supabase at module level — init inside the handler
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-}
-
-function getPlanFromVariant(variantId: string): string {
-  if (variantId === process.env.LEMONSQUEEZY_STARTER_VARIANT_ID)
-    return "starter";
-  if (variantId === process.env.LEMONSQUEEZY_PRO_VARIANT_ID) return "pro";
-  if (variantId === process.env.LEMONSQUEEZY_SCALE_VARIANT_ID) return "scale";
-  return "free";
-}
+const PLAN_MAP: Record<string, string> = {
+  PLN_l45c6u49b4rtphi: "starter",
+  PLN_mdtlpytqpous1zr: "pro",
+  PLN_jw99ak49aljjjd4: "scale",
+};
 
 export async function POST(req: NextRequest) {
-  const supabase = getSupabase();
   const rawBody = await req.text();
-  const signature = req.headers.get("x-signature");
+  const signature = req.headers.get("x-paystack-signature") ?? "";
+  const secret = process.env.PAYSTACK_SECRET_KEY ?? "";
 
-  const hmac = crypto
-    .createHmac("sha256", process.env.LEMONSQUEEZY_WEBHOOK_SECRET!)
+  // Verify webhook signature
+  const hash = crypto
+    .createHmac("sha512", secret)
     .update(rawBody)
     .digest("hex");
 
-  if (hmac !== signature) {
-    console.error("Invalid webhook signature");
+  if (hash !== signature) {
+    console.error("Invalid Paystack webhook signature");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  const payload = JSON.parse(rawBody);
-  const eventName = payload.meta?.event_name;
-  const attributes = payload.data?.attributes;
-  const businessId = payload.meta?.custom_data?.business_id;
+  const event = JSON.parse(rawBody);
+  const eventType = event.event as string;
+  console.log("Paystack webhook:", eventType);
 
-  console.log("Webhook received:", eventName, "for business:", businessId);
-
-  if (!businessId) {
-    return NextResponse.json(
-      { error: "No business_id in custom data" },
-      { status: 400 },
-    );
-  }
-
-  const variantId = String(
-    attributes?.first_subscription_item?.variant_id || "",
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
-  const plan = getPlanFromVariant(variantId);
-  const subscriptionId = String(payload.data?.id || "");
-  const status = attributes?.status;
 
-  switch (eventName) {
-    case "subscription_created":
-    case "subscription_updated":
-      await supabase
+  // Handle successful subscription
+  if (eventType === "subscription.create" || eventType === "charge.success") {
+    const data = event.data;
+    const planCode = data.plan?.plan_code || data.plan_code;
+    const customerEmail = data.customer?.email;
+    const subscriptionCode = data.subscription_code || data.reference;
+    const businessId = data.metadata?.business_id;
+
+    const plan = PLAN_MAP[planCode];
+    if (!plan) {
+      console.log("Unknown plan code:", planCode);
+      return NextResponse.json({ received: true });
+    }
+
+    // Find business - try by metadata first, then by customer email
+    let bizId = businessId;
+
+    if (!bizId && customerEmail) {
+      const { data: authData } = await supabase.auth.admin.listUsers();
+      const user = authData?.users?.find((u) => u.email === customerEmail);
+      if (user) {
+        const { data: biz } = await supabase
+          .from("businesses")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        bizId = biz?.id;
+      }
+    }
+
+    if (bizId) {
+      const { error } = await supabase
         .from("businesses")
         .update({
           plan,
-          subscription_id: subscriptionId,
-          subscription_status: status,
+          subscription_id: subscriptionCode,
+          subscription_status: "active",
         })
-        .eq("id", businessId);
-      break;
+        .eq("id", bizId);
+      if (error) console.error("Update error:", error);
+      else console.log(`Upgraded business ${bizId} to ${plan}`);
+    }
+  }
 
-    case "subscription_cancelled":
-    case "subscription_expired":
-      await supabase
-        .from("businesses")
-        .update({ plan: "free", subscription_status: "cancelled" })
-        .eq("id", businessId);
-      break;
+  // Handle subscription cancellation
+  if (
+    eventType === "subscription.disable" ||
+    eventType === "subscription.not_renew"
+  ) {
+    const data = event.data;
+    const subscriptionCode = data.subscription_code;
 
-    default:
-      console.log("Unhandled event:", eventName);
+    const { error } = await supabase
+      .from("businesses")
+      .update({ plan: "free", subscription_status: "cancelled" })
+      .eq("subscription_id", subscriptionCode);
+
+    if (error) console.error("Downgrade error:", error);
+    else console.log(`Downgraded subscription ${subscriptionCode} to free`);
   }
 
   return NextResponse.json({ received: true });
