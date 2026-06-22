@@ -7,6 +7,13 @@ const PLAN_CODES: Record<string, string> = {
   scale: "PLN_jw99ak49aljjjd4",
 };
 
+// Amounts in kobo (NGN * 100)
+const PLAN_AMOUNTS: Record<string, number> = {
+  starter: 49000 * 100,
+  pro: 99000 * 100,
+  scale: 199000 * 100,
+};
+
 export async function POST(req: NextRequest) {
   const { plan, businessId } = await req.json();
 
@@ -49,6 +56,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         email,
         plan: planCode,
+        amount: PLAN_AMOUNTS[plan],
         callback_url: `${appUrl}/dashboard/billing?success=true&plan=${plan}`,
         metadata: {
           business_id: businessId,
