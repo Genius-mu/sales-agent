@@ -1,0 +1,16 @@
+{
+  "name": "Saim — AI Sales Agent",
+  "short_name": "Saim",
+  "description": "Deploy an AI sales agent on your website in minutes. Qualifies leads, answers questions, and captures emails 24/7.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060608",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
