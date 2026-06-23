@@ -16,7 +16,7 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="bg-[#080809] text-white min-h-screen flex items-center justify-center px-4">
+      <body className="bg-[#060608] text-white min-h-screen flex items-center justify-center px-4">
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-red-600/5 rounded-full blur-[120px]" />
           <div
@@ -42,7 +42,7 @@ export default function GlobalError({
             </svg>
           </div>
 
-          <h1 className="text-2xl font-bold text-white mb-2">
+          <h1 className="text-2xl font-black text-white mb-2">
             Something went wrong
           </h1>
           <p className="text-zinc-500 text-sm leading-relaxed mb-8">
