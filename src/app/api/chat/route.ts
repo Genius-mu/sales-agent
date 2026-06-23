@@ -88,7 +88,7 @@ async function sendLeadEmail(
       )
       .join("");
 
-    await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -131,6 +131,17 @@ async function sendLeadEmail(
         `,
       }),
     });
+
+    const result = await res.json();
+    if (!res.ok) {
+      console.error(
+        "[Resend] Lead email failed:",
+        res.status,
+        JSON.stringify(result),
+      );
+    } else {
+      console.log("[Resend] Lead email sent:", result.id, "to", ownerEmail);
+    }
   } catch (e) {
     console.error("Failed to send lead email:", e);
   }
