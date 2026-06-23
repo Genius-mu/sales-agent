@@ -78,6 +78,12 @@ async function sendLeadEmail(
   conversation: { role: string; content: string }[],
   appUrl: string,
 ) {
+  console.log(
+    "[Resend] sendLeadEmail called. Key present:",
+    !!process.env.RESEND_API_KEY,
+    "to:",
+    ownerEmail,
+  );
   try {
     // Build a short transcript of the last few messages
     const transcript = conversation
@@ -311,6 +317,14 @@ LEAD_EMAIL: their@email.com`;
     }
 
     // Send lead notification email — only when a NEW lead is captured
+    console.log(
+      "[Lead] check — leadEmail:",
+      leadEmail,
+      "alreadyExisted:",
+      leadAlreadyExisted,
+      "user_id:",
+      business.user_id,
+    );
     if (leadEmail && !leadAlreadyExisted && business.user_id) {
       const { data: userData } = await supabase.auth.admin.getUserById(
         business.user_id,
