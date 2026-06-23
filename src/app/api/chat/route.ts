@@ -330,6 +330,7 @@ LEAD_EMAIL: their@email.com`;
         business.user_id,
       );
       const ownerEmail = userData?.user?.email;
+      console.log("[Lead] ownerEmail resolved to:", ownerEmail);
       if (ownerEmail) {
         const appUrl = (
           process.env.NEXT_PUBLIC_APP_URL ||
