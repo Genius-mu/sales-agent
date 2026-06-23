@@ -15,7 +15,7 @@ export default function DashboardError({
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-[#080809] text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#060608] text-white flex items-center justify-center px-4">
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[400px] h-[300px] bg-red-600/5 rounded-full blur-[100px]" />
       </div>
@@ -33,7 +33,7 @@ export default function DashboardError({
           </svg>
         </div>
 
-        <h2 className="text-xl font-bold text-white mb-2">Page error</h2>
+        <h2 className="text-xl font-black text-white mb-2">Page error</h2>
         <p className="text-zinc-500 text-sm leading-relaxed mb-6">
           This page ran into a problem. Try refreshing or go back to the
           overview.

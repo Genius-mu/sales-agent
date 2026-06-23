@@ -1,6 +1,6 @@
 export default function DashboardLoading() {
   return (
-    <div className="min-h-screen bg-[#080809] text-white">
+    <div className="min-h-screen bg-[#060608] text-white">
       {/* Nav skeleton */}
       <div className="flex items-center justify-between px-8 py-4 border-b border-zinc-800 bg-zinc-950">
         <div className="flex items-center gap-2">
