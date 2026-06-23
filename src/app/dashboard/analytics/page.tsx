@@ -223,7 +223,7 @@ export default function AnalyticsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#080809] text-white">
+    <div className="min-h-screen bg-[#060608] text-white">
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[130px]" />
         <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-violet-600/4 rounded-full blur-[110px]" />
@@ -239,7 +239,7 @@ export default function AnalyticsPage() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at center, transparent 40%, #080809 100%)",
+              "radial-gradient(ellipse at center, transparent 40%, #060608 100%)",
           }}
         />
       </div>
@@ -265,7 +265,7 @@ export default function AnalyticsPage() {
                   Analytics
                 </p>
               </div>
-              <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none mb-2">
+              <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight leading-tight mb-2">
                 Performance
               </h1>
               <p className="text-zinc-500 text-sm">
@@ -277,7 +277,7 @@ export default function AnalyticsPage() {
                 <button
                   key={r}
                   onClick={() => setRange(r)}
-                  className={`px-4 sm:px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${range === r ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}`}
+                  className={`px-4 sm:px-5 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 ${range === r ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}`}
                 >
                   {r}d
                 </button>
@@ -314,14 +314,14 @@ export default function AnalyticsPage() {
                         }}
                       />
                     </div>
-                    <p className="text-2xl sm:text-3xl font-bold tabular-nums tracking-tight mb-1">
+                    <p className="text-[26px] sm:text-[28px] font-semibold tabular-nums tracking-tight mb-1">
                       {loading ? (
                         <span className="inline-block w-10 h-7 bg-zinc-800 rounded animate-pulse" />
                       ) : (
                         totals[m.key].toLocaleString()
                       )}
                     </p>
-                    <p className="text-zinc-400 text-xs font-medium hidden sm:block">
+                    <p className="text-zinc-400 text-[13px] font-medium hidden sm:block">
                       {m.label}
                     </p>
                     <p className="text-zinc-400 text-xs font-medium sm:hidden">
@@ -462,7 +462,7 @@ export default function AnalyticsPage() {
                       className={`text-center transition-opacity duration-300 ${activeMetrics.includes(m.key) ? "opacity-100" : "opacity-30"}`}
                     >
                       <p
-                        className="text-base sm:text-lg font-bold tabular-nums"
+                        className="text-base sm:text-lg font-semibold tabular-nums"
                         style={{ color: m.color }}
                       >
                         {totals[m.key].toLocaleString()}
