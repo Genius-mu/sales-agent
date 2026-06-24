@@ -9,9 +9,9 @@ const PLAN_CODES: Record<string, string> = {
 
 // Amounts in kobo (NGN * 100)
 const PLAN_AMOUNTS: Record<string, number> = {
-  starter: 49000 * 100,
-  pro: 99000 * 100,
-  scale: 199000 * 100,
+  starter: 1000 * 100,
+  pro: 5000 * 100,
+  scale: 15000 * 100,
 };
 
 export async function POST(req: NextRequest) {
