@@ -51,7 +51,7 @@ const FEATURES = [
 const PLANS = [
   {
     name: "Starter",
-    price: "$49",
+    price: "₦1,000",
     per: "/mo",
     desc: "For founders ready to stop losing leads",
     popular: false,
@@ -66,7 +66,7 @@ const PLANS = [
   },
   {
     name: "Pro",
-    price: "$99",
+    price: "₦5,000",
     per: "/mo",
     desc: "For businesses that can't afford to miss a sale",
     popular: true,
@@ -82,7 +82,7 @@ const PLANS = [
   },
   {
     name: "Scale",
-    price: "$199",
+    price: "₦1500",
     per: "/mo",
     desc: "For agencies running multiple client sites",
     popular: false,
