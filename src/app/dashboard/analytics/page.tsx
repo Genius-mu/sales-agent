@@ -25,26 +25,11 @@ interface DayData {
 
 type MetricKey = "conversations" | "leads" | "messages" | "activeSessions";
 
-const METRICS: {
-  key: MetricKey;
-  label: string;
-  color: string;
-  icon: string;
-}[] = [
-  {
-    key: "conversations",
-    label: "Conversations",
-    color: "#3b82f6",
-    icon: "💬",
-  },
-  { key: "leads", label: "Leads Captured", color: "#22c55e", icon: "🎯" },
-  { key: "messages", label: "Messages Sent", color: "#a78bfa", icon: "✉️" },
-  {
-    key: "activeSessions",
-    label: "Active Sessions",
-    color: "#f59e0b",
-    icon: "⚡",
-  },
+const METRICS: { key: MetricKey; label: string; color: string }[] = [
+  { key: "conversations", label: "Conversations", color: "#3b82f6" },
+  { key: "leads", label: "Leads", color: "#10b981" },
+  { key: "messages", label: "Messages", color: "#8b5cf6" },
+  { key: "activeSessions", label: "Active sessions", color: "#f59e0b" },
 ];
 
 function buildEmptyDays(days: number): DayData[] {
@@ -61,7 +46,7 @@ function buildEmptyDays(days: number): DayData[] {
   });
 }
 
-function AnimatedCard({
+function FadeIn({
   children,
   delay = 0,
   className = "",
@@ -80,10 +65,9 @@ function AnimatedCard({
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible
-          ? "translateY(0) scale(1)"
-          : "translateY(20px) scale(0.98)",
-        transition: `opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1)`,
+        transform: visible ? "translateY(0)" : "translateY(8px)",
+        transition:
+          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
       }}
     >
       {children}
@@ -102,22 +86,22 @@ const CustomTooltip = ({
 }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-zinc-900/95 border border-zinc-700/80 rounded-2xl px-4 py-3 shadow-2xl shadow-black/50 backdrop-blur-sm">
-      <p className="text-zinc-400 text-xs mb-3 font-medium">{label}</p>
-      <div className="space-y-2">
+    <div className="bg-zinc-950/95 border border-zinc-800 rounded-xl px-3.5 py-3 shadow-xl backdrop-blur-sm">
+      <p className="text-zinc-500 text-[11px] mb-2.5 font-medium">{label}</p>
+      <div className="space-y-1.5">
         {payload.map((p) => (
           <div
             key={p.dataKey}
-            className="flex items-center justify-between gap-6"
+            className="flex items-center justify-between gap-8"
           >
             <div className="flex items-center gap-2">
               <div
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: p.color }}
               />
-              <span className="text-zinc-400 text-xs">{p.name}</span>
+              <span className="text-zinc-400 text-[13px]">{p.name}</span>
             </div>
-            <span className="text-white text-xs font-bold tabular-nums">
+            <span className="text-white text-[13px] font-medium tabular-nums">
               {p.value}
             </span>
           </div>
@@ -138,12 +122,6 @@ export default function AnalyticsPage() {
     "messages",
     "activeSessions",
   ]);
-  const [headerVisible, setHeaderVisible] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setHeaderVisible(true), 50);
-    return () => clearTimeout(t);
-  }, []);
 
   const toggleMetric = (key: MetricKey) => {
     setActiveMetrics((prev) =>
@@ -222,168 +200,124 @@ export default function AnalyticsPage() {
     { conversations: 0, leads: 0, messages: 0, activeSessions: 0 },
   );
 
+  const convRate =
+    totals.conversations > 0
+      ? Math.round((totals.leads / totals.conversations) * 100)
+      : 0;
+
   return (
-    <div className="min-h-screen bg-[#060608] text-white">
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute -top-32 right-1/4 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] bg-violet-600/4 rounded-full blur-[110px]" />
-        <div
-          className="absolute inset-0 opacity-[0.012]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, transparent 40%, #060608 100%)",
-          }}
-        />
+    <div className="min-h-screen bg-[#08090b] text-white">
+      {/* Subtle ambient background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-700/30 to-transparent" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/[0.04] rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10">
         <DashboardNav />
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <div
-            className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12"
-            style={{
-              opacity: headerVisible ? 1 : 0,
-              transform: headerVisible ? "translateY(0)" : "translateY(-12px)",
-              transition:
-                "opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)",
-            }}
-          >
+          <FadeIn className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-                <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-medium">
-                  Analytics
-                </p>
-              </div>
-              <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight leading-tight mb-2">
-                Performance
+              <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
+                Analytics
               </h1>
               <p className="text-zinc-500 text-sm">
-                Real-time insights into your agent's activity
+                Track how your agent performs over time.
               </p>
             </div>
-            <div className="flex items-center bg-zinc-900/80 border border-zinc-800 rounded-xl p-1 gap-1 backdrop-blur-sm self-start sm:self-auto">
+            <div className="flex items-center bg-zinc-900/60 border border-zinc-800 rounded-lg p-0.5 gap-0.5 self-start">
               {([7, 30, 90] as Range[]).map((r) => (
                 <button
                   key={r}
                   onClick={() => setRange(r)}
-                  className={`px-4 sm:px-5 py-2 rounded-lg text-[13px] font-medium transition-all duration-200 ${range === r ? "bg-zinc-700 text-white shadow-sm" : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"}`}
+                  className={`px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-colors ${range === r ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"}`}
                 >
-                  {r}d
+                  {r} days
                 </button>
               ))}
             </div>
-          </div>
+          </FadeIn>
 
           {/* Stat cards */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             {METRICS.map((m, i) => {
               const isActive = activeMetrics.includes(m.key);
+              const extra =
+                m.key === "leads" && totals.conversations > 0
+                  ? `${convRate}% conversion`
+                  : `Last ${range} days`;
               return (
-                <AnimatedCard key={m.key} delay={100 + i * 80}>
+                <FadeIn key={m.key} delay={60 + i * 50}>
                   <button
                     onClick={() => toggleMetric(m.key)}
-                    className={`group w-full text-left relative bg-zinc-900/60 border rounded-2xl p-4 sm:p-5 overflow-hidden transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-sm ${isActive ? "border-zinc-700 hover:border-zinc-600" : "border-zinc-800/50 opacity-50 hover:opacity-70"}`}
+                    className={`group w-full text-left relative bg-zinc-900/40 border rounded-xl p-4 transition-all duration-200 ${isActive ? "border-zinc-800 hover:border-zinc-700" : "border-zinc-800/40 opacity-45 hover:opacity-75"}`}
                   >
-                    <div
-                      className="absolute top-0 left-0 right-0 h-0.5 rounded-t-2xl transition-opacity duration-300"
-                      style={{
-                        backgroundColor: m.color,
-                        opacity: isActive ? 1 : 0,
-                      }}
-                    />
-                    <div className="flex items-start justify-between mb-3 sm:mb-4">
-                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center text-sm sm:text-base">
-                        {m.icon}
-                      </div>
+                    <div className="flex items-center gap-2 mb-3">
                       <div
-                        className="w-2 h-2 rounded-full mt-1 transition-all duration-300"
-                        style={{
-                          backgroundColor: m.color,
-                          opacity: isActive ? 1 : 0.3,
-                        }}
+                        className="w-1.5 h-1.5 rounded-full"
+                        style={{ backgroundColor: m.color }}
                       />
+                      <span className="text-zinc-400 text-[13px] font-medium">
+                        {m.label}
+                      </span>
                     </div>
-                    <p className="text-[26px] sm:text-[28px] font-semibold tabular-nums tracking-tight mb-1">
+                    <p className="text-[28px] leading-none font-semibold tabular-nums tracking-tight mb-2">
                       {loading ? (
-                        <span className="inline-block w-10 h-7 bg-zinc-800 rounded animate-pulse" />
+                        <span className="inline-block w-12 h-7 bg-zinc-800/80 rounded animate-pulse" />
                       ) : (
                         totals[m.key].toLocaleString()
                       )}
                     </p>
-                    <p className="text-zinc-400 text-[13px] font-medium hidden sm:block">
-                      {m.label}
-                    </p>
-                    <p className="text-zinc-400 text-xs font-medium sm:hidden">
-                      {m.label.split(" ")[0]}
-                    </p>
-                    <p className="text-zinc-600 text-xs mt-0.5">
-                      Last {range}d
-                    </p>
+                    <p className="text-zinc-600 text-[11px]">{extra}</p>
                   </button>
-                </AnimatedCard>
+                </FadeIn>
               );
             })}
           </div>
 
           {/* Chart */}
-          <AnimatedCard delay={450}>
-            <div className="relative bg-zinc-900/60 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-zinc-800/60 gap-3">
+          <FadeIn delay={280}>
+            <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-4 border-b border-zinc-800/60 gap-3">
                 <div>
-                  <h2 className="font-semibold text-white text-base">
-                    Performance over time
+                  <h2 className="text-[15px] font-semibold text-white tracking-tight">
+                    Activity over time
                   </h2>
-                  <p className="text-zinc-500 text-xs mt-0.5">
-                    Tap metric cards to toggle visibility
+                  <p className="text-zinc-500 text-[13px] mt-0.5">
+                    Select metrics above to compare
                   </p>
                 </div>
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {METRICS.filter((m) => activeMetrics.includes(m.key)).map(
                     (m) => (
                       <div
                         key={m.key}
-                        className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium border border-zinc-700/80 bg-zinc-800/60"
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium border border-zinc-800 bg-zinc-900/60"
                       >
                         <div
                           className="w-1.5 h-1.5 rounded-full"
                           style={{ backgroundColor: m.color }}
                         />
-                        <span className="text-zinc-300 hidden sm:inline">
-                          {m.label}
-                        </span>
-                        <span className="text-zinc-300 sm:hidden">
-                          {m.label.split(" ")[0]}
-                        </span>
+                        <span className="text-zinc-400">{m.label}</span>
                       </div>
                     ),
                   )}
                 </div>
               </div>
 
-              <div className="p-4 sm:p-6">
+              <div className="p-4 sm:p-5">
                 {loading ? (
-                  <div className="flex flex-col items-center justify-center h-48 sm:h-72 gap-3">
-                    <div className="w-8 h-8 border-2 border-zinc-700 border-t-blue-500 rounded-full animate-spin" />
-                    <p className="text-zinc-600 text-sm">
-                      Loading chart data...
-                    </p>
+                  <div className="flex flex-col items-center justify-center h-56 gap-3">
+                    <div className="w-7 h-7 border-2 border-zinc-800 border-t-blue-500 rounded-full animate-spin" />
+                    <p className="text-zinc-600 text-[13px]">Loading data</p>
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height={260}>
+                  <ResponsiveContainer width="100%" height={280}>
                     <AreaChart
                       data={data}
-                      margin={{ top: 10, right: 4, left: -24, bottom: 0 }}
+                      margin={{ top: 8, right: 4, left: -20, bottom: 0 }}
                     >
                       <defs>
                         {METRICS.map((m) => (
@@ -398,7 +332,7 @@ export default function AnalyticsPage() {
                             <stop
                               offset="0%"
                               stopColor={m.color}
-                              stopOpacity={0.15}
+                              stopOpacity={0.18}
                             />
                             <stop
                               offset="100%"
@@ -410,21 +344,22 @@ export default function AnalyticsPage() {
                       </defs>
                       <CartesianGrid
                         strokeDasharray="3 3"
-                        stroke="#27272a"
+                        stroke="#1c1c1f"
                         vertical={false}
                       />
                       <XAxis
                         dataKey="date"
-                        tick={{ fill: "#52525b", fontSize: 10 }}
+                        tick={{ fill: "#52525b", fontSize: 11 }}
                         tickLine={false}
                         axisLine={false}
                         interval={range === 7 ? 0 : range === 30 ? 6 : 13}
                       />
                       <YAxis
-                        tick={{ fill: "#52525b", fontSize: 10 }}
+                        tick={{ fill: "#52525b", fontSize: 11 }}
                         tickLine={false}
                         axisLine={false}
                         allowDecimals={false}
+                        width={32}
                       />
                       <Tooltip
                         content={<CustomTooltip />}
@@ -445,7 +380,11 @@ export default function AnalyticsPage() {
                             strokeWidth={2}
                             fill={`url(#grad-${m.key})`}
                             dot={false}
-                            activeDot={{ r: 4, fill: m.color, strokeWidth: 0 }}
+                            activeDot={{
+                              r: 3.5,
+                              fill: m.color,
+                              strokeWidth: 0,
+                            }}
                           />
                         ),
                       )}
@@ -453,49 +392,33 @@ export default function AnalyticsPage() {
                   </ResponsiveContainer>
                 )}
               </div>
-
-              {!loading && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 px-4 sm:px-6 py-4 border-t border-zinc-800/60 bg-zinc-950/30 gap-3 sm:gap-0">
-                  {METRICS.map((m) => (
-                    <div
-                      key={m.key}
-                      className={`text-center transition-opacity duration-300 ${activeMetrics.includes(m.key) ? "opacity-100" : "opacity-30"}`}
-                    >
-                      <p
-                        className="text-base sm:text-lg font-semibold tabular-nums"
-                        style={{ color: m.color }}
-                      >
-                        {totals[m.key].toLocaleString()}
-                      </p>
-                      <p className="text-zinc-600 text-xs hidden sm:block">
-                        {m.label}
-                      </p>
-                      <p className="text-zinc-600 text-xs sm:hidden">
-                        {m.label.split(" ")[0]}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-          </AnimatedCard>
+          </FadeIn>
 
           {/* Empty state */}
           {!loading && totals.conversations === 0 && (
-            <AnimatedCard delay={600}>
-              <div className="mt-6 flex flex-col items-center justify-center py-10 sm:py-12 bg-zinc-900/40 border border-zinc-800/60 rounded-2xl text-center px-4">
-                <div className="w-12 h-12 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-2xl mb-4">
-                  📭
+            <FadeIn delay={360}>
+              <div className="mt-4 flex flex-col items-center justify-center py-14 bg-zinc-900/30 border border-zinc-800/60 rounded-xl text-center px-4">
+                <div className="w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-3">
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
+                    <path
+                      stroke="#52525b"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 3v18h18M7 14l4-4 3 3 5-6"
+                    />
+                  </svg>
                 </div>
-                <p className="text-zinc-400 text-sm font-medium mb-1">
+                <p className="text-zinc-300 text-sm font-medium mb-1">
                   No data yet
                 </p>
-                <p className="text-zinc-600 text-xs">
-                  Start conversations via your embedded widget to see stats
-                  here.
+                <p className="text-zinc-600 text-[13px] max-w-xs">
+                  Once visitors start chatting with your agent, their activity
+                  shows up here.
                 </p>
               </div>
-            </AnimatedCard>
+            </FadeIn>
           )}
         </div>
       </div>
