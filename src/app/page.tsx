@@ -8,52 +8,43 @@ const STATS = [
 
 const PAIN_POINTS = [
   {
-    icon: "📵",
     title: "You're asleep. They're buying.",
-    desc: "A prospect visits at 11pm, has a question, gets silence. By morning they've signed with your competitor who had a bot.",
+    desc: "A prospect visits at 11pm, has a question, gets silence. By morning they've signed with a competitor who answered.",
   },
   {
-    icon: "🔁",
-    title: "You're answering the same questions daily.",
-    desc: "Pricing. Availability. What's included. Hours of your week, gone. Your agent handles all of it — instantly, accurately, 24/7.",
+    title: "You answer the same questions daily.",
+    desc: "Pricing. Availability. What's included. Hours of your week, gone. Your agent handles all of it — instantly, accurately, around the clock.",
   },
   {
-    icon: "🕳️",
     title: "Your website is a leaky bucket.",
-    desc: "Traffic comes in. Nothing captures it. No qualification. No follow-up. Thousands in ad spend, evaporating silently.",
+    desc: "Traffic comes in. Nothing captures it. No qualification, no follow-up. Ad spend evaporating, silently.",
   },
 ];
 
 const FEATURES = [
   {
-    icon: "⚡",
     title: "Instant response, every time",
-    desc: "Zero delay. The moment someone lands on your site and asks a question, your agent is already answering — with your voice, your knowledge, your offer.",
+    desc: "The moment someone lands and asks a question, your agent is already answering — in your voice, with your knowledge.",
   },
   {
-    icon: "🎯",
     title: "Qualifies before you speak",
-    desc: "Budget. Timeline. Decision maker. Your agent extracts it all naturally, so every call you take is with someone ready to buy.",
+    desc: "Budget, timeline, decision maker. Your agent extracts it naturally, so every call you take is with someone ready to buy.",
   },
   {
-    icon: "📧",
     title: "Captures the email, always",
-    desc: "When interest is high, your agent asks for the email. No forms. No friction. Just a natural conversation that ends with a lead in your dashboard.",
+    desc: "When interest is high, it asks for the email. No forms, no friction — just a conversation that ends with a lead in your dashboard.",
   },
   {
-    icon: "🧠",
-    title: "Trained on YOUR business",
-    desc: "Not a generic chatbot. Paste your URL and Saim reads everything — services, pricing, FAQs, tone — and becomes an expert on you.",
+    title: "Trained on your business",
+    desc: "Not a generic bot. Paste your URL and Saim reads your services, pricing, FAQs, and tone — then becomes an expert on you.",
   },
   {
-    icon: "🔌",
-    title: "Live in under 5 minutes",
-    desc: "One script tag. Paste it before </body>. No engineers. No integrations. No delays. Your agent is live before your next meeting.",
+    title: "Live in under five minutes",
+    desc: "One script tag before </body>. No engineers, no integrations. Your agent is live before your next meeting.",
   },
   {
-    icon: "📊",
     title: "Every lead, tracked",
-    desc: "Full conversation history. Captured emails. Engagement analytics. You see exactly what your visitors are asking and where deals are forming.",
+    desc: "Full conversation history, captured emails, engagement analytics. See exactly what visitors ask and where deals form.",
   },
 ];
 
@@ -64,9 +55,6 @@ const PLANS = [
     per: "/mo",
     desc: "For founders ready to stop losing leads",
     popular: false,
-    color: "from-zinc-900 to-zinc-950",
-    border: "border-zinc-800",
-    accent: "#52525b",
     features: [
       "500 conversations/month",
       "Lead capture & email collection",
@@ -75,7 +63,6 @@ const PLANS = [
       "Email support",
     ],
     cta: "Start capturing leads",
-    ctaStyle: "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700",
   },
   {
     name: "Pro",
@@ -83,9 +70,6 @@ const PLANS = [
     per: "/mo",
     desc: "For businesses that can't afford to miss a sale",
     popular: true,
-    color: "from-blue-950/60 to-zinc-950",
-    border: "border-blue-500/50",
-    accent: "#3b82f6",
     features: [
       "Unlimited conversations",
       "Lead capture + CRM export",
@@ -94,9 +78,7 @@ const PLANS = [
       "Priority support",
       "Custom agent persona",
     ],
-    cta: "Start free trial →",
-    ctaStyle:
-      "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30",
+    cta: "Start free trial",
   },
   {
     name: "Scale",
@@ -104,9 +86,6 @@ const PLANS = [
     per: "/mo",
     desc: "For agencies running multiple client sites",
     popular: false,
-    color: "from-zinc-900 to-zinc-950",
-    border: "border-zinc-800",
-    accent: "#52525b",
     features: [
       "Unlimited conversations",
       "Unlimited site embeds",
@@ -116,40 +95,39 @@ const PLANS = [
       "Priority API access",
     ],
     cta: "Talk to us",
-    ctaStyle: "bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700",
   },
 ];
 
 const TESTIMONIALS = [
   {
     quote:
-      "We went from responding to leads in 4 hours to instantly. Closed 3 deals in the first week that I know we would have lost before.",
+      "We went from responding to leads in four hours to instantly. Closed three deals in the first week we'd have lost before.",
     name: "James O.",
     role: "Founder, B2B SaaS",
     avatar: "J",
   },
   {
     quote:
-      "Our discovery calls are completely different now. Prospects already know our pricing, our process, and they're pre-sold before they even book.",
+      "Our discovery calls are completely different now. Prospects already know our pricing and process — they're pre-sold before they book.",
     name: "Sarah M.",
-    role: "Agency Owner",
+    role: "Agency owner",
     avatar: "S",
   },
   {
     quote:
-      "I was spending 2 hours a day answering the same questions. That time is now spent closing. Saim paid for itself in 48 hours.",
+      "I spent two hours a day answering the same questions. That time is now spent closing. Saim paid for itself in 48 hours.",
     name: "David K.",
-    role: "Freelance Consultant",
+    role: "Freelance consultant",
     avatar: "D",
   },
 ];
 
 const CHAT = [
-  { from: "agent", text: "Hi! 👋 I'm here to help. What brings you in today?" },
+  { from: "agent", text: "Hi! I'm here to help. What brings you in today?" },
   { from: "user", text: "I need help automating my sales follow-up" },
   {
     from: "agent",
-    text: "Perfect — that's exactly what we solve. Are you currently losing leads because of slow response times, or is it more about the volume of follow-ups you can't keep up with?",
+    text: "Perfect — that's exactly what we solve. Are you losing leads to slow response times, or is it more the volume you can't keep up with?",
   },
   {
     from: "user",
@@ -157,42 +135,74 @@ const CHAT = [
   },
   {
     from: "agent",
-    text: "Got it. After-hours is where most businesses hemorrhage revenue. With Saim, your agent responds in seconds — at 2am if needed. What does your average deal size look like?",
+    text: "Got it. After-hours is where most businesses lose revenue. With Saim, your agent responds in seconds — even at 2am. What's your average deal size?",
   },
 ];
 
+const Check = ({ className = "" }: { className?: string }) => (
+  <svg
+    width="14"
+    height="14"
+    fill="none"
+    viewBox="0 0 24 24"
+    className={className}
+  >
+    <path
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M20 6 9 17l-5-5"
+    />
+  </svg>
+);
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#060608] text-white font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#08090b] text-white font-sans antialiased overflow-x-hidden">
       {/* Ambient background */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-blue-600/8 rounded-full blur-[180px]" />
-        <div className="absolute top-1/3 -right-60 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[150px]" />
-        <div className="absolute bottom-1/4 -left-40 w-[500px] h-[500px] bg-cyan-600/4 rounded-full blur-[130px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-600/[0.07] rounded-full blur-[150px] animate-[pulseGlow_8s_ease-in-out_infinite]" />
+        <div className="absolute top-1/4 -right-40 w-[500px] h-[500px] bg-indigo-600/[0.05] rounded-full blur-[140px] animate-[pulseSide_10s_ease-in-out_infinite_1s]" />
+        <div className="absolute bottom-1/4 -left-40 w-[450px] h-[450px] bg-cyan-600/[0.04] rounded-full blur-[130px] animate-[pulseSide_12s_ease-in-out_infinite_2s]" />
         <div
           className="absolute inset-0 opacity-[0.018]"
           style={{
             backgroundImage:
               "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
             backgroundSize: "80px 80px",
+            maskImage:
+              "radial-gradient(ellipse at 50% 0%, #000 30%, transparent 80%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse at 50% 0%, #000 30%, transparent 80%)",
           }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at 50% 0%, transparent 40%, #060608 100%)",
+              "radial-gradient(ellipse at 50% 0%, transparent 45%, #08090b 100%)",
           }}
         />
       </div>
+      <style>{`
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+          50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+        }
+        @keyframes pulseSide {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
+        }
+      `}</style>
 
       {/* NAV */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 sm:px-10 py-4 border-b border-white/5 bg-[#060608]/85 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 sm:px-10 py-3.5 border-b border-white/5 bg-[#08090b]/85 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm font-black shadow-lg shadow-blue-500/40">
+          <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[13px] font-semibold shadow-[0_0_16px_-4px_rgba(59,130,246,0.6)]">
             S
           </div>
-          <span className="font-black text-sm tracking-tight text-white">
+          <span className="font-semibold text-[15px] tracking-tight text-white">
             Saim
           </span>
         </div>
@@ -201,7 +211,7 @@ export default function LandingPage() {
             <a
               key={item}
               href={`#${item.toLowerCase().replace(/ /g, "-")}`}
-              className="text-zinc-500 hover:text-zinc-200 text-sm transition-colors font-medium"
+              className="text-zinc-400 hover:text-white text-[13px] transition-colors font-medium"
             >
               {item}
             </a>
@@ -210,86 +220,76 @@ export default function LandingPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/login"
-            className="text-zinc-500 hover:text-white text-sm transition-colors hidden sm:block font-medium"
+            className="text-zinc-400 hover:text-white text-[13px] transition-colors hidden sm:block font-medium"
           >
             Sign in
           </Link>
           <Link
             href="/login"
-            className="text-xs sm:text-sm bg-white text-black font-bold px-4 sm:px-5 py-2.5 rounded-xl hover:bg-zinc-100 transition-all active:scale-95 shadow-xl shadow-white/10"
+            className="text-[13px] bg-white text-black font-medium px-4 py-2 rounded-lg hover:bg-zinc-200 transition-colors active:scale-[0.98]"
           >
-            Start free →
+            Start free
           </Link>
         </div>
       </nav>
 
       <div className="relative z-10">
         {/* HERO */}
-        <section className="flex flex-col items-center justify-center text-center px-5 sm:px-6 pt-36 sm:pt-48 pb-16 sm:pb-20">
+        <section className="flex flex-col items-center justify-center text-center px-5 sm:px-6 pt-32 sm:pt-44 pb-16 sm:pb-20">
           <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2.5 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-2 text-xs text-red-400 mb-8 font-semibold tracking-wide uppercase">
-              <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse" />
-              Every minute without this, you're losing revenue
+            <div className="inline-flex items-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-full px-3.5 py-1.5 text-[12px] text-zinc-300 mb-7 font-medium shadow-[0_0_20px_-4px_rgba(59,130,246,0.25)]">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 animate-ping" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-400" />
+              </span>
+              AI sales agent for your website
             </div>
 
-            <h1 className="text-5xl sm:text-6xl lg:text-[80px] font-black tracking-tight leading-[1.0] mb-6 sm:mb-8">
-              Your website has{" "}
-              <span className="relative inline-block">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 via-zinc-400 to-zinc-500 line-through decoration-red-500">
-                  visitors.
-                </span>
+            <h1 className="relative text-[40px] sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] mb-6">
+              <span className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+                Your website has visitors.
               </span>
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500">
+              <span className="bg-gradient-to-b from-zinc-500 to-zinc-600 bg-clip-text text-transparent">
                 It should have customers.
               </span>
             </h1>
 
-            <p className="text-zinc-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10 sm:mb-12 leading-relaxed">
-              Saim is an AI sales agent that lives on your website — qualifying
-              leads, answering questions, and capturing emails{" "}
-              <span className="text-white font-semibold">
-                the moment someone shows interest.
-              </span>{" "}
-              Not an hour later. Not tomorrow. Now.
+            <p className="text-zinc-400 text-base sm:text-lg max-w-2xl mx-auto mb-9 leading-relaxed">
+              Saim is an AI sales agent that lives on your site — qualifying
+              leads, answering questions, and capturing emails the moment
+              someone shows interest. Not an hour later. Now.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
               <Link
                 href="/login"
-                className="group relative w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold px-10 py-4 rounded-xl text-base transition-all shadow-2xl shadow-blue-600/40 hover:shadow-blue-500/50 active:scale-95 overflow-hidden text-center"
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium px-7 py-3 rounded-lg text-[15px] transition-all active:scale-[0.98] text-center shadow-[0_0_24px_-6px_rgba(59,130,246,0.6)] hover:shadow-[0_0_32px_-4px_rgba(59,130,246,0.85)]"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <span className="relative">Activate my sales agent →</span>
+                Activate my sales agent
               </Link>
-              <Link
-                href="/login"
-                className="flex items-center gap-2 text-zinc-400 hover:text-white text-sm transition-colors group font-medium"
+              <a
+                href="#how-it-works"
+                className="w-full sm:w-auto text-zinc-400 hover:text-white text-[14px] transition-colors font-medium px-7 py-3 rounded-lg border border-zinc-800 hover:border-zinc-700 text-center"
               >
-                <span className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs">
-                  ▶
-                </span>
-                See it live in 60 seconds
-              </Link>
+                See how it works
+              </a>
             </div>
-            <p className="text-zinc-700 text-xs">
+            <p className="text-zinc-600 text-[12px]">
               No credit card · 14-day free trial · Live in 5 minutes
             </p>
           </div>
         </section>
 
         {/* STATS BAR */}
-        <section className="px-5 sm:px-8 pb-16 sm:pb-24 max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-zinc-800/60 rounded-2xl overflow-hidden border border-zinc-800/60">
+        <section className="px-5 sm:px-8 pb-16 sm:pb-24 max-w-4xl mx-auto">
+          <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-px bg-zinc-800/60 rounded-xl overflow-hidden border border-zinc-800 shadow-[0_0_40px_-12px_rgba(59,130,246,0.15)]">
             {STATS.map((stat, i) => (
-              <div
-                key={i}
-                className="bg-[#060608] px-6 sm:px-8 py-8 text-center"
-              >
-                <div className="text-4xl sm:text-5xl font-black text-white mb-2 tabular-nums">
+              <div key={i} className="bg-[#08090b] px-6 py-7 text-center">
+                <div className="text-3xl sm:text-4xl font-semibold mb-2 tabular-nums tracking-tight bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
                   {stat.value}
                 </div>
-                <div className="text-zinc-500 text-xs sm:text-sm leading-relaxed">
+                <div className="text-zinc-500 text-[13px] leading-relaxed">
                   {stat.label}
                 </div>
               </div>
@@ -298,41 +298,30 @@ export default function LandingPage() {
         </section>
 
         {/* PAIN SECTION */}
-        <section className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-5xl mx-auto">
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-5">
-              <span className="w-1 h-1 bg-red-400 rounded-full" />
+        <section className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-4">
               The problem
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight mb-4 leading-tight">
-              You're working hard.
-              <br />
-              <span className="text-zinc-500">Your website isn't.</span>
+            </p>
+            <h2 className="text-[28px] sm:text-4xl font-semibold tracking-tight mb-3 leading-tight">
+              You're working hard. Your website isn't.
             </h2>
-            <p className="text-zinc-500 text-base sm:text-lg max-w-xl mx-auto">
+            <p className="text-zinc-500 text-base max-w-xl mx-auto leading-relaxed">
               Right now, leads are visiting your site, not finding answers, and
               leaving. Permanently.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {PAIN_POINTS.map((p, i) => (
               <div
                 key={i}
-                className="group relative bg-zinc-900/40 border border-zinc-800/60 hover:border-red-500/20 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5"
               >
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
-                  style={{
-                    background:
-                      "radial-gradient(300px circle at 50% 0%, rgba(239,68,68,0.04), transparent 70%)",
-                  }}
-                />
-                <div className="text-3xl mb-4">{p.icon}</div>
-                <h3 className="font-bold text-white text-base mb-2">
+                <h3 className="font-medium text-white text-[15px] mb-2">
                   {p.title}
                 </h3>
-                <p className="text-zinc-500 text-sm leading-relaxed">
+                <p className="text-zinc-500 text-[13px] leading-relaxed">
                   {p.desc}
                 </p>
               </div>
@@ -341,39 +330,32 @@ export default function LandingPage() {
         </section>
 
         {/* CHAT DEMO */}
-        <section className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
+        <section className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-14 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-6">
-                <span className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse" />
+              <p className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-4">
                 Live demo
-              </div>
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tight mb-5 leading-tight">
-                Watch it qualify a lead
-                <br />
-                <span className="text-blue-400">in real time.</span>
-              </h2>
-              <p className="text-zinc-400 text-base leading-relaxed mb-6">
-                This isn't a scripted demo. This is exactly what your visitors
-                experience — a natural, intelligent conversation that moves them
-                from curious to ready-to-buy.
               </p>
-              <div className="space-y-3">
+              <h2 className="text-[26px] sm:text-3xl font-semibold tracking-tight mb-4 leading-tight">
+                Watch it qualify a lead in real time
+              </h2>
+              <p className="text-zinc-400 text-[15px] leading-relaxed mb-6">
+                This is exactly what your visitors experience — a natural,
+                intelligent conversation that moves them from curious to
+                ready-to-buy.
+              </p>
+              <div className="space-y-2.5">
                 {[
-                  "Responds in under 1 second",
+                  "Responds in under a second",
                   "Asks qualifying questions naturally",
                   "Captures contact info without forms",
                   "Hands off to you when they're ready",
                 ].map((item) => (
-                  <div key={item} className="flex items-center gap-3">
-                    <div className="w-5 h-5 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
-                      <span className="text-emerald-400 text-xs font-bold">
-                        ✓
-                      </span>
-                    </div>
-                    <span className="text-zinc-300 text-sm font-medium">
-                      {item}
+                  <div key={item} className="flex items-center gap-2.5">
+                    <span className="text-emerald-400 shrink-0">
+                      <Check className="w-4 h-4" />
                     </span>
+                    <span className="text-zinc-300 text-[14px]">{item}</span>
                   </div>
                 ))}
               </div>
@@ -381,54 +363,41 @@ export default function LandingPage() {
 
             {/* Chat widget mock */}
             <div className="relative">
-              <div
-                className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full scale-110"
-                style={{ animationDuration: "4s" }}
-              />
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/10 border border-white/8">
-                <div className="bg-gradient-to-r from-blue-700 to-blue-600 px-5 py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+              <div className="absolute -inset-4 bg-blue-600/10 blur-3xl rounded-full" />
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/10 border border-zinc-800 ring-1 ring-white/5">
+                <div className="bg-zinc-900 border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
                     <div className="relative">
-                      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white text-sm font-bold">
+                      <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-[12px] font-semibold">
                         S
                       </div>
-                      <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-blue-700" />
+                      <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-zinc-900" />
                     </div>
                     <div>
-                      <p className="text-white text-sm font-bold leading-none">
-                        Saim Agent
+                      <p className="text-white text-[13px] font-medium leading-none">
+                        Sales Assistant
                       </p>
-                      <p className="text-blue-200 text-xs mt-0.5">
+                      <p className="text-zinc-500 text-[11px] mt-0.5">
                         Online · Responds instantly
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-1.5">
-                    {["bg-red-400", "bg-yellow-400", "bg-green-400"].map(
-                      (c) => (
-                        <div
-                          key={c}
-                          className={`w-2.5 h-2.5 rounded-full ${c} opacity-70`}
-                        />
-                      ),
-                    )}
-                  </div>
                 </div>
-                <div className="bg-zinc-950 p-4 space-y-3 min-h-[280px]">
+                <div className="bg-[#0a0b0d] p-4 space-y-2.5 min-h-[280px]">
                   {CHAT.map((msg, i) => (
                     <div
                       key={i}
                       className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
                     >
                       <div
-                        className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${msg.from === "user" ? "bg-blue-600 text-white rounded-br-sm" : "bg-zinc-800/90 text-zinc-200 rounded-bl-sm border border-zinc-700/50"}`}
+                        className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-[13px] leading-relaxed ${msg.from === "user" ? "bg-blue-600 text-white rounded-br-sm" : "bg-zinc-800/80 text-zinc-200 rounded-bl-sm border border-zinc-700/50"}`}
                       >
                         {msg.text}
                       </div>
                     </div>
                   ))}
                   <div className="flex justify-start">
-                    <div className="bg-zinc-800/80 border border-zinc-700/50 px-3.5 py-2.5 rounded-2xl rounded-bl-sm flex items-center gap-1">
+                    <div className="bg-zinc-800/80 border border-zinc-700/50 px-3.5 py-3 rounded-2xl rounded-bl-sm flex items-center gap-1">
                       {[0, 150, 300].map((delay) => (
                         <div
                           key={delay}
@@ -439,11 +408,11 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
-                <div className="bg-zinc-900 border-t border-zinc-800/60 px-3 py-3 flex gap-2">
-                  <div className="flex-1 bg-zinc-800/60 border border-zinc-700/40 rounded-xl px-3 py-2 text-xs text-zinc-600">
-                    Type a message...
+                <div className="bg-zinc-900 border-t border-zinc-800 px-3 py-3 flex gap-2">
+                  <div className="flex-1 bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-3 py-2 text-[12px] text-zinc-600">
+                    Type a message…
                   </div>
-                  <div className="bg-blue-600 text-white text-xs px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-blue-500 transition-colors">
+                  <div className="bg-blue-600 text-white text-[12px] px-4 py-2 rounded-lg font-medium">
                     Send
                   </div>
                 </div>
@@ -455,40 +424,39 @@ export default function LandingPage() {
         {/* FEATURES */}
         <section
           id="features"
-          className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-5xl mx-auto"
+          className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto"
         >
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-5">
-              <span className="w-1 h-1 bg-blue-400 rounded-full" />
+          <div className="text-center mb-12">
+            <p className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-4">
               The system
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight mb-4 leading-tight">
-              A complete revenue engine.
-              <br />
-              <span className="text-zinc-500">Not just a chatbot.</span>
+            </p>
+            <h2 className="text-[28px] sm:text-4xl font-semibold tracking-tight mb-3 leading-tight">
+              A complete revenue engine, not just a chatbot
             </h2>
-            <p className="text-zinc-500 text-base sm:text-lg max-w-xl mx-auto">
-              Every feature is designed to do one thing — turn more of your
+            <p className="text-zinc-500 text-base max-w-xl mx-auto leading-relaxed">
+              Every feature is built to do one thing — turn more of your
               existing traffic into paying customers.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {FEATURES.map((f, i) => (
               <div
                 key={i}
-                className="group relative bg-zinc-900/50 border border-zinc-800/70 hover:border-blue-500/25 rounded-2xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/5 overflow-hidden"
+                className="group relative bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 rounded-xl p-5 transition-all duration-300 hover:-translate-y-0.5 overflow-hidden"
               >
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
                   style={{
                     background:
-                      "radial-gradient(280px circle at 50% 0%, rgba(59,130,246,0.05), transparent 70%)",
+                      "radial-gradient(300px circle at 50% 0%, rgba(59,130,246,0.06), transparent 70%)",
                   }}
                 />
-                <div className="text-2xl mb-4">{f.icon}</div>
-                <h3 className="font-bold text-white text-sm mb-2">{f.title}</h3>
-                <p className="text-zinc-500 text-xs leading-relaxed">
+                <div className="absolute -top-px left-5 right-5 h-px bg-gradient-to-r from-transparent via-blue-400/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <h3 className="relative font-medium text-white text-[14px] mb-2">
+                  {f.title}
+                </h3>
+                <p className="relative text-zinc-500 text-[13px] leading-relaxed">
                   {f.desc}
                 </p>
               </div>
@@ -499,54 +467,49 @@ export default function LandingPage() {
         {/* HOW IT WORKS */}
         <section
           id="how-it-works"
-          className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-3xl mx-auto"
+          className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-2xl mx-auto"
         >
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-5">
-              <span className="w-1 h-1 bg-violet-400 rounded-full" />
+          <div className="text-center mb-12">
+            <p className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-4">
               How it works
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight mb-4 leading-tight">
-              Live in 5 minutes.
-              <br />
-              <span className="text-zinc-500">No engineers needed.</span>
+            </p>
+            <h2 className="text-[28px] sm:text-4xl font-semibold tracking-tight mb-3 leading-tight">
+              Live in five minutes, no engineers
             </h2>
           </div>
 
           <div className="space-y-0">
             {[
               {
-                n: "01",
+                n: "1",
                 title: "Tell Saim about your business",
                 desc: "Paste your website URL or write a short description. Saim reads everything and becomes an expert on your products, pricing, and tone in seconds.",
               },
               {
-                n: "02",
+                n: "2",
                 title: "Customize how your agent speaks",
-                desc: "Choose a personality. Set the focus. Make it sound exactly like you — professional, casual, direct, or warm. It's your agent, not a generic bot.",
+                desc: "Choose a personality and set the focus. Make it sound exactly like you — professional, casual, direct, or warm.",
               },
               {
-                n: "03",
+                n: "3",
                 title: "Paste one line of code",
-                desc: "Copy the embed snippet and paste it before </body> on your site. Done. Your agent is live, qualifying leads, and capturing emails from this moment.",
+                desc: "Copy the embed snippet and drop it before </body>. Your agent is live, qualifying leads, and capturing emails from that moment.",
               },
             ].map((step, i) => (
-              <div key={step.n} className="flex gap-5 sm:gap-6">
+              <div key={step.n} className="flex gap-4 sm:gap-5">
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
-                    <span className="text-blue-400 text-sm font-black font-mono">
+                  <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0">
+                    <span className="text-zinc-400 text-[13px] font-medium tabular-nums">
                       {step.n}
                     </span>
                   </div>
-                  {i < 2 && (
-                    <div className="w-px flex-1 bg-gradient-to-b from-zinc-700/60 to-transparent my-2" />
-                  )}
+                  {i < 2 && <div className="w-px flex-1 bg-zinc-800 my-1.5" />}
                 </div>
-                <div className={`pb-8 sm:pb-10 ${i === 2 ? "pb-0" : ""}`}>
-                  <h3 className="font-black text-white text-lg mb-2 mt-2">
+                <div className={i === 2 ? "" : "pb-7"}>
+                  <h3 className="font-medium text-white text-[15px] mb-1 mt-0.5">
                     {step.title}
                   </h3>
-                  <p className="text-zinc-500 text-sm leading-relaxed">
+                  <p className="text-zinc-500 text-[13px] leading-relaxed">
                     {step.desc}
                   </p>
                 </div>
@@ -556,40 +519,47 @@ export default function LandingPage() {
         </section>
 
         {/* TESTIMONIALS */}
-        <section className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-5">
-              <span className="w-1 h-1 bg-emerald-400 rounded-full" />
+        <section className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-4">
               Results
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
+            </p>
+            <h2 className="text-[26px] sm:text-3xl font-semibold tracking-tight">
               Revenue recovered. Time reclaimed.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {TESTIMONIALS.map((t, i) => (
               <div
                 key={i}
-                className="bg-zinc-900/50 border border-zinc-800/60 rounded-2xl p-6"
+                className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5"
               >
-                <div className="flex gap-1 mb-4">
+                <div className="flex gap-0.5 mb-3.5">
                   {[1, 2, 3, 4, 5].map((s) => (
-                    <span key={s} className="text-amber-400 text-xs">
-                      ★
-                    </span>
+                    <svg
+                      key={s}
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="#f59e0b"
+                    >
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
                   ))}
                 </div>
-                <p className="text-zinc-300 text-sm leading-relaxed mb-5">
+                <p className="text-zinc-300 text-[13px] leading-relaxed mb-4">
                   "{t.quote}"
                 </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-white text-[12px] font-medium shrink-0">
                     {t.avatar}
                   </div>
                   <div>
-                    <p className="text-white text-xs font-bold">{t.name}</p>
-                    <p className="text-zinc-600 text-xs">{t.role}</p>
+                    <p className="text-white text-[12px] font-medium">
+                      {t.name}
+                    </p>
+                    <p className="text-zinc-600 text-[12px]">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -600,81 +570,73 @@ export default function LandingPage() {
         {/* PRICING */}
         <section
           id="pricing"
-          className="px-5 sm:px-8 pb-20 sm:pb-32 max-w-5xl mx-auto"
+          className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto"
         >
-          <div className="text-center mb-12 sm:mb-16">
-            <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-500 mb-5">
-              <span className="w-1 h-1 bg-amber-400 rounded-full" />
+          <div className="text-center mb-12">
+            <p className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-4">
               Pricing
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-black tracking-tight mb-3 leading-tight">
-              Less than one lost deal.
-              <br />
-              <span className="text-zinc-500">Every single month.</span>
+            </p>
+            <h2 className="text-[28px] sm:text-4xl font-semibold tracking-tight mb-3 leading-tight">
+              Less than one lost deal a month
             </h2>
-            <p className="text-zinc-500 text-base">
-              If Saim captures one extra lead per month, it pays for itself 10x
+            <p className="text-zinc-500 text-base max-w-md mx-auto">
+              Capture one extra lead a month and Saim pays for itself many times
               over.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 mb-8">
-            {PLANS.map((plan, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {PLANS.map((plan) => (
               <div key={plan.name} className="relative">
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                    <span className="bg-blue-600 text-white text-xs font-black px-5 py-1.5 rounded-full shadow-xl shadow-blue-600/40 tracking-wide uppercase">
-                      Most Popular
+                  <div className="absolute -top-2.5 left-5 z-20">
+                    <span className="bg-blue-600 text-white text-[11px] font-medium px-2.5 py-1 rounded-full">
+                      Most popular
                     </span>
                   </div>
                 )}
                 <div
-                  className={`relative h-full bg-gradient-to-b ${plan.color} border ${plan.border} rounded-2xl p-6 flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl text-left ${plan.popular ? "hover:border-blue-400/60 hover:shadow-blue-500/15" : "hover:border-zinc-700"}`}
+                  className={`relative h-full bg-zinc-900/40 border rounded-xl p-5 flex flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 text-left ${plan.popular ? "border-blue-500/30 hover:border-blue-500/50 shadow-[0_0_40px_-12px_rgba(59,130,246,0.4)]" : "border-zinc-800 hover:border-zinc-700"}`}
                 >
                   {plan.popular && (
-                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/70 to-transparent" />
+                    <>
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
+                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-32 bg-blue-600/[0.18] rounded-full blur-3xl pointer-events-none" />
+                    </>
                   )}
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none rounded-2xl"
-                    style={{
-                      background: `radial-gradient(280px circle at 50% 0%, ${plan.accent}15, transparent 70%)`,
-                    }}
-                  />
-
-                  <div className="relative mb-5">
-                    <p className="text-zinc-500 text-xs font-black tracking-[0.2em] uppercase mb-3">
+                  <div className="relative mb-4">
+                    <p className="text-zinc-400 text-[11px] font-medium tracking-[0.12em] uppercase mb-3">
                       {plan.name}
                     </p>
-                    <div className="flex items-end gap-1 mb-1">
-                      <span className="text-5xl font-black tracking-tight">
+                    <div className="flex items-end gap-1 mb-1.5">
+                      <span className="text-[34px] leading-none font-semibold tracking-tight">
                         {plan.price}
                       </span>
-                      <span className="text-zinc-500 text-sm mb-1.5">
+                      <span className="text-zinc-500 text-[13px] mb-1">
                         {plan.per}
                       </span>
                     </div>
-                    <p className="text-zinc-500 text-xs">{plan.desc}</p>
+                    <p className="text-zinc-500 text-[12px] leading-relaxed">
+                      {plan.desc}
+                    </p>
                   </div>
-
-                  <div className="h-px bg-zinc-800/80 mb-5" />
-
-                  <ul className="space-y-2.5 flex-1 mb-6">
+                  <div className="h-px bg-zinc-800/80 mb-4" />
+                  <ul className="space-y-2.5 flex-1 mb-5">
                     {plan.features.map((f) => (
                       <li
                         key={f}
-                        className="flex items-start gap-2.5 text-xs text-zinc-300"
+                        className="flex items-start gap-2.5 text-[13px] text-zinc-300"
                       >
-                        <span className="text-emerald-400 mt-0.5 shrink-0 font-black">
-                          ✓
+                        <span className="text-emerald-400 mt-0.5 shrink-0">
+                          <Check className="w-3.5 h-3.5" />
                         </span>
                         {f}
                       </li>
                     ))}
                   </ul>
-
                   <Link
                     href="/login"
-                    className={`relative block w-full py-3 rounded-xl text-sm font-black text-center transition-all duration-200 active:scale-95 ${plan.ctaStyle}`}
+                    className={`block w-full py-2.5 rounded-lg text-[13px] font-medium text-center transition-colors active:scale-[0.98] ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white" : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700"}`}
                   >
                     {plan.cta}
                   </Link>
@@ -683,17 +645,15 @@ export default function LandingPage() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-zinc-700 text-xs">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-zinc-600 text-[12px]">
             {[
               "14-day free trial",
               "No credit card required",
               "Cancel anytime",
               "Live in under 5 minutes",
-            ].map((t, i) => (
-              <div key={t} className="flex items-center gap-4">
-                {i > 0 && (
-                  <div className="w-1 h-1 bg-zinc-800 rounded-full hidden sm:block" />
-                )}
+            ].map((t) => (
+              <div key={t} className="flex items-center gap-1.5">
+                <Check className="w-3 h-3 text-zinc-600" />
                 <span>{t}</span>
               </div>
             ))}
@@ -701,40 +661,34 @@ export default function LandingPage() {
         </section>
 
         {/* FINAL CTA */}
-        <section className="px-5 sm:px-8 pb-24 sm:pb-36 max-w-4xl mx-auto text-center">
-          <div className="relative bg-gradient-to-b from-blue-950/40 to-zinc-950 border border-blue-500/15 rounded-3xl px-6 sm:px-12 py-16 sm:py-24 overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-px bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
-            <div className="absolute inset-0 bg-blue-600/3 rounded-3xl" />
-            <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl" />
+        <section className="px-5 sm:px-8 pb-24 sm:pb-32 max-w-4xl mx-auto text-center">
+          <div className="relative bg-zinc-900/40 border border-blue-500/20 rounded-2xl px-6 sm:px-12 py-14 sm:py-20 overflow-hidden shadow-[0_0_60px_-20px_rgba(59,130,246,0.35)]">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-56 bg-blue-600/15 rounded-full blur-3xl animate-[pulseGlow_8s_ease-in-out_infinite]" />
+            <div
+              className="absolute inset-0 opacity-[0.02] pointer-events-none"
+              style={{
+                backgroundImage:
+                  "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+                backgroundSize: "40px 40px",
+              }}
+            />
             <div className="relative">
-              <div className="inline-flex items-center gap-2 bg-zinc-900/80 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-400 mb-8">
-                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                Your competitors are already using AI. Are you?
-              </div>
-              <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-5 leading-tight">
-                Stop watching leads
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">
-                  walk out the door.
-                </span>
+              <h2 className="text-[32px] sm:text-5xl font-semibold tracking-tight mb-4 leading-tight bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+                Stop watching leads walk out the door
               </h2>
-              <p className="text-zinc-400 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-                Every day without Saim is another day of missed conversations,
-                unqualified calls, and revenue left on the table. Set it up in 5
-                minutes. Start capturing leads tonight.
+              <p className="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto mb-9 leading-relaxed">
+                Every day without Saim is another day of missed conversations
+                and revenue left on the table. Set it up in five minutes. Start
+                capturing leads tonight.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link
-                  href="/login"
-                  className="group relative w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-black px-10 sm:px-14 py-5 rounded-xl text-base transition-all shadow-2xl shadow-blue-600/40 hover:shadow-blue-500/50 active:scale-95 overflow-hidden text-center"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="relative">
-                    Start free trial — no card needed →
-                  </span>
-                </Link>
-              </div>
-              <p className="text-zinc-700 text-xs mt-6">
+              <Link
+                href="/login"
+                className="inline-block w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium px-10 py-3.5 rounded-lg text-[15px] transition-all active:scale-[0.98] text-center shadow-[0_0_28px_-6px_rgba(59,130,246,0.7)] hover:shadow-[0_0_36px_-4px_rgba(59,130,246,0.9)]"
+              >
+                Start free trial
+              </Link>
+              <p className="text-zinc-600 text-[12px] mt-5">
                 14-day trial · Cancel anytime · Setup in 5 minutes
               </p>
             </div>
@@ -742,29 +696,29 @@ export default function LandingPage() {
         </section>
 
         {/* FOOTER */}
-        <footer className="border-t border-zinc-900 px-5 sm:px-10 py-8 flex flex-col sm:flex-row items-center sm:justify-between gap-4 text-zinc-600 text-xs">
+        <footer className="border-t border-zinc-900 px-5 sm:px-10 py-8 flex flex-col sm:flex-row items-center sm:justify-between gap-4 text-zinc-600 text-[12px]">
           <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-xs font-black shadow-sm shadow-blue-500/30">
+            <div className="w-6 h-6 rounded-md bg-blue-600 flex items-center justify-center text-white text-[12px] font-semibold">
               S
             </div>
-            <span className="text-zinc-400 font-bold">Saim</span>
+            <span className="text-zinc-300 font-medium">Saim</span>
           </div>
-          <div className="flex items-center gap-6 text-zinc-700">
+          <div className="flex items-center gap-6">
             <a
               href="#features"
-              className="hover:text-zinc-400 transition-colors"
+              className="hover:text-zinc-300 transition-colors"
             >
               Features
             </a>
             <a
               href="#pricing"
-              className="hover:text-zinc-400 transition-colors"
+              className="hover:text-zinc-300 transition-colors"
             >
               Pricing
             </a>
             <Link
               href="/login"
-              className="hover:text-zinc-400 transition-colors"
+              className="hover:text-zinc-300 transition-colors"
             >
               Login
             </Link>
