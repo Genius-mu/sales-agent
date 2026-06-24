@@ -82,7 +82,7 @@ const PLANS = [
   },
   {
     name: "Scale",
-    price: "₦1500",
+    price: "₦15,000",
     per: "/mo",
     desc: "For agencies running multiple client sites",
     popular: false,
@@ -186,14 +186,10 @@ export default function LandingPage() {
         />
       </div>
       <style>{`
-        @keyframes pulseGlow {
-          0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
-          50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
-        }
-        @keyframes pulseSide {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 1; }
-        }
+        @keyframes pulseGlow { 0%,100% { opacity:0.6; transform:translateX(-50%) scale(1); } 50% { opacity:1; transform:translateX(-50%) scale(1.08); } }
+        @keyframes pulseSide { 0%,100% { opacity:0.5; } 50% { opacity:1; } }
+        @keyframes heroPulse { 0%,100% { opacity:0.7; transform:scale(1); } 50% { opacity:1; transform:scale(1.1); } }
+        @keyframes shimmer { 0% { background-position:0% center; } 100% { background-position:200% center; } }
       `}</style>
 
       {/* NAV */}
@@ -235,9 +231,25 @@ export default function LandingPage() {
 
       <div className="relative z-10">
         {/* HERO */}
-        <section className="flex flex-col items-center justify-center text-center px-5 sm:px-6 pt-32 sm:pt-44 pb-16 sm:pb-20">
-          <div className="max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-full px-3.5 py-1.5 text-[12px] text-zinc-300 mb-7 font-medium shadow-[0_0_20px_-4px_rgba(59,130,246,0.25)]">
+        <section className="relative flex flex-col items-center justify-center text-center px-5 sm:px-6 pt-32 sm:pt-44 pb-16 sm:pb-20">
+          {/* Hero spotlight glow */}
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[760px] max-w-[95vw] h-[420px] pointer-events-none">
+            <div className="absolute inset-0 bg-blue-600/20 rounded-full blur-[120px] animate-[heroPulse_6s_ease-in-out_infinite]" />
+            <div className="absolute inset-x-24 top-8 h-44 bg-cyan-500/10 rounded-full blur-[100px]" />
+          </div>
+          {/* Conic shimmer ring */}
+          <div className="absolute top-24 left-1/2 -translate-x-1/2 w-[360px] h-[360px] pointer-events-none opacity-40">
+            <div
+              className="absolute inset-0 rounded-full blur-2xl animate-[spin_18s_linear_infinite]"
+              style={{
+                background:
+                  "conic-gradient(from 0deg, transparent, rgba(59,130,246,0.18), transparent, rgba(34,211,238,0.12), transparent)",
+              }}
+            />
+          </div>
+
+          <div className="relative max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-zinc-900/70 border border-blue-500/20 rounded-full px-4 py-1.5 text-[12px] text-zinc-200 mb-7 font-medium shadow-[0_0_24px_-4px_rgba(59,130,246,0.4)] backdrop-blur-sm">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 animate-ping" />
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-400" />
@@ -246,11 +258,11 @@ export default function LandingPage() {
             </div>
 
             <h1 className="relative text-[40px] sm:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] mb-6">
-              <span className="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+              <span className="relative bg-gradient-to-b from-white via-white to-zinc-400 bg-clip-text text-transparent drop-shadow-[0_2px_30px_rgba(255,255,255,0.12)]">
                 Your website has visitors.
               </span>
               <br />
-              <span className="bg-gradient-to-b from-zinc-500 to-zinc-600 bg-clip-text text-transparent">
+              <span className="relative bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-[shimmer_6s_linear_infinite]">
                 It should have customers.
               </span>
             </h1>
@@ -264,13 +276,14 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
               <Link
                 href="/login"
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium px-7 py-3 rounded-lg text-[15px] transition-all active:scale-[0.98] text-center shadow-[0_0_24px_-6px_rgba(59,130,246,0.6)] hover:shadow-[0_0_32px_-4px_rgba(59,130,246,0.85)]"
+                className="group relative w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium px-7 py-3 rounded-lg text-[15px] transition-all active:scale-[0.98] text-center shadow-[0_0_30px_-6px_rgba(59,130,246,0.7)] hover:shadow-[0_0_44px_-4px_rgba(59,130,246,0.95)] overflow-hidden"
               >
-                Activate my sales agent
+                <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <span className="relative">Activate my sales agent</span>
               </Link>
               <a
                 href="#how-it-works"
-                className="w-full sm:w-auto text-zinc-400 hover:text-white text-[14px] transition-colors font-medium px-7 py-3 rounded-lg border border-zinc-800 hover:border-zinc-700 text-center"
+                className="w-full sm:w-auto text-zinc-300 hover:text-white text-[14px] transition-colors font-medium px-7 py-3 rounded-lg border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/40 text-center backdrop-blur-sm"
               >
                 See how it works
               </a>
@@ -311,13 +324,13 @@ export default function LandingPage() {
               leaving. Permanently.
             </p>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {PAIN_POINTS.map((p, i) => (
               <div
                 key={i}
-                className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5"
+                className="group relative bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 rounded-xl p-5 transition-colors overflow-hidden"
               >
+                <div className="absolute -top-px left-6 right-6 h-px bg-gradient-to-r from-transparent via-zinc-600/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <h3 className="font-medium text-white text-[15px] mb-2">
                   {p.title}
                 </h3>
@@ -360,8 +373,6 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-
-            {/* Chat widget mock */}
             <div className="relative">
               <div className="absolute -inset-4 bg-blue-600/10 blur-3xl rounded-full" />
               <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/10 border border-zinc-800 ring-1 ring-white/5">
@@ -438,7 +449,6 @@ export default function LandingPage() {
               existing traffic into paying customers.
             </p>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {FEATURES.map((f, i) => (
               <div
@@ -477,7 +487,6 @@ export default function LandingPage() {
               Live in five minutes, no engineers
             </h2>
           </div>
-
           <div className="space-y-0">
             {[
               {
@@ -528,7 +537,6 @@ export default function LandingPage() {
               Revenue recovered. Time reclaimed.
             </h2>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {TESTIMONIALS.map((t, i) => (
               <div
@@ -584,7 +592,6 @@ export default function LandingPage() {
               over.
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {PLANS.map((plan) => (
               <div key={plan.name} className="relative">
@@ -644,7 +651,6 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-zinc-600 text-[12px]">
             {[
               "14-day free trial",
