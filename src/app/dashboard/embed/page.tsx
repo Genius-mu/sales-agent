@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
-import { getSupabase, getBusinessId } from "@/lib/supabase";
+import { getBusinessId } from "@/lib/supabase";
 
-function AnimatedSection({
+function FadeIn({
   children,
   delay = 0,
+  className = "",
 }: {
   children: React.ReactNode;
   delay?: number;
+  className?: string;
 }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -18,11 +20,12 @@ function AnimatedSection({
   }, [delay]);
   return (
     <div
+      className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transform: visible ? "translateY(0)" : "translateY(8px)",
         transition:
-          "opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1)",
+          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
       }}
     >
       {children}
@@ -31,52 +34,32 @@ function AnimatedSection({
 }
 
 const PLATFORMS = [
-  {
-    name: "Webflow",
-    icon: "▲",
-    path: "Project Settings → Custom Code → Footer Code",
-  },
-  {
-    name: "WordPress",
-    icon: "⚡",
-    path: "Appearance → Theme Editor → footer.php",
-  },
-  {
-    name: "Shopify",
-    icon: "🛍",
-    path: "Online Store → Themes → Edit Code → theme.liquid",
-  },
-  {
-    name: "Framer",
-    icon: "◈",
-    path: "Site Settings → Custom Code → End of body tag",
-  },
-  {
-    name: "Wix",
-    icon: "✦",
-    path: "Settings → Custom Code → Add to all pages (body)",
-  },
+  { name: "Webflow", path: "Project Settings → Custom Code → Footer Code" },
+  { name: "WordPress", path: "Appearance → Theme Editor → footer.php" },
+  { name: "Shopify", path: "Online Store → Themes → Edit Code → theme.liquid" },
+  { name: "Framer", path: "Site Settings → Custom Code → End of body tag" },
+  { name: "Wix", path: "Settings → Custom Code → Add to all pages (body)" },
 ];
 
 const STEPS = [
   {
-    n: "01",
+    n: "1",
     title: "Copy the snippet",
-    desc: "Click the Copy button above to grab the embed code.",
+    desc: "Click Copy above to grab your embed code.",
   },
   {
-    n: "02",
-    title: "Open your site HTML",
-    desc: "Navigate to your website builder, CMS, or codebase.",
+    n: "2",
+    title: "Open your site's HTML",
+    desc: "Go to your website builder, CMS, or codebase.",
   },
   {
-    n: "03",
+    n: "3",
     title: "Paste before </body>",
     desc: "Drop the snippet just before the closing body tag on every page.",
   },
   {
-    n: "04",
-    title: "Publish & go live",
+    n: "4",
+    title: "Publish",
     desc: "Save and deploy — the chat bubble appears bottom-right instantly.",
   },
 ];
@@ -84,12 +67,6 @@ const STEPS = [
 export default function EmbedPage() {
   const [businessId, setBusinessId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [headerVisible, setHeaderVisible] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setHeaderVisible(true), 50);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     getBusinessId().then((id) => {
@@ -107,7 +84,7 @@ export default function EmbedPage() {
   };
   (function(d, s) {
     var js = d.createElement(s);
-    js.src = "${appUrl}widget.js";
+    js.src = "${appUrl}/widget.js";
     js.async = true;
     d.body.appendChild(js);
   })(document, "script");
@@ -121,81 +98,50 @@ export default function EmbedPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080809] text-white">
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-0 left-1/2 w-[600px] h-[400px] bg-blue-600/5 rounded-full blur-[140px]" />
-        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-600/4 rounded-full blur-[120px]" />
-        <div
-          className="absolute inset-0 opacity-[0.012]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, transparent 40%, #080809 100%)",
-          }}
-        />
+    <div className="min-h-screen bg-[#08090b] text-white">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-700/30 to-transparent" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/[0.04] rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10">
         <DashboardNav />
 
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-2xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <div
-            className="mb-8 sm:mb-12"
-            style={{
-              opacity: headerVisible ? 1 : 0,
-              transform: headerVisible ? "translateY(0)" : "translateY(-12px)",
-              transition:
-                "opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)",
-            }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-medium">
-                Deploy
-              </p>
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none mb-3">
-              Embed Agent
+          <FadeIn className="mb-7">
+            <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
+              Embed your agent
             </h1>
             <p className="text-zinc-500 text-sm leading-relaxed">
-              One snippet. Paste before the closing{" "}
-              <code className="text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md text-xs font-mono">
+              One snippet. Paste it before the closing{" "}
+              <code className="text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded text-[12px] font-mono">
                 &lt;/body&gt;
               </code>{" "}
-              tag and your AI agent goes live instantly.
+              tag and your agent goes live.
             </p>
-          </div>
+          </FadeIn>
 
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-4">
             {/* Code block */}
-            <AnimatedSection delay={150}>
-              <div className="relative bg-zinc-900/60 border border-zinc-800/80 rounded-2xl overflow-hidden backdrop-blur-sm">
-                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
-
+            <FadeIn delay={80}>
+              <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
                 {/* Toolbar */}
-                <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-zinc-800/60">
+                <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-zinc-800/60">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
                     </div>
-                    <span className="text-zinc-600 text-xs font-mono">
+                    <span className="text-zinc-600 text-[12px] font-mono">
                       embed.html
                     </span>
                   </div>
                   <button
                     onClick={copy}
                     disabled={!businessId}
-                    className={`flex items-center gap-1.5 sm:gap-2 text-xs px-3 sm:px-4 py-1.5 rounded-lg font-semibold transition-all duration-300 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed ${copied ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-400" : "bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600 text-zinc-300"}`}
+                    className={`flex items-center gap-1.5 text-[12px] px-3 py-1.5 rounded-md font-medium transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed ${copied ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400" : "bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-300"}`}
                   >
                     {copied ? (
                       <>
@@ -213,7 +159,7 @@ export default function EmbedPage() {
                             d="M5 13l4 4L19 7"
                           />
                         </svg>
-                        Copied!
+                        Copied
                       </>
                     ) : (
                       <>
@@ -238,8 +184,7 @@ export default function EmbedPage() {
                             strokeWidth="1.5"
                           />
                         </svg>
-                        <span className="hidden sm:inline">Copy code</span>
-                        <span className="sm:hidden">Copy</span>
+                        Copy
                       </>
                     )}
                   </button>
@@ -247,16 +192,16 @@ export default function EmbedPage() {
 
                 {/* Code */}
                 <div className="overflow-x-auto">
-                  <pre className="p-4 sm:p-6 text-xs font-mono leading-relaxed min-w-0">
+                  <pre className="p-4 sm:p-5 text-[12px] font-mono leading-relaxed">
                     <code>
                       {embedCode.split("\n").map((line, i) => (
                         <div key={i} className="flex">
-                          <span className="w-6 sm:w-8 shrink-0 text-zinc-700 select-none text-right mr-3 sm:mr-4">
+                          <span className="w-6 sm:w-7 shrink-0 text-zinc-700 select-none text-right mr-3">
                             {i + 1}
                           </span>
                           <span
                             className={
-                              line.includes("<!--") || line.includes("//")
+                              line.includes("<!--")
                                 ? "text-zinc-600"
                                 : line.includes("window.")
                                   ? "text-violet-400"
@@ -280,58 +225,51 @@ export default function EmbedPage() {
                 </div>
 
                 {/* Business ID badge */}
-                <div className="flex items-center gap-2 px-4 sm:px-6 py-3 border-t border-zinc-800/60 bg-zinc-950/40 overflow-hidden">
+                <div className="flex items-center gap-2 px-4 sm:px-5 py-3 border-t border-zinc-800/60 bg-zinc-950/40">
                   <div
-                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${businessId ? "bg-blue-400" : "bg-zinc-600 animate-pulse"}`}
+                    className={`w-1.5 h-1.5 rounded-full shrink-0 ${businessId ? "bg-emerald-400" : "bg-zinc-600 animate-pulse"}`}
                   />
-                  <span className="text-zinc-600 text-xs shrink-0">
-                    Business ID:
+                  <span className="text-zinc-600 text-[12px] shrink-0">
+                    Business ID
                   </span>
                   <code
-                    className={`text-xs font-mono truncate ${businessId ? "text-blue-400" : "text-zinc-600"}`}
+                    className={`text-[12px] font-mono truncate ${businessId ? "text-zinc-400" : "text-zinc-600"}`}
                   >
-                    {businessId ?? "Loading..."}
+                    {businessId ?? "Loading…"}
                   </code>
                 </div>
               </div>
-            </AnimatedSection>
+            </FadeIn>
 
             {/* Install steps */}
-            <AnimatedSection delay={300}>
-              <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-4 sm:p-6 backdrop-blur-sm">
-                <div className="flex items-center gap-3 mb-5 sm:mb-6">
-                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                    📋
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white text-sm">
-                      Installation steps
-                    </h3>
-                    <p className="text-zinc-600 text-xs">
-                      Takes less than 2 minutes
-                    </p>
-                  </div>
+            <FadeIn delay={160}>
+              <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5">
+                <div className="mb-5">
+                  <h3 className="font-semibold text-white text-[15px]">
+                    Installation
+                  </h3>
+                  <p className="text-zinc-500 text-[13px] mt-0.5">
+                    Under two minutes, start to finish.
+                  </p>
                 </div>
                 <div className="space-y-0">
                   {STEPS.map((step, i) => (
-                    <div key={step.n} className="flex gap-3 sm:gap-4">
+                    <div key={step.n} className="flex gap-3.5">
                       <div className="flex flex-col items-center">
-                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center shrink-0">
-                          <span className="text-blue-400 text-xs font-bold font-mono">
+                        <div className="w-6 h-6 rounded-md bg-zinc-800/80 border border-zinc-700/60 flex items-center justify-center shrink-0">
+                          <span className="text-zinc-400 text-[12px] font-medium tabular-nums">
                             {step.n}
                           </span>
                         </div>
                         {i < STEPS.length - 1 && (
-                          <div className="w-px flex-1 bg-zinc-800/60 my-1" />
+                          <div className="w-px flex-1 bg-zinc-800 my-1" />
                         )}
                       </div>
-                      <div
-                        className={`pb-4 sm:pb-5 ${i === STEPS.length - 1 ? "pb-0" : ""}`}
-                      >
-                        <p className="text-sm font-semibold text-zinc-200 mb-1 mt-1">
+                      <div className={i === STEPS.length - 1 ? "" : "pb-4"}>
+                        <p className="text-[13px] font-medium text-zinc-200 mb-0.5 mt-0.5">
                           {step.title}
                         </p>
-                        <p className="text-zinc-500 text-xs leading-relaxed">
+                        <p className="text-zinc-500 text-[12px] leading-relaxed">
                           {step.desc}
                         </p>
                       </div>
@@ -339,86 +277,71 @@ export default function EmbedPage() {
                   ))}
                 </div>
               </div>
-            </AnimatedSection>
+            </FadeIn>
 
             {/* Platform tips */}
-            <AnimatedSection delay={450}>
-              <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-4 sm:p-6 backdrop-blur-sm">
-                <div className="flex items-center gap-3 mb-4 sm:mb-5">
-                  <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                    🧩
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white text-sm">
-                      Platform guides
-                    </h3>
-                    <p className="text-zinc-600 text-xs">
-                      Where to paste on popular builders
-                    </p>
-                  </div>
+            <FadeIn delay={240}>
+              <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5">
+                <div className="mb-4">
+                  <h3 className="font-semibold text-white text-[15px]">
+                    Where to paste
+                  </h3>
+                  <p className="text-zinc-500 text-[13px] mt-0.5">
+                    Common builders and where the snippet goes.
+                  </p>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   {PLATFORMS.map((p) => (
                     <div
                       key={p.name}
-                      className="group flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-3 bg-zinc-800/40 hover:bg-zinc-800/70 border border-zinc-800/60 hover:border-zinc-700 rounded-xl transition-all duration-200 cursor-default"
+                      className="group flex items-center gap-3 px-3 py-2.5 bg-zinc-900/40 hover:bg-zinc-800/50 border border-zinc-800/60 hover:border-zinc-700 rounded-lg transition-colors"
                     >
-                      <div className="w-7 h-7 rounded-lg bg-zinc-900 border border-zinc-700 flex items-center justify-center text-xs shrink-0">
-                        {p.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-zinc-200 text-xs font-semibold">
-                          {p.name}
-                        </span>
-                        <p className="text-zinc-600 text-xs mt-0.5 font-mono truncate hidden sm:block">
-                          {p.path}
-                        </p>
-                        <p className="text-zinc-600 text-xs mt-0.5 font-mono truncate sm:hidden">
-                          {p.path.split(" → ").pop()}
-                        </p>
-                      </div>
-                      <svg
-                        className="w-3.5 h-3.5 text-zinc-700 group-hover:text-zinc-500 transition-colors shrink-0"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 18l6-6-6-6"
-                        />
-                      </svg>
+                      <span className="text-zinc-200 text-[13px] font-medium w-20 shrink-0">
+                        {p.name}
+                      </span>
+                      <p className="text-zinc-500 text-[12px] font-mono truncate flex-1 hidden sm:block">
+                        {p.path}
+                      </p>
+                      <p className="text-zinc-500 text-[12px] font-mono truncate flex-1 sm:hidden">
+                        {p.path.split(" → ").pop()}
+                      </p>
                     </div>
                   ))}
                 </div>
               </div>
-            </AnimatedSection>
+            </FadeIn>
 
             {/* Help note */}
-            <AnimatedSection delay={550}>
-              <div className="flex items-start gap-3 px-4 sm:px-5 py-4 bg-blue-500/5 border border-blue-500/15 rounded-2xl">
-                <div className="w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <svg width="10" height="10" fill="none" viewBox="0 0 24 24">
-                    <path
-                      stroke="#60a5fa"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      d="M12 8v4m0 4h.01"
-                    />
-                  </svg>
-                </div>
-                <p className="text-zinc-500 text-xs leading-relaxed">
-                  Make sure your agent is{" "}
-                  <span className="text-zinc-300 font-medium">
-                    configured first
-                  </span>{" "}
-                  — visit the Setup page to add your website URL before
-                  embedding. The widget won't respond without it.
+            <FadeIn delay={320}>
+              <div className="flex items-start gap-2.5 px-4 py-3.5 bg-blue-500/[0.06] border border-blue-500/15 rounded-xl">
+                <svg
+                  width="15"
+                  height="15"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="shrink-0 mt-0.5"
+                >
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                    stroke="#60a5fa"
+                    strokeWidth="1.5"
+                  />
+                  <path
+                    stroke="#60a5fa"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    d="M12 8v.01M12 11v5"
+                  />
+                </svg>
+                <p className="text-zinc-400 text-[13px] leading-relaxed">
+                  Configure your agent first — add your website URL on the{" "}
+                  <span className="text-zinc-200 font-medium">Setup</span> page
+                  before embedding. The widget won't respond without it.
                 </p>
               </div>
-            </AnimatedSection>
+            </FadeIn>
           </div>
         </div>
       </div>
