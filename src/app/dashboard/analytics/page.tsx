@@ -252,9 +252,24 @@ export default function AnalyticsPage() {
                 <FadeIn key={m.key} delay={60 + i * 50}>
                   <button
                     onClick={() => toggleMetric(m.key)}
-                    className={`group w-full text-left relative bg-zinc-900/40 border rounded-xl p-4 transition-all duration-200 ${isActive ? "border-zinc-800 hover:border-zinc-700" : "border-zinc-800/40 opacity-45 hover:opacity-75"}`}
+                    className={`group w-full text-left relative bg-zinc-900/40 border rounded-xl p-4 overflow-hidden transition-all duration-200 ${isActive ? "border-zinc-800 hover:border-zinc-700" : "border-zinc-800/40 opacity-45 hover:opacity-75"}`}
                   >
-                    <div className="flex items-center gap-2 mb-3">
+                    {/* Soft top glow in metric color */}
+                    <div
+                      className="absolute -top-12 left-1/2 -translate-x-1/2 w-32 h-20 rounded-full blur-2xl transition-opacity duration-300"
+                      style={{
+                        backgroundColor: m.color,
+                        opacity: isActive ? 0.14 : 0,
+                      }}
+                    />
+                    <div
+                      className="absolute top-0 left-0 right-0 h-px transition-opacity duration-300"
+                      style={{
+                        background: `linear-gradient(to right, transparent, ${m.color}, transparent)`,
+                        opacity: isActive ? 0.5 : 0,
+                      }}
+                    />
+                    <div className="relative flex items-center gap-2 mb-3">
                       <div
                         className="w-1.5 h-1.5 rounded-full"
                         style={{ backgroundColor: m.color }}
@@ -263,14 +278,16 @@ export default function AnalyticsPage() {
                         {m.label}
                       </span>
                     </div>
-                    <p className="text-[28px] leading-none font-semibold tabular-nums tracking-tight mb-2">
+                    <p className="relative text-[28px] leading-none font-semibold tabular-nums tracking-tight mb-2">
                       {loading ? (
                         <span className="inline-block w-12 h-7 bg-zinc-800/80 rounded animate-pulse" />
                       ) : (
                         totals[m.key].toLocaleString()
                       )}
                     </p>
-                    <p className="text-zinc-600 text-[11px]">{extra}</p>
+                    <p className="relative text-zinc-600 text-[11px]">
+                      {extra}
+                    </p>
                   </button>
                 </FadeIn>
               );
