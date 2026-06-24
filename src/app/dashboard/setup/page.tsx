@@ -7,31 +7,38 @@ import { getSupabase, getBusinessId } from "@/lib/supabase";
 const PERSONAS = [
   {
     value: "friendly and professional",
-    label: "Friendly & Professional",
-    icon: "🤝",
+    label: "Friendly & professional",
     desc: "Warm, helpful, builds trust",
   },
   {
     value: "direct and concise",
-    label: "Direct & Concise",
-    icon: "⚡",
+    label: "Direct & concise",
     desc: "Gets to the point fast",
   },
   {
     value: "enthusiastic and energetic",
-    label: "Enthusiastic & Energetic",
-    icon: "🚀",
+    label: "Enthusiastic & energetic",
     desc: "High energy, exciting",
   },
   {
     value: "warm and consultative",
-    label: "Warm & Consultative",
-    icon: "💡",
+    label: "Warm & consultative",
     desc: "Advisory, thoughtful",
   },
 ];
 
-function AnimatedSection({
+const COLORS = [
+  "#2563eb",
+  "#7c3aed",
+  "#dc2626",
+  "#059669",
+  "#d97706",
+  "#0891b2",
+  "#db2777",
+  "#000000",
+];
+
+function FadeIn({
   children,
   delay = 0,
 }: {
@@ -47,11 +54,33 @@ function AnimatedSection({
     <div
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transform: visible ? "translateY(0)" : "translateY(8px)",
         transition:
-          "opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1)",
+          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
       }}
     >
+      {children}
+    </div>
+  );
+}
+
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 rounded-xl p-5 transition-colors">
+      <div className="mb-3.5">
+        <label className="block text-[13px] font-medium text-zinc-200">
+          {label}
+        </label>
+        <p className="text-zinc-500 text-[12px] mt-0.5">{hint}</p>
+      </div>
       {children}
     </div>
   );
@@ -72,13 +101,7 @@ export default function SetupPage() {
   const [charCount, setCharCount] = useState(0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [headerVisible, setHeaderVisible] = useState(false);
   const [loadingBiz, setLoadingBiz] = useState(true);
-
-  useEffect(() => {
-    const t = setTimeout(() => setHeaderVisible(true), 50);
-    return () => clearTimeout(t);
-  }, []);
 
   useEffect(() => {
     async function loadBusiness() {
@@ -92,10 +115,10 @@ export default function SetupPage() {
       const { data } = await getSupabase()
         .from("businesses")
         .select(
-          "id, name, website_url, agent_persona, scraped_content, description",
+          "id, name, website_url, agent_persona, scraped_content, description, agent_name, widget_color",
         )
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (data) {
         const d = data as {
@@ -105,17 +128,15 @@ export default function SetupPage() {
           agent_persona: string;
           scraped_content: string | null;
           description: string | null;
+          agent_name?: string;
+          widget_color?: string;
         };
         setName(d.name || "");
         setUrl(d.website_url || "");
         setPersona(d.agent_persona || PERSONAS[0].value);
         setDescription(d.description || "");
-        setAgentName(
-          (d as { agent_name?: string }).agent_name || "Sales Assistant",
-        );
-        setWidgetColor(
-          (d as { widget_color?: string }).widget_color || "#2563eb",
-        );
+        setAgentName(d.agent_name || "Sales Assistant");
+        setWidgetColor(d.widget_color || "#2563eb");
         if (d.scraped_content) {
           setScraped(true);
           setPreview(d.scraped_content.slice(0, 300));
@@ -139,16 +160,15 @@ export default function SetupPage() {
         body: JSON.stringify({ url, businessId }),
       });
       const data = await res.json();
-      if (data.error) {
-        setError(data.error);
-      } else {
+      if (data.error) setError(data.error);
+      else {
         setScraped(true);
         setPreview(data.preview);
         setCharCount(data.characters || 0);
-        setSuccess("Website content loaded successfully");
+        setSuccess("Website content loaded.");
       }
     } catch {
-      setError("Failed to scrape website. Check the URL and try again.");
+      setError("Couldn't read that website. Check the URL and try again.");
     } finally {
       setScraping(false);
     }
@@ -169,8 +189,8 @@ export default function SetupPage() {
         widget_color: widgetColor,
       })
       .eq("id", businessId);
-    if (error) setError("Failed to save settings.");
-    else setSuccess("Settings saved successfully!");
+    if (error) setError("Couldn't save your settings. Try again.");
+    else setSuccess("Settings saved.");
     setSaving(false);
   };
 
@@ -178,152 +198,101 @@ export default function SetupPage() {
     ? description.trim().split(/\s+/).length
     : 0;
 
+  const inputCls =
+    "w-full bg-zinc-800/60 border border-zinc-700/80 focus:border-blue-500/60 rounded-lg px-3.5 py-2.5 text-[13px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:bg-zinc-800";
+
   return (
-    <div className="min-h-screen bg-[#080809] text-white">
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[130px]" />
-        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-indigo-600/4 rounded-full blur-[110px]" />
-        <div
-          className="absolute inset-0 opacity-[0.012]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, transparent 40%, #080809 100%)",
-          }}
-        />
+    <div className="min-h-screen bg-[#08090b] text-white">
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-700/30 to-transparent" />
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/[0.04] rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10">
         <DashboardNav />
 
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-2xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <div
-            className="mb-8 sm:mb-12"
-            style={{
-              opacity: headerVisible ? 1 : 0,
-              transform: headerVisible ? "translateY(0)" : "translateY(-12px)",
-              transition:
-                "opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1)",
-            }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-              <p className="text-zinc-500 text-xs tracking-[0.2em] uppercase font-medium">
-                Configuration
+          <FadeIn>
+            <div className="mb-7">
+              <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
+                Agent setup
+              </h1>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Train your agent on your business so it can qualify leads and
+                answer questions around the clock.
               </p>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-none mb-3">
-              Agent Setup
-            </h1>
-            <p className="text-zinc-500 text-sm leading-relaxed">
-              Train your agent with your business info so it can qualify leads
-              and answer questions 24/7.
-            </p>
-          </div>
+          </FadeIn>
 
           {/* Step indicators */}
-          <AnimatedSection delay={100}>
-            <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8 overflow-x-auto pb-1">
+          <FadeIn delay={60}>
+            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
               {[
-                { n: "1", label: "Business Name", done: !!name },
+                { n: "1", label: "Name", done: !!name },
                 { n: "2", label: "Description", done: !!description },
                 { n: "3", label: "Website", done: scraped },
                 { n: "4", label: "Personality", done: true },
               ].map((step, i) => (
-                <div
-                  key={step.n}
-                  className="flex items-center gap-2 sm:gap-3 shrink-0"
-                >
+                <div key={step.n} className="flex items-center gap-2 shrink-0">
                   <div
-                    className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full border text-xs font-medium transition-all duration-300 whitespace-nowrap ${step.done ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-zinc-900 border-zinc-800 text-zinc-500"}`}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[12px] font-medium whitespace-nowrap transition-colors ${step.done ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400" : "bg-zinc-900/60 border-zinc-800 text-zinc-500"}`}
                   >
                     <span
-                      className={`w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${step.done ? "bg-emerald-500 text-white" : "bg-zinc-800 text-zinc-500"}`}
+                      className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 ${step.done ? "bg-emerald-500 text-white" : "bg-zinc-800 text-zinc-500"}`}
                     >
                       {step.done ? "✓" : step.n}
                     </span>
                     <span className="hidden sm:inline">{step.label}</span>
                   </div>
-                  {i < 3 && (
-                    <div className="w-4 sm:w-6 h-px bg-zinc-800 shrink-0" />
-                  )}
+                  {i < 3 && <div className="w-4 h-px bg-zinc-800 shrink-0" />}
                 </div>
               ))}
             </div>
-          </AnimatedSection>
+          </FadeIn>
 
-          {/* Loading skeleton */}
           {loadingBiz ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-6 animate-pulse"
+                  className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5 animate-pulse"
                 >
-                  <div className="w-32 h-4 bg-zinc-800 rounded mb-4" />
-                  <div className="w-full h-10 bg-zinc-800 rounded-xl" />
+                  <div className="w-28 h-3.5 bg-zinc-800 rounded mb-3" />
+                  <div className="w-full h-9 bg-zinc-800 rounded-lg" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3">
               {/* Business Name */}
-              <AnimatedSection delay={200}>
-                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                      🏢
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-zinc-200">
-                        Business Name
-                      </label>
-                      <p className="text-zinc-600 text-xs">
-                        How should the agent refer to your company?
-                      </p>
-                    </div>
-                  </div>
+              <FadeIn delay={120}>
+                <Field
+                  label="Business name"
+                  hint="How should the agent refer to your company?"
+                >
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Acme Inc."
-                    className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800"
+                    className={inputCls}
                   />
-                </div>
-              </AnimatedSection>
+                </Field>
+              </FadeIn>
 
-              {/* Business Description */}
-              <AnimatedSection delay={280}>
-                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                      📝
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-zinc-200">
-                        Business Description
-                      </label>
-                      <p className="text-zinc-600 text-xs">
-                        Tell the agent what your business does — this is its
-                        core knowledge
-                      </p>
-                    </div>
-                  </div>
+              {/* Description */}
+              <FadeIn delay={170}>
+                <Field
+                  label="Business description"
+                  hint="What your business does — this is the agent's core knowledge."
+                >
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="We are a SaaS company that helps e-commerce brands automate their customer support using AI. Our main product is a chat widget that integrates with Shopify and reduces support tickets by 60%..."
+                    placeholder="We're a SaaS company helping e-commerce brands automate support with AI. Our chat widget integrates with Shopify and cuts support tickets by 60%…"
                     rows={5}
-                    className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800 resize-none leading-relaxed overflow-hidden"
-                    style={{ minHeight: "120px" }}
+                    className={`${inputCls} resize-none leading-relaxed overflow-hidden`}
+                    style={{ minHeight: "110px" }}
                     onInput={(e) => {
                       const t = e.currentTarget;
                       t.style.height = "auto";
@@ -331,46 +300,36 @@ export default function SetupPage() {
                     }}
                   />
                   <div className="flex items-center justify-between mt-2">
-                    <p className="text-zinc-700 text-xs">
-                      The more detail you give, the better the agent will answer
+                    <p className="text-zinc-600 text-[12px]">
+                      The more detail, the better the answers.
                     </p>
                     <span
-                      className={`text-xs tabular-nums ${descWordCount > 20 ? "text-emerald-500" : "text-zinc-600"}`}
+                      className={`text-[12px] tabular-nums ${descWordCount > 20 ? "text-emerald-500" : "text-zinc-600"}`}
                     >
                       {descWordCount} words
                     </span>
                   </div>
-                </div>
-              </AnimatedSection>
+                </Field>
+              </FadeIn>
 
-              {/* Website URL */}
-              <AnimatedSection delay={360}>
-                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                      🌐
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-zinc-200">
-                        Website Content
-                      </label>
-                      <p className="text-zinc-600 text-xs">
-                        We'll read your site and use it to train the agent
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2 mb-4">
+              {/* Website */}
+              <FadeIn delay={220}>
+                <Field
+                  label="Website content"
+                  hint="We'll read your site and use it to train the agent."
+                >
+                  <div className="flex flex-col sm:flex-row gap-2 mb-3">
                     <input
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
                       placeholder="https://yourwebsite.com"
                       onKeyDown={(e) => e.key === "Enter" && handleScrape()}
-                      className="flex-1 bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800"
+                      className={`flex-1 ${inputCls}`}
                     />
                     <button
                       onClick={handleScrape}
                       disabled={scraping || !url || !businessId}
-                      className="sm:w-auto w-full px-5 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-sm font-semibold rounded-xl transition-all duration-200 active:scale-95 hover:shadow-lg hover:shadow-blue-500/20 whitespace-nowrap disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="sm:w-auto w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-[13px] font-medium rounded-lg transition-colors active:scale-[0.98] whitespace-nowrap disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {scraping ? (
                         <>
@@ -393,102 +352,70 @@ export default function SetupPage() {
                               d="M4 12a8 8 0 018-8v8H4z"
                             />
                           </svg>
-                          Reading...
+                          Reading…
                         </>
                       ) : scraped ? (
-                        "Re-scrape"
+                        "Re-scan"
                       ) : (
-                        "Load Site"
+                        "Load site"
                       )}
                     </button>
                   </div>
                   {scraped && preview && (
-                    <div className="relative bg-zinc-800/50 border border-zinc-700/60 rounded-xl p-4 overflow-hidden">
-                      <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500/60 to-transparent rounded-t-xl" />
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          <p className="text-emerald-400 text-xs font-semibold">
+                    <div className="bg-zinc-800/40 border border-zinc-700/60 rounded-lg p-3.5">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          <p className="text-emerald-400 text-[12px] font-medium">
                             Content loaded
                           </p>
                         </div>
-                        <span className="text-zinc-600 text-xs">
+                        <span className="text-zinc-600 text-[12px]">
                           {charCount.toLocaleString()} chars
                         </span>
                       </div>
-                      <p className="text-zinc-500 text-xs leading-relaxed line-clamp-3">
+                      <p className="text-zinc-500 text-[12px] leading-relaxed line-clamp-3">
                         {preview}…
                       </p>
                     </div>
                   )}
-                </div>
-              </AnimatedSection>
+                </Field>
+              </FadeIn>
 
               {/* Agent Name */}
-              <AnimatedSection delay={400}>
-                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                      💬
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-zinc-200">
-                        Agent Name
-                      </label>
-                      <p className="text-zinc-600 text-xs">
-                        What should the chat widget call your agent?
-                      </p>
-                    </div>
-                  </div>
+              <FadeIn delay={260}>
+                <Field
+                  label="Agent name"
+                  hint="What should the chat widget call your agent?"
+                >
                   <input
                     value={agentName}
                     onChange={(e) => setAgentName(e.target.value)}
                     placeholder="Sales Assistant"
-                    className="w-full bg-zinc-800/80 border border-zinc-700/80 focus:border-blue-500/60 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 outline-none transition-all duration-200 focus:bg-zinc-800"
+                    className={inputCls}
                   />
-                </div>
-              </AnimatedSection>
+                </Field>
+              </FadeIn>
 
               {/* Widget Color */}
-              <AnimatedSection delay={420}>
-                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                      🎨
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-zinc-200">
-                        Widget Color
-                      </label>
-                      <p className="text-zinc-600 text-xs">
-                        Pick the main color for your chat widget
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      <input
-                        type="color"
-                        value={widgetColor}
-                        onChange={(e) => setWidgetColor(e.target.value)}
-                        className="w-12 h-12 rounded-xl cursor-pointer border-2 border-zinc-700 bg-transparent p-0.5"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2 flex-1">
-                      {[
-                        "#2563eb",
-                        "#7c3aed",
-                        "#dc2626",
-                        "#059669",
-                        "#d97706",
-                        "#0891b2",
-                        "#db2777",
-                        "#000000",
-                      ].map((c) => (
+              <FadeIn delay={300}>
+                <Field
+                  label="Widget color"
+                  hint="The main color for your chat widget."
+                >
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <input
+                      type="color"
+                      value={widgetColor}
+                      onChange={(e) => setWidgetColor(e.target.value)}
+                      className="w-10 h-10 rounded-lg cursor-pointer border border-zinc-700 bg-transparent p-0.5 shrink-0"
+                    />
+                    <div className="flex items-center gap-1.5 flex-1">
+                      {COLORS.map((c) => (
                         <button
                           key={c}
                           onClick={() => setWidgetColor(c)}
-                          className="w-7 h-7 rounded-lg border-2 transition-all hover:scale-110 active:scale-95 shrink-0"
+                          className="w-6 h-6 rounded-md border-2 transition-transform hover:scale-110 active:scale-95 shrink-0"
                           style={{
                             backgroundColor: c,
                             borderColor:
@@ -497,19 +424,19 @@ export default function SetupPage() {
                         />
                       ))}
                     </div>
-                    <code className="text-zinc-400 text-xs font-mono">
+                    <code className="text-zinc-500 text-[12px] font-mono">
                       {widgetColor}
                     </code>
                   </div>
                   {/* Preview */}
-                  <div className="mt-4 flex items-center gap-3 p-3 bg-zinc-800/40 rounded-xl">
+                  <div className="mt-3.5 flex items-center gap-3 p-3 bg-zinc-800/40 rounded-lg">
                     <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg"
+                      className="w-8 h-8 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: widgetColor }}
                     >
                       <svg
-                        width="16"
-                        height="16"
+                        width="15"
+                        height="15"
                         fill="none"
                         viewBox="0 0 24 24"
                       >
@@ -520,34 +447,24 @@ export default function SetupPage() {
                       </svg>
                     </div>
                     <div
-                      className="flex-1 h-7 rounded-lg flex items-center px-3"
+                      className="flex-1 h-7 rounded-md flex items-center px-3"
                       style={{ backgroundColor: widgetColor }}
                     >
-                      <span className="text-white text-xs font-semibold">
+                      <span className="text-white text-[12px] font-medium">
                         {agentName}
                       </span>
                     </div>
-                    <span className="text-zinc-600 text-xs">Preview</span>
+                    <span className="text-zinc-600 text-[12px]">Preview</span>
                   </div>
-                </div>
-              </AnimatedSection>
+                </Field>
+              </FadeIn>
 
               {/* Persona */}
-              <AnimatedSection delay={440}>
-                <div className="bg-zinc-900/60 border border-zinc-800/80 hover:border-zinc-700 rounded-2xl p-4 sm:p-6 transition-all duration-300 backdrop-blur-sm">
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-8 h-8 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm shrink-0">
-                      🎭
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-zinc-200">
-                        Agent Personality
-                      </label>
-                      <p className="text-zinc-600 text-xs">
-                        How should your agent communicate with visitors?
-                      </p>
-                    </div>
-                  </div>
+              <FadeIn delay={340}>
+                <Field
+                  label="Personality"
+                  hint="How should your agent talk to visitors?"
+                >
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {PERSONAS.map((p) => {
                       const active = persona === p.value;
@@ -555,107 +472,116 @@ export default function SetupPage() {
                         <button
                           key={p.value}
                           onClick={() => setPersona(p.value)}
-                          className={`relative text-left px-4 py-3.5 rounded-xl text-sm transition-all duration-200 border overflow-hidden ${active ? "bg-blue-600/15 border-blue-500/50 text-white" : "bg-zinc-800/60 border-zinc-700/60 text-zinc-400 hover:border-zinc-600 hover:text-zinc-300 hover:bg-zinc-800"}`}
+                          className={`relative text-left px-3.5 py-3 rounded-lg transition-colors border ${active ? "bg-blue-600/15 border-blue-500/50" : "bg-zinc-800/40 border-zinc-700/60 hover:border-zinc-600 hover:bg-zinc-800/70"}`}
                         >
+                          <p
+                            className={`font-medium text-[13px] mb-0.5 ${active ? "text-blue-300" : "text-zinc-200"}`}
+                          >
+                            {p.label}
+                          </p>
+                          <p className="text-zinc-500 text-[12px]">{p.desc}</p>
                           {active && (
-                            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
-                          )}
-                          <div className="flex items-start gap-3">
-                            <span className="text-base mt-0.5 shrink-0">
-                              {p.icon}
-                            </span>
-                            <div className="min-w-0">
-                              <p
-                                className={`font-semibold text-xs mb-0.5 ${active ? "text-blue-300" : "text-zinc-300"}`}
+                            <div className="absolute top-3 right-3 w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
+                              <svg
+                                width="8"
+                                height="8"
+                                fill="none"
+                                viewBox="0 0 24 24"
                               >
-                                {p.label}
-                              </p>
-                              <p className="text-zinc-600 text-xs">{p.desc}</p>
-                            </div>
-                          </div>
-                          {active && (
-                            <div className="absolute top-3 right-3">
-                              <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
-                                <svg
-                                  width="8"
-                                  height="8"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    stroke="white"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                </svg>
-                              </div>
+                                <path
+                                  stroke="white"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
                             </div>
                           )}
                         </button>
                       );
                     })}
                   </div>
-                </div>
-              </AnimatedSection>
+                </Field>
+              </FadeIn>
 
               {/* Feedback */}
               {error && (
-                <AnimatedSection delay={0}>
-                  <div className="flex items-start gap-3 text-red-400 bg-red-500/8 border border-red-500/20 rounded-xl px-4 py-3">
-                    <span className="text-base mt-0.5 shrink-0">⚠</span>
-                    <p className="text-sm">{error}</p>
-                  </div>
-                </AnimatedSection>
+                <div className="flex items-start gap-2.5 text-red-400 bg-red-500/[0.07] border border-red-500/20 rounded-lg px-4 py-3">
+                  <svg
+                    width="15"
+                    height="15"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="shrink-0 mt-0.5"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
+                    />
+                  </svg>
+                  <p className="text-[13px]">{error}</p>
+                </div>
               )}
               {success && (
-                <AnimatedSection delay={0}>
-                  <div className="flex items-center gap-3 text-emerald-400 bg-emerald-500/8 border border-emerald-500/20 rounded-xl px-4 py-3">
-                    <span className="text-base shrink-0">✓</span>
-                    <p className="text-sm font-medium">{success}</p>
-                  </div>
-                </AnimatedSection>
+                <div className="flex items-center gap-2.5 text-emerald-400 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-lg px-4 py-3">
+                  <svg
+                    width="15"
+                    height="15"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="shrink-0"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <p className="text-[13px] font-medium">{success}</p>
+                </div>
               )}
 
               {/* Save */}
-              <AnimatedSection delay={520}>
+              <FadeIn delay={400}>
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full relative bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-bold py-3.5 rounded-xl text-sm transition-all duration-200 active:scale-[0.98] hover:shadow-xl hover:shadow-blue-500/20 disabled:cursor-not-allowed overflow-hidden group"
+                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-medium py-3 rounded-lg text-[13px] transition-colors active:scale-[0.99] disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="relative flex items-center justify-center gap-2">
-                    {saving ? (
-                      <>
-                        <svg
-                          className="animate-spin w-4 h-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8v8H4z"
-                          />
-                        </svg>
-                        Saving...
-                      </>
-                    ) : (
-                      "Save Settings"
-                    )}
-                  </span>
+                  {saving ? (
+                    <>
+                      <svg
+                        className="animate-spin w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Saving…
+                    </>
+                  ) : (
+                    "Save settings"
+                  )}
                 </button>
-              </AnimatedSection>
+              </FadeIn>
             </div>
           )}
         </div>
