@@ -9,7 +9,7 @@ const PLANS = [
   {
     key: "starter",
     name: "Starter",
-    price: "$49",
+    price: "₦1,000",
     per: "/mo",
     desc: "For founders ready to stop losing leads",
     accent: "#71717a",
@@ -27,7 +27,7 @@ const PLANS = [
   {
     key: "pro",
     name: "Pro",
-    price: "$99",
+    price: "₦5,000",
     per: "/mo",
     desc: "For businesses that can't afford to miss a sale",
     accent: "#3b82f6",
@@ -46,7 +46,7 @@ const PLANS = [
   {
     key: "scale",
     name: "Scale",
-    price: "$199",
+    price: "₦15,000",
     per: "/mo",
     desc: "For agencies running multiple client sites",
     accent: "#71717a",
