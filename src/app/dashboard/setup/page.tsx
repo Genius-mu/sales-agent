@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
+import Reveal from "@/app/components/Reveal";
 import { getSupabase, getBusinessId } from "@/lib/supabase";
 
 const PERSONAS = [
@@ -37,32 +38,6 @@ const COLORS = [
   "#db2777",
   "#000000",
 ];
-
-function FadeIn({
-  children,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  delay?: number;
-}) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  return (
-    <div
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(8px)",
-        transition:
-          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
 
 function Field({
   label,
@@ -213,7 +188,7 @@ export default function SetupPage() {
 
         <div className="max-w-2xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <FadeIn>
+          <Reveal distance={20}>
             <div className="mb-7">
               <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
                 Agent setup
@@ -223,10 +198,10 @@ export default function SetupPage() {
                 answer questions around the clock.
               </p>
             </div>
-          </FadeIn>
+          </Reveal>
 
           {/* Step indicators */}
-          <FadeIn delay={60}>
+          <Reveal delay={60}>
             <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1">
               {[
                 { n: "1", label: "Name", done: !!name },
@@ -249,7 +224,7 @@ export default function SetupPage() {
                 </div>
               ))}
             </div>
-          </FadeIn>
+          </Reveal>
 
           {loadingBiz ? (
             <div className="space-y-3">
@@ -266,7 +241,7 @@ export default function SetupPage() {
           ) : (
             <div className="space-y-3">
               {/* Business Name */}
-              <FadeIn delay={120}>
+              <Reveal delay={80}>
                 <Field
                   label="Business name"
                   hint="How should the agent refer to your company?"
@@ -278,10 +253,10 @@ export default function SetupPage() {
                     className={inputCls}
                   />
                 </Field>
-              </FadeIn>
+              </Reveal>
 
               {/* Description */}
-              <FadeIn delay={170}>
+              <Reveal delay={80}>
                 <Field
                   label="Business description"
                   hint="What your business does — this is the agent's core knowledge."
@@ -310,10 +285,10 @@ export default function SetupPage() {
                     </span>
                   </div>
                 </Field>
-              </FadeIn>
+              </Reveal>
 
               {/* Website */}
-              <FadeIn delay={220}>
+              <Reveal delay={80}>
                 <Field
                   label="Website content"
                   hint="We'll read your site and use it to train the agent."
@@ -380,10 +355,10 @@ export default function SetupPage() {
                     </div>
                   )}
                 </Field>
-              </FadeIn>
+              </Reveal>
 
               {/* Agent Name */}
-              <FadeIn delay={260}>
+              <Reveal delay={80}>
                 <Field
                   label="Agent name"
                   hint="What should the chat widget call your agent?"
@@ -395,10 +370,10 @@ export default function SetupPage() {
                     className={inputCls}
                   />
                 </Field>
-              </FadeIn>
+              </Reveal>
 
               {/* Widget Color */}
-              <FadeIn delay={300}>
+              <Reveal delay={80}>
                 <Field
                   label="Widget color"
                   hint="The main color for your chat widget."
@@ -457,10 +432,10 @@ export default function SetupPage() {
                     <span className="text-zinc-600 text-[12px]">Preview</span>
                   </div>
                 </Field>
-              </FadeIn>
+              </Reveal>
 
               {/* Persona */}
-              <FadeIn delay={340}>
+              <Reveal delay={80}>
                 <Field
                   label="Personality"
                   hint="How should your agent talk to visitors?"
@@ -503,7 +478,7 @@ export default function SetupPage() {
                     })}
                   </div>
                 </Field>
-              </FadeIn>
+              </Reveal>
 
               {/* Feedback */}
               {error && (
@@ -548,7 +523,7 @@ export default function SetupPage() {
               )}
 
               {/* Save */}
-              <FadeIn delay={400}>
+              <Reveal delay={80}>
                 <button
                   onClick={handleSave}
                   disabled={saving}
@@ -581,7 +556,7 @@ export default function SetupPage() {
                     "Save settings"
                   )}
                 </button>
-              </FadeIn>
+              </Reveal>
             </div>
           )}
         </div>
