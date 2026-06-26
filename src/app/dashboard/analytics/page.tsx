@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import DashboardNav from "@/app/components/DashboardNav";
+import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
 
 type Range = 7 | 30 | 90;
@@ -44,35 +45,6 @@ function buildEmptyDays(days: number): DayData[] {
       activeSessions: 0,
     };
   });
-}
-
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  return (
-    <div
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(8px)",
-        transition:
-          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
-      }}
-    >
-      {children}
-    </div>
-  );
 }
 
 const CustomTooltip = ({
@@ -172,7 +144,10 @@ export default function AnalyticsPage() {
         }) => {
           const dateStr = new Date(convo.created_at).toLocaleDateString(
             "en-US",
-            { month: "short", day: "numeric" },
+            {
+              month: "short",
+              day: "numeric",
+            },
           );
           const day = days.find((d) => d.date === dateStr);
           if (!day) return;
@@ -218,7 +193,10 @@ export default function AnalyticsPage() {
 
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <FadeIn className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <Reveal
+            distance={20}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
+          >
             <div>
               <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
                 Analytics
@@ -238,7 +216,7 @@ export default function AnalyticsPage() {
                 </button>
               ))}
             </div>
-          </FadeIn>
+          </Reveal>
 
           {/* Stat cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
@@ -249,12 +227,11 @@ export default function AnalyticsPage() {
                   ? `${convRate}% conversion`
                   : `Last ${range} days`;
               return (
-                <FadeIn key={m.key} delay={60 + i * 50}>
+                <Reveal key={m.key} delay={i * 70} distance={22}>
                   <button
                     onClick={() => toggleMetric(m.key)}
-                    className={`group w-full text-left relative bg-zinc-900/40 border rounded-xl p-4 overflow-hidden transition-all duration-200 ${isActive ? "border-zinc-800 hover:border-zinc-700" : "border-zinc-800/40 opacity-45 hover:opacity-75"}`}
+                    className={`group w-full text-left relative bg-zinc-900/40 border rounded-xl p-4 overflow-hidden transition-all duration-200 h-full ${isActive ? "border-zinc-800 hover:border-zinc-700" : "border-zinc-800/40 opacity-45 hover:opacity-75"}`}
                   >
-                    {/* Soft top glow in metric color */}
                     <div
                       className="absolute -top-12 left-1/2 -translate-x-1/2 w-32 h-20 rounded-full blur-2xl transition-opacity duration-300"
                       style={{
@@ -289,13 +266,13 @@ export default function AnalyticsPage() {
                       {extra}
                     </p>
                   </button>
-                </FadeIn>
+                </Reveal>
               );
             })}
           </div>
 
           {/* Chart */}
-          <FadeIn delay={280}>
+          <Reveal>
             <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-4 border-b border-zinc-800/60 gap-3">
                 <div>
@@ -410,11 +387,11 @@ export default function AnalyticsPage() {
                 )}
               </div>
             </div>
-          </FadeIn>
+          </Reveal>
 
           {/* Empty state */}
           {!loading && totals.conversations === 0 && (
-            <FadeIn delay={360}>
+            <Reveal delay={80}>
               <div className="mt-4 flex flex-col items-center justify-center py-14 bg-zinc-900/30 border border-zinc-800/60 rounded-xl text-center px-4">
                 <div className="w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-3">
                   <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
@@ -435,7 +412,7 @@ export default function AnalyticsPage() {
                   shows up here.
                 </p>
               </div>
-            </FadeIn>
+            </Reveal>
           )}
         </div>
       </div>
