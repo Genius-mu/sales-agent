@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
+import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
 
 interface Message {
@@ -16,35 +17,6 @@ interface Conversation {
   messages: Message[];
   lead_email: string | null;
   created_at: string;
-}
-
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  return (
-    <div
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(8px)",
-        transition:
-          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
-      }}
-    >
-      {children}
-    </div>
-  );
 }
 
 function timeAgo(dateStr: string) {
@@ -234,7 +206,7 @@ export default function ConversationsPage() {
 
         <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <FadeIn className="mb-7">
+          <Reveal distance={20} className="mb-7">
             <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
               Conversations
             </h1>
@@ -242,41 +214,40 @@ export default function ConversationsPage() {
               Every chat your agent has had. Browse history, review leads, read
               full transcripts.
             </p>
-          </FadeIn>
+          </Reveal>
 
           {/* Stats row */}
-          <FadeIn delay={60} className="grid grid-cols-3 gap-3 mb-5">
-            {STATS.map((stat) => (
-              <div
-                key={stat.label}
-                className="relative bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 overflow-hidden"
-              >
-                <div
-                  className="absolute -top-10 left-1/2 -translate-x-1/2 w-28 h-16 rounded-full blur-2xl"
-                  style={{ backgroundColor: stat.color, opacity: 0.1 }}
-                />
-                <div className="relative flex items-center gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            {STATS.map((stat, i) => (
+              <Reveal key={stat.label} delay={i * 70} distance={22}>
+                <div className="relative bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 overflow-hidden h-full">
                   <div
-                    className="w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: stat.color }}
+                    className="absolute -top-10 left-1/2 -translate-x-1/2 w-28 h-16 rounded-full blur-2xl"
+                    style={{ backgroundColor: stat.color, opacity: 0.1 }}
                   />
-                  <span className="text-zinc-400 text-[13px] font-medium">
-                    {stat.label}
-                  </span>
+                  <div className="relative flex items-center gap-2 mb-2">
+                    <div
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: stat.color }}
+                    />
+                    <span className="text-zinc-400 text-[13px] font-medium">
+                      {stat.label}
+                    </span>
+                  </div>
+                  <div className="relative text-2xl sm:text-[26px] leading-none font-semibold tabular-nums">
+                    {loading ? (
+                      <span className="inline-block w-10 h-6 bg-zinc-800/80 rounded animate-pulse" />
+                    ) : (
+                      stat.value.toLocaleString()
+                    )}
+                  </div>
                 </div>
-                <div className="relative text-2xl sm:text-[26px] leading-none font-semibold tabular-nums">
-                  {loading ? (
-                    <span className="inline-block w-10 h-6 bg-zinc-800/80 rounded animate-pulse" />
-                  ) : (
-                    stat.value.toLocaleString()
-                  )}
-                </div>
-              </div>
+              </Reveal>
             ))}
-          </FadeIn>
+          </div>
 
           {/* Filters + Search */}
-          <FadeIn delay={120} className="flex flex-col sm:flex-row gap-3 mb-4">
+          <Reveal delay={120} className="flex flex-col sm:flex-row gap-3 mb-4">
             <div className="flex items-center gap-0.5 p-0.5 bg-zinc-900/60 border border-zinc-800 rounded-lg">
               {(["all", "leads"] as const).map((f) => (
                 <button
@@ -317,10 +288,10 @@ export default function ConversationsPage() {
                 className="w-full pl-9 pr-4 py-2 bg-zinc-900/60 border border-zinc-800 rounded-lg text-[13px] text-zinc-300 placeholder-zinc-600 outline-none focus:border-zinc-600 transition-colors"
               />
             </div>
-          </FadeIn>
+          </Reveal>
 
           {/* Conversation list */}
-          <FadeIn delay={180}>
+          <Reveal delay={180} repeat={false}>
             <div className="relative bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -370,7 +341,6 @@ export default function ConversationsPage() {
                         onClick={() => setSelected(convo)}
                         className="w-full text-left px-4 sm:px-5 py-3.5 hover:bg-zinc-800/30 transition-colors group flex items-start gap-3"
                       >
-                        {/* Status dot avatar */}
                         <div
                           className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 mt-0.5 ${convo.lead_email ? "bg-emerald-500/10 border-emerald-500/20" : "bg-zinc-800 border-zinc-700/60"}`}
                         >
@@ -426,7 +396,7 @@ export default function ConversationsPage() {
                 </div>
               )}
             </div>
-          </FadeIn>
+          </Reveal>
         </div>
       </div>
 
