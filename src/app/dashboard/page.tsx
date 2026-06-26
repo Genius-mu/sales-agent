@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import DashboardNav from "@/app/components/DashboardNav";
+import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
 
 interface RecentConvo {
@@ -40,35 +41,6 @@ function useCountUp(target: number, duration = 1000) {
     return () => clearInterval(timer);
   }, [target, duration]);
   return value;
-}
-
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  return (
-    <div
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(8px)",
-        transition:
-          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
-      }}
-    >
-      {children}
-    </div>
-  );
 }
 
 function timeAgo(dateStr: string) {
@@ -301,7 +273,6 @@ export default function DashboardPage() {
     },
   ];
 
-  // Onboarding checklist
   const checklist = [
     { label: "Create your account", done: true, href: "/dashboard" },
     {
@@ -335,7 +306,10 @@ export default function DashboardPage() {
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <FadeIn className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-7 sm:mb-8">
+          <Reveal
+            distance={20}
+            className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-7 sm:mb-8"
+          >
             <div className="min-w-0 flex-1">
               <p className="text-zinc-500 text-[13px] mb-1">{greeting()} 👋</p>
               <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-white mb-1 leading-tight">
@@ -372,11 +346,11 @@ export default function DashboardPage() {
                 <Arrow />
               </Link>
             )}
-          </FadeIn>
+          </Reveal>
 
           {/* Agent offline warning */}
           {!loading && !stats?.agentReady && (
-            <FadeIn delay={60} className="mb-6">
+            <Reveal delay={60} distance={18} className="mb-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-amber-500/[0.06] border border-amber-500/20 rounded-xl px-5 py-4">
                 <div className="flex items-start gap-3">
                   <svg
@@ -411,13 +385,13 @@ export default function DashboardPage() {
                   Set up agent
                 </Link>
               </div>
-            </FadeIn>
+            </Reveal>
           )}
 
-          {/* Stat cards — now 4, responsive 2x2 on mobile */}
+          {/* Stat cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             {STAT_CARDS.map((card, i) => (
-              <FadeIn key={card.label} delay={80 + i * 50}>
+              <Reveal key={card.label} delay={i * 70} distance={22}>
                 <div className="relative bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 rounded-xl p-4 sm:p-5 overflow-hidden transition-colors h-full">
                   <div
                     className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-16 rounded-full blur-2xl"
@@ -455,14 +429,14 @@ export default function DashboardPage() {
                     {card.sub}
                   </p>
                 </div>
-              </FadeIn>
+              </Reveal>
             ))}
           </div>
 
           {/* Two-column: Recent activity + Getting started */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
             {/* Recent activity */}
-            <FadeIn delay={280} className="lg:col-span-3">
+            <Reveal direction="left" className="lg:col-span-3">
               <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden h-full flex flex-col">
                 <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800/60">
                   <div>
@@ -566,10 +540,10 @@ export default function DashboardPage() {
                   </div>
                 )}
               </div>
-            </FadeIn>
+            </Reveal>
 
             {/* Getting started checklist */}
-            <FadeIn delay={340} className="lg:col-span-2">
+            <Reveal direction="right" delay={120} className="lg:col-span-2">
               <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5 h-full">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-[15px] font-semibold text-white tracking-tight">
@@ -580,7 +554,6 @@ export default function DashboardPage() {
                   </span>
                 </div>
 
-                {/* Progress bar */}
                 <div className="h-1 bg-zinc-800 rounded-full overflow-hidden mb-5">
                   <div
                     className="h-full bg-emerald-500 rounded-full transition-all duration-700"
@@ -616,7 +589,7 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </div>
-            </FadeIn>
+            </Reveal>
           </div>
 
           {/* Quick actions */}
@@ -628,7 +601,6 @@ export default function DashboardPage() {
                 title: "Train your agent",
                 desc: "Tell Saim about your business. The more it knows, the better it sells.",
                 cta: "Open setup",
-                delay: 400,
                 urgent: !stats?.agentReady && !loading,
               },
               {
@@ -637,11 +609,10 @@ export default function DashboardPage() {
                 title: "Go live on your site",
                 desc: "One script tag, pasted anywhere. Your agent starts capturing leads instantly.",
                 cta: "Get embed code",
-                delay: 450,
                 urgent: false,
               },
-            ].map((item) => (
-              <FadeIn key={item.href} delay={item.delay}>
+            ].map((item, i) => (
+              <Reveal key={item.href} delay={i * 90} direction="up">
                 <Link
                   href={item.href}
                   className={`group relative block rounded-xl p-5 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 h-full ${item.urgent ? "bg-blue-950/30 border border-blue-500/30 hover:border-blue-500/50" : "bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700"}`}
@@ -667,18 +638,18 @@ export default function DashboardPage() {
                     <Arrow />
                   </span>
                 </Link>
-              </FadeIn>
+              </Reveal>
             ))}
           </div>
 
           {/* Tips / resources */}
-          <FadeIn delay={500} className="mb-12">
-            <div className="flex items-center gap-4 mb-5">
+          <div className="mb-12">
+            <Reveal className="flex items-center gap-4 mb-5">
               <h2 className="text-[15px] font-semibold text-zinc-300 shrink-0">
                 Tips to close more
               </h2>
               <div className="h-px flex-1 bg-zinc-800/60" />
-            </div>
+            </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
                 {
@@ -693,24 +664,23 @@ export default function DashboardPage() {
                   title: "Match your brand color",
                   desc: "A widget that matches your site feels native and earns more trust from visitors.",
                 },
-              ].map((tip) => (
-                <div
-                  key={tip.title}
-                  className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4"
-                >
-                  <h3 className="text-zinc-200 text-[13px] font-medium mb-1.5">
-                    {tip.title}
-                  </h3>
-                  <p className="text-zinc-500 text-[12px] leading-relaxed">
-                    {tip.desc}
-                  </p>
-                </div>
+              ].map((tip, i) => (
+                <Reveal key={tip.title} delay={i * 80} direction="up">
+                  <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 h-full">
+                    <h3 className="text-zinc-200 text-[13px] font-medium mb-1.5">
+                      {tip.title}
+                    </h3>
+                    <p className="text-zinc-500 text-[12px] leading-relaxed">
+                      {tip.desc}
+                    </p>
+                  </div>
+                </Reveal>
               ))}
             </div>
-          </FadeIn>
+          </div>
 
           {/* Pricing */}
-          <FadeIn delay={560}>
+          <Reveal>
             <div className="mb-8 text-center">
               <div className="flex items-center gap-4 mb-7">
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent to-zinc-800/60" />
@@ -727,11 +697,16 @@ export default function DashboardPage() {
                 times over.
               </p>
             </div>
-          </FadeIn>
+          </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {PLANS.map((plan, i) => (
-              <FadeIn key={plan.name} delay={600 + i * 60} className="relative">
+              <Reveal
+                key={plan.name}
+                delay={i * 90}
+                direction="up"
+                className="relative"
+              >
                 {plan.badge && (
                   <div className="absolute -top-2.5 left-5 z-20">
                     <span className="bg-blue-600 text-white text-[11px] font-medium px-2.5 py-1 rounded-full">
@@ -785,11 +760,11 @@ export default function DashboardPage() {
                     {plan.cta}
                   </Link>
                 </div>
-              </FadeIn>
+              </Reveal>
             ))}
           </div>
 
-          <FadeIn delay={820}>
+          <Reveal>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pb-8">
               {[
                 "14-day free trial",
@@ -802,7 +777,7 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-          </FadeIn>
+          </Reveal>
         </div>
       </div>
     </div>
