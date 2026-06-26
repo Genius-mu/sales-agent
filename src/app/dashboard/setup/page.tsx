@@ -158,6 +158,7 @@ export default function SetupPage() {
       .from("businesses")
       .update({
         name,
+        website_url: url,
         agent_persona: persona,
         description,
         agent_name: agentName,
