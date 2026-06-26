@@ -2,36 +2,8 @@
 
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
+import Reveal from "@/app/components/Reveal";
 import { getBusinessId } from "@/lib/supabase";
-
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  return (
-    <div
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(8px)",
-        transition:
-          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
 
 const PLATFORMS = [
   { name: "Webflow", path: "Project Settings → Custom Code → Footer Code" },
@@ -109,7 +81,7 @@ export default function EmbedPage() {
 
         <div className="max-w-2xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <FadeIn className="mb-7">
+          <Reveal distance={20} className="mb-7">
             <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
               Embed your agent
             </h1>
@@ -120,11 +92,11 @@ export default function EmbedPage() {
               </code>{" "}
               tag and your agent goes live.
             </p>
-          </FadeIn>
+          </Reveal>
 
           <div className="space-y-4">
             {/* Code block */}
-            <FadeIn delay={80}>
+            <Reveal delay={60}>
               <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
                 {/* Toolbar */}
                 <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-zinc-800/60">
@@ -239,10 +211,10 @@ export default function EmbedPage() {
                   </code>
                 </div>
               </div>
-            </FadeIn>
+            </Reveal>
 
             {/* Install steps */}
-            <FadeIn delay={160}>
+            <Reveal delay={80}>
               <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5">
                 <div className="mb-5">
                   <h3 className="font-semibold text-white text-[15px]">
@@ -277,10 +249,10 @@ export default function EmbedPage() {
                   ))}
                 </div>
               </div>
-            </FadeIn>
+            </Reveal>
 
             {/* Platform tips */}
-            <FadeIn delay={240}>
+            <Reveal delay={80}>
               <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5">
                 <div className="mb-4">
                   <h3 className="font-semibold text-white text-[15px]">
@@ -309,10 +281,10 @@ export default function EmbedPage() {
                   ))}
                 </div>
               </div>
-            </FadeIn>
+            </Reveal>
 
             {/* Help note */}
-            <FadeIn delay={320}>
+            <Reveal delay={80}>
               <div className="flex items-start gap-2.5 px-4 py-3.5 bg-blue-500/[0.06] border border-blue-500/15 rounded-xl">
                 <svg
                   width="15"
@@ -341,7 +313,7 @@ export default function EmbedPage() {
                   before embedding. The widget won't respond without it.
                 </p>
               </div>
-            </FadeIn>
+            </Reveal>
           </div>
         </div>
       </div>
