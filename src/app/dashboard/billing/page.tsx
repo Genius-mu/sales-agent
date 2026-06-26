@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import DashboardNav from "@/app/components/DashboardNav";
+import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
 
 const PLANS = [
@@ -93,35 +94,6 @@ const COMPARISON = [
   { feature: "Custom agent name", free: false, starter: false, pro: true },
   { feature: "Priority support", free: false, starter: false, pro: true },
 ];
-
-function FadeIn({
-  children,
-  delay = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-  return (
-    <div
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(8px)",
-        transition:
-          "opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
 
 const Check = ({ className = "" }: { className?: string }) => (
   <svg
@@ -234,7 +206,7 @@ function BillingContent() {
   return (
     <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
       {/* Header */}
-      <FadeIn className="mb-8">
+      <Reveal distance={20} className="mb-8">
         <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
           {isFree ? "Your agent is running on limits" : "Billing"}
         </h1>
@@ -243,11 +215,11 @@ function BillingContent() {
             ? "You're on the free tier — 50 conversations a month. Enough to see it work. Upgrade to let it run without limits."
             : "Manage your subscription and unlock more as your business grows."}
         </p>
-      </FadeIn>
+      </Reveal>
 
       {/* Success banner */}
       {success && (
-        <FadeIn className="mb-6">
+        <Reveal distance={16} className="mb-6">
           <div className="flex items-center gap-3 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-xl px-4 py-3.5">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0">
               <Check />
@@ -261,11 +233,11 @@ function BillingContent() {
               </p>
             </div>
           </div>
-        </FadeIn>
+        </Reveal>
       )}
 
       {/* Current plan */}
-      <FadeIn delay={60} className="mb-8">
+      <Reveal delay={60} className="mb-8">
         <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -309,40 +281,39 @@ function BillingContent() {
             )}
           </div>
         </div>
-      </FadeIn>
+      </Reveal>
 
       {/* Pain points — free users only */}
       {isFree && !pageLoading && (
-        <FadeIn delay={120} className="mb-8">
-          <div className="mb-4">
+        <div className="mb-8">
+          <Reveal className="mb-4">
             <h2 className="text-[15px] font-semibold text-white mb-1">
               What you're leaving on the table
             </h2>
             <p className="text-zinc-500 text-[13px]">
               Every day on free, here's what slips by.
             </p>
-          </div>
+          </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {PAIN_POINTS.map((p) => (
-              <div
-                key={p.title}
-                className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4"
-              >
-                <h3 className="text-white text-[13px] font-medium mb-1.5">
-                  {p.title}
-                </h3>
-                <p className="text-zinc-500 text-[12px] leading-relaxed">
-                  {p.desc}
-                </p>
-              </div>
+            {PAIN_POINTS.map((p, i) => (
+              <Reveal key={p.title} delay={i * 80} direction="up">
+                <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 h-full">
+                  <h3 className="text-white text-[13px] font-medium mb-1.5">
+                    {p.title}
+                  </h3>
+                  <p className="text-zinc-500 text-[12px] leading-relaxed">
+                    {p.desc}
+                  </p>
+                </div>
+              </Reveal>
             ))}
           </div>
-        </FadeIn>
+        </div>
       )}
 
       {/* ROI callout */}
       {isFree && !pageLoading && (
-        <FadeIn delay={180} className="mb-8">
+        <Reveal delay={60} distance={24} className="mb-8">
           <div className="relative overflow-hidden bg-zinc-900/40 border border-blue-500/20 rounded-xl px-5 sm:px-6 py-5">
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
             <div className="absolute -top-16 left-1/4 w-48 h-32 bg-blue-600/10 rounded-full blur-3xl" />
@@ -365,25 +336,25 @@ function BillingContent() {
               </button>
             </div>
           </div>
-        </FadeIn>
+        </Reveal>
       )}
 
       {/* Plans */}
-      <FadeIn delay={220}>
+      <Reveal>
         <div className="flex items-center gap-4 mb-5">
           <h2 className="text-[15px] font-semibold text-zinc-300 shrink-0">
             {isActive ? "Change plan" : "Choose a plan"}
           </h2>
           <div className="h-px flex-1 bg-zinc-800/60" />
         </div>
-      </FadeIn>
+      </Reveal>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
         {PLANS.map((plan, i) => {
           const isCurrent = currentPlan === plan.key && isActive;
           const isLoading = loadingPlan === plan.key;
           return (
-            <FadeIn key={plan.key} delay={260 + i * 60}>
+            <Reveal key={plan.key} delay={i * 90} direction="up">
               <div className="relative h-full">
                 {plan.badge && (
                   <div className="absolute -top-2.5 left-5 z-20">
@@ -480,13 +451,13 @@ function BillingContent() {
                   </button>
                 </div>
               </div>
-            </FadeIn>
+            </Reveal>
           );
         })}
       </div>
 
       {/* Comparison table */}
-      <FadeIn delay={440} className="mb-10">
+      <Reveal className="mb-10">
         <h2 className="text-[15px] font-semibold text-zinc-300 mb-4">
           Compare plans
         </h2>
@@ -539,10 +510,10 @@ function BillingContent() {
             </div>
           ))}
         </div>
-      </FadeIn>
+      </Reveal>
 
       {/* Trust footer */}
-      <FadeIn delay={520}>
+      <Reveal>
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pb-4">
           {[
             "Secure payments via Paystack",
@@ -556,7 +527,7 @@ function BillingContent() {
             </div>
           ))}
         </div>
-      </FadeIn>
+      </Reveal>
     </div>
   );
 }
