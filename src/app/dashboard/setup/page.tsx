@@ -89,9 +89,7 @@ export default function SetupPage() {
 
       const { data } = await getSupabase()
         .from("businesses")
-        .select(
-          "id, name, website_url, agent_persona, scraped_content, description, agent_name, widget_color",
-        )
+        .select("*")
         .eq("id", id)
         .maybeSingle();
 
@@ -207,7 +205,7 @@ export default function SetupPage() {
               {[
                 { n: "1", label: "Name", done: !!name },
                 { n: "2", label: "Description", done: !!description },
-                { n: "3", label: "Website", done: scraped },
+                { n: "3", label: "Website", done: !!url || scraped },
                 { n: "4", label: "Personality", done: true },
               ].map((step, i) => (
                 <div key={step.n} className="flex items-center gap-2 shrink-0">
