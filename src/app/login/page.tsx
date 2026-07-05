@@ -112,14 +112,6 @@ export default function LoginPage() {
         return;
       }
       if (data.user) {
-        await getSupabase()
-          .from("businesses")
-          .insert({
-            user_id: data.user.id,
-            name: email.split("@")[0],
-            agent_persona: "friendly and professional",
-            plan: "free",
-          });
         setSuccess(
           "Account created. Check your email to confirm, then sign in.",
         );
