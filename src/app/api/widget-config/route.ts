@@ -6,6 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
   "Access-Control-Max-Age": "86400",
+  // Prevent caching so color/name changes reflect immediately
+  "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
 };
 
 export async function OPTIONS() {
@@ -28,11 +30,13 @@ export async function GET(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 
+  // .maybeSingle() returns null instead of throwing on 0 or multiple rows,
+  // so a duplicate/missing row no longer silently forces the default color.
   const { data, error } = await supabase
     .from("businesses")
     .select("agent_name, widget_color")
     .eq("id", businessId)
-    .single();
+    .maybeSingle();
 
   if (error || !data) {
     return NextResponse.json(
