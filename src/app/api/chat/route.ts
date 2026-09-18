@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
 
 const corsHeaders = {
@@ -14,10 +14,10 @@ export async function OPTIONS() {
 }
 
 const PLAN_LIMITS: Record<string, number> = {
-  free: 50,
-  starter: 500,
-  pro: Infinity,
-  scale: Infinity,
+  free: 20,
+  starter: 300,
+  pro: 1200,
+  scale: 3000,
 };
 
 async function sendLimitEmail(
@@ -45,13 +45,13 @@ async function sendLimitEmail(
               </div>
               <h1 style="font-size:22px;font-weight:700;color:#18181b;margin:0 0 8px;">You've hit your monthly limit</h1>
               <p style="color:#71717a;font-size:14px;line-height:1.6;margin:0;">
-                Hi there — your Saim agent for <strong style="color:#18181b;">${businessName}</strong> has reached its 50 free conversations this month. Your widget is now paused until you upgrade.
+                Hi there — your Saim agent for <strong style="color:#18181b;">${businessName}</strong> has reached its 20 free conversations this month. Your widget is now paused until you upgrade.
               </p>
             </div>
             <div style="background:#f4f4f5;border-radius:12px;padding:20px;margin-bottom:24px;">
-              <p style="color:#18181b;font-size:13px;font-weight:600;margin:0 0 12px;">What you get on Starter ($49/mo):</p>
+              <p style="color:#18181b;font-size:13px;font-weight:600;margin:0 0 12px;">What you get on Starter (₦7,500/mo):</p>
               <ul style="color:#52525b;font-size:13px;line-height:2;margin:0;padding-left:16px;">
-                <li>500 conversations/month</li>
+                <li>300 conversations/month</li>
                 <li>Lead capture & dashboard</li>
                 <li>Priority email support</li>
               </ul>
@@ -85,7 +85,6 @@ async function sendLeadEmail(
     ownerEmail,
   );
   try {
-    // Build a short transcript of the last few messages
     const transcript = conversation
       .slice(-6)
       .map(
@@ -158,14 +157,14 @@ export async function POST(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
   const { message, sessionId, businessId } = await req.json();
 
   if (!message || !sessionId || !businessId) {
     return NextResponse.json(
       { error: "message, sessionId, and businessId are required" },
-      { status: 400 },
+      { status: 400, headers: corsHeaders },
     );
   }
 
@@ -177,11 +176,14 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (businessError || !business) {
-    return NextResponse.json({ error: "Business not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Business not found" },
+      { status: 404, headers: corsHeaders },
+    );
   }
 
   const plan = (business.plan as string) || "free";
-  const limit = PLAN_LIMITS[plan] ?? 50;
+  const limit = PLAN_LIMITS[plan] ?? 20;
 
   // Count conversations this month
   if (limit !== Infinity) {
@@ -268,15 +270,21 @@ LEAD_EMAIL: their@email.com`;
   ];
 
   try {
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 500,
-      system: systemPrompt,
-      messages: updatedHistory,
+    const geminiContents = updatedHistory.map((m) => ({
+      role: m.role === "user" ? "user" : "model",
+      parts: [{ text: m.content }],
+    }));
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: geminiContents,
+      config: {
+        systemInstruction: systemPrompt,
+        temperature: 0.3,
+      },
     });
 
-    const rawReply =
-      response.content[0].type === "text" ? response.content[0].text : "";
+    const rawReply = response.text || "";
     const emailMatch = rawReply.match(/LEAD_EMAIL:\s*(\S+@\S+\.\S+)/);
     const leadEmail = emailMatch ? emailMatch[1] : null;
     const cleanReply = rawReply.replace(/LEAD_EMAIL:.*$/m, "").trim();
@@ -291,7 +299,6 @@ LEAD_EMAIL: their@email.com`;
       .eq("session_id", sessionId)
       .maybeSingle();
 
-    // Track whether this lead was already captured before this message
     const leadAlreadyExisted = !!existing?.lead_email;
 
     if (existing?.id) {
@@ -316,21 +323,11 @@ LEAD_EMAIL: their@email.com`;
       if (insertError) console.error("Conversation insert error:", insertError);
     }
 
-    // Send lead notification email — only when a NEW lead is captured
-    console.log(
-      "[Lead] check — leadEmail:",
-      leadEmail,
-      "alreadyExisted:",
-      leadAlreadyExisted,
-      "user_id:",
-      business.user_id,
-    );
     if (leadEmail && !leadAlreadyExisted && business.user_id) {
       const { data: userData } = await supabase.auth.admin.getUserById(
         business.user_id,
       );
       const ownerEmail = userData?.user?.email;
-      console.log("[Lead] ownerEmail resolved to:", ownerEmail);
       if (ownerEmail) {
         const appUrl = (
           process.env.NEXT_PUBLIC_APP_URL ||
@@ -355,10 +352,10 @@ LEAD_EMAIL: their@email.com`;
       { headers: corsHeaders },
     );
   } catch (err) {
-    console.error("Claude API error:", err);
+    console.error("Gemini API error:", err);
     return NextResponse.json(
       { error: "Failed to get response from AI" },
-      { status: 500 },
+      { status: 500, headers: corsHeaders },
     );
   }
 }
