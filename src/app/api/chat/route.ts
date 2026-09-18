@@ -275,15 +275,38 @@ LEAD_EMAIL: their@email.com`;
       parts: [{ text: m.content }],
     }));
 
-    const modelName = process.env.GEMINI_MODEL || "gemini-2.0-flash";
-    const response = await ai.models.generateContent({
-      model: modelName,
-      contents: geminiContents,
-      config: {
-        systemInstruction: systemPrompt,
-        temperature: 0.3,
-      },
-    });
+    const candidateModels = Array.from(
+      new Set([
+        process.env.GEMINI_MODEL,
+        "gemini-3.6-flash",
+        "gemini-1.5-flash",
+        "gemini-2.0-flash",
+      ].filter(Boolean))
+    ) as string[];
+
+    let response = null;
+    let lastErr = null;
+
+    for (const modelName of candidateModels) {
+      try {
+        response = await ai.models.generateContent({
+          model: modelName,
+          contents: geminiContents,
+          config: {
+            systemInstruction: systemPrompt,
+            temperature: 0.3,
+          },
+        });
+        if (response?.text) break;
+      } catch (err: any) {
+        lastErr = err;
+        console.warn(`[Gemini] Model ${modelName} failed, trying fallback:`, err?.message || err);
+      }
+    }
+
+    if (!response) {
+      throw lastErr || new Error("All Gemini model candidates failed.");
+    }
 
     const rawReply = response.text || "";
     const emailMatch = rawReply.match(/LEAD_EMAIL:\s*(\S+@\S+\.\S+)/);
