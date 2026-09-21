@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
+import { PLANS } from "@/lib/plans";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,13 +13,6 @@ const corsHeaders = {
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200, headers: corsHeaders });
 }
-
-const PLAN_LIMITS: Record<string, number> = {
-  free: 20,
-  starter: 300,
-  pro: 1200,
-  scale: 3000,
-};
 
 async function sendLimitEmail(
   businessEmail: string,
@@ -183,7 +177,7 @@ export async function POST(req: NextRequest) {
   }
 
   const plan = (business.plan as string) || "free";
-  const limit = PLAN_LIMITS[plan] ?? 20;
+  const limit = PLANS[plan]?.monthlyLimit ?? 20;
 
   // Count conversations this month
   if (limit !== Infinity) {

@@ -1,66 +1,90 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-
-const PLAN_CODES: Record<string, string> = {
-  starter: "PLN_l45c6u49b4rtphi",
-  pro: "PLN_mdtlpytqpous1zr",
-  scale: "PLN_jw99ak49aljjjd4",
-};
-
-// Amounts in kobo (NGN * 100)
-const PLAN_AMOUNTS: Record<string, number> = {
-  starter: 1000 * 100,
-  pro: 5000 * 100,
-  scale: 15000 * 100,
-};
+import { createClient } from "@/lib/supabase-server";
+import { PLANS } from "@/lib/plans";
 
 export async function POST(req: NextRequest) {
-  const { plan, businessId } = await req.json();
-
-  const planCode = PLAN_CODES[plan];
-  if (!planCode) {
-    return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
-  }
-
-  const appUrl = (
-    process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app"
-  ).replace(/\/+$/, "");
-
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
-
-  // Get user email from business
-  const { data: business } = await supabase
-    .from("businesses")
-    .select("user_id")
-    .eq("id", businessId)
-    .single();
-
-  let email = "";
-  if (business?.user_id) {
-    const { data: userData } = await supabase.auth.admin.getUserById(
-      business.user_id,
-    );
-    email = userData?.user?.email || "";
-  }
-
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 },
+      );
+    }
+
+    const body = await req.json();
+    const { plan, businessId } = body || {};
+
+    if (!businessId || typeof businessId !== "string") {
+      return NextResponse.json(
+        { error: "businessId is required" },
+        { status: 400 },
+      );
+    }
+
+    const planConfig = PLANS[plan];
+    if (!planConfig || planConfig.isFree || !planConfig.paystackPlanCode) {
+      return NextResponse.json(
+        { error: "Invalid plan selected for checkout" },
+        { status: 400 },
+      );
+    }
+
+    // Verify user owns businessId
+    const { data: business, error: bizError } = await supabase
+      .from("businesses")
+      .select("id, user_id")
+      .eq("id", businessId)
+      .single();
+
+    if (bizError || !business || business.user_id !== user.id) {
+      return NextResponse.json(
+        { error: "Forbidden: You do not own this business" },
+        { status: 403 },
+      );
+    }
+
+    const email = user.email;
+    if (!email) {
+      return NextResponse.json(
+        { error: "Authenticated user email is missing" },
+        { status: 400 },
+      );
+    }
+
+    const appUrl = (
+      process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app"
+    ).replace(/\/+$/, "");
+
+    const secretKey = process.env.PAYSTACK_SECRET_KEY;
+    if (!secretKey) {
+      console.error("PAYSTACK_SECRET_KEY is not configured");
+      return NextResponse.json(
+        { error: "Payment gateway misconfigured" },
+        { status: 500 },
+      );
+    }
+
     const res = await fetch("https://api.paystack.co/transaction/initialize", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        Authorization: `Bearer ${secretKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         email,
-        plan: planCode,
-        amount: PLAN_AMOUNTS[plan],
-        callback_url: `${appUrl}/dashboard/billing?success=true&plan=${plan}`,
+        plan: planConfig.paystackPlanCode,
+        amount: planConfig.priceKobo,
+        callback_url: `${appUrl}/dashboard/billing`,
         metadata: {
           business_id: businessId,
-          plan,
+          plan: planConfig.key,
+          user_id: user.id,
           cancel_action: `${appUrl}/dashboard/billing`,
         },
       }),
@@ -69,9 +93,9 @@ export async function POST(req: NextRequest) {
     const data = await res.json();
 
     if (!data.status) {
-      console.error("Paystack error:", data);
+      console.error("Paystack checkout initialize error:", data);
       return NextResponse.json(
-        { error: data.message || "Failed to create checkout" },
+        { error: data.message || "Failed to create checkout transaction" },
         { status: 500 },
       );
     }

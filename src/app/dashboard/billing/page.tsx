@@ -1,78 +1,20 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import DashboardNav from "@/app/components/DashboardNav";
 import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
-
-const PLANS = [
-  {
-    key: "starter",
-    name: "Starter",
-    price: "₦1,000",
-    per: "/mo",
-    desc: "For founders ready to stop losing leads",
-    accent: "#71717a",
-    popular: false,
-    badge: null,
-    features: [
-      "500 conversations/month",
-      "Lead capture & email collection",
-      "Full conversation dashboard",
-      "1 site embed",
-      "Email support",
-    ],
-    cta: "Upgrade to Starter",
-  },
-  {
-    key: "pro",
-    name: "Pro",
-    price: "₦5,000",
-    per: "/mo",
-    desc: "For businesses that can't afford to miss a sale",
-    accent: "#3b82f6",
-    popular: true,
-    badge: "Most popular",
-    features: [
-      "Unlimited conversations",
-      "Lead capture + CRM export",
-      "Advanced analytics dashboard",
-      "Up to 5 site embeds",
-      "Custom agent persona",
-      "Priority support",
-    ],
-    cta: "Upgrade to Pro",
-  },
-  {
-    key: "scale",
-    name: "Scale",
-    price: "₦15,000",
-    per: "/mo",
-    desc: "For agencies running multiple client sites",
-    accent: "#71717a",
-    popular: false,
-    badge: null,
-    features: [
-      "Unlimited conversations",
-      "Unlimited site embeds",
-      "White-label widget",
-      "Custom AI persona per client",
-      "Dedicated account support",
-      "Priority API access",
-    ],
-    cta: "Upgrade to Scale",
-  },
-];
+import { PLANS, PlanConfig } from "@/lib/plans";
 
 const PAIN_POINTS = [
   {
     title: "Leads visit at 2am",
-    desc: "Free plan caps at 50 conversations. After that, your agent goes silent — and visitors leave without a word.",
+    desc: "Free plan caps at 20 conversations. After that, your agent goes silent — and visitors leave without a word.",
   },
   {
-    title: "You're capped at 50 chats",
-    desc: "That's one decent traffic day. If your site gets real visitors, you'll hit the limit before the month ends.",
+    title: "You're capped at 20 chats",
+    desc: "That's just a few traffic days. If your site gets real visitors, you'll hit the limit before the month ends.",
   },
   {
     title: "No analytics on free",
@@ -83,16 +25,17 @@ const PAIN_POINTS = [
 const COMPARISON = [
   {
     feature: "Conversations/month",
-    free: "50",
-    starter: "500",
-    pro: "Unlimited",
+    free: "20",
+    starter: "300",
+    pro: "1,200",
+    scale: "3,000",
   },
-  { feature: "Lead capture", free: true, starter: true, pro: true },
-  { feature: "CRM export", free: false, starter: false, pro: true },
-  { feature: "Analytics dashboard", free: false, starter: false, pro: true },
-  { feature: "Site embeds", free: "1", starter: "1", pro: "5" },
-  { feature: "Custom agent name", free: false, starter: false, pro: true },
-  { feature: "Priority support", free: false, starter: false, pro: true },
+  { feature: "Lead capture", free: true, starter: true, pro: true, scale: true },
+  { feature: "CRM export", free: false, starter: false, pro: true, scale: true },
+  { feature: "Analytics dashboard", free: false, starter: false, pro: true, scale: true },
+  { feature: "Site embeds", free: "1", starter: "1", pro: "5", scale: "Unlimited" },
+  { feature: "Custom agent name", free: false, starter: false, pro: true, scale: true },
+  { feature: "Priority support", free: false, starter: false, pro: true, scale: true },
 ];
 
 const Check = ({ className = "" }: { className?: string }) => (
@@ -132,51 +75,108 @@ const Dash = () => (
 
 function BillingContent() {
   const searchParams = useSearchParams();
-  const success = searchParams.get("success");
+  const router = useRouter();
+  const referenceParam = searchParams.get("reference") || searchParams.get("trxref");
 
   const [businessId, setBusinessId] = useState<string | null>(null);
-  const [currentPlan, setCurrentPlan] = useState("free");
+  const [currentPlanKey, setCurrentPlanKey] = useState("free");
   const [subscriptionStatus, setSubscriptionStatus] = useState("inactive");
+  const [monthlyUsage, setMonthlyUsage] = useState<number>(0);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [pageLoading, setPageLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadPlan() {
-      const sb = getSupabase();
-      const {
-        data: { session },
-      } = await sb.auth.getSession();
-      if (!session?.user) {
-        setPageLoading(false);
-        return;
-      }
-      const { data } = await sb
-        .from("businesses")
-        .select("id, plan, subscription_status")
-        .eq("user_id", session.user.id)
-        .maybeSingle();
-      if (data) {
-        const d = data as {
-          id: string;
-          plan: string;
-          subscription_status: string;
-        };
-        setBusinessId(d.id);
-        setCurrentPlan(d.plan || "free");
-        setSubscriptionStatus(d.subscription_status || "inactive");
-      }
+  // Verification state
+  const [verifying, setVerifying] = useState(false);
+  const [verificationSuccess, setVerificationSuccess] = useState<string | null>(null);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+
+  // Cancellation state
+  const [cancelling, setCancelling] = useState(false);
+
+  const fetchBusinessData = async () => {
+    const sb = getSupabase();
+    const {
+      data: { session },
+    } = await sb.auth.getSession();
+    if (!session?.user) {
       setPageLoading(false);
+      return;
     }
-    loadPlan();
-  }, []);
+    const { data } = await sb
+      .from("businesses")
+      .select("id, plan, subscription_status")
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
+    if (data) {
+      const d = data as {
+        id: string;
+        plan: string;
+        subscription_status: string;
+      };
+      setBusinessId(d.id);
+      setCurrentPlanKey(d.plan || "free");
+      setSubscriptionStatus(d.subscription_status || "inactive");
+
+      // Count monthly conversations usage
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const { count } = await sb
+        .from("conversations")
+        .select("id", { count: "exact", head: true })
+        .eq("business_id", d.id)
+        .gte("created_at", startOfMonth.toISOString());
+
+      setMonthlyUsage(count ?? 0);
+    }
+    setPageLoading(false);
+  };
 
   useEffect(() => {
-    if (!checkoutUrl) return;
-    window.location.href = checkoutUrl;
-    setCheckoutUrl(null);
-    setLoadingPlan(null);
-  }, [checkoutUrl]);
+    fetchBusinessData();
+  }, []);
+
+  // Handle server-side transaction verification when returning from Paystack redirect
+  useEffect(() => {
+    if (!referenceParam) return;
+
+    async function verifyTransaction() {
+      setVerifying(true);
+      setVerificationError(null);
+      setVerificationSuccess(null);
+
+      try {
+        const res = await fetch("/api/billing/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reference: referenceParam }),
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          setVerificationSuccess("Payment verified successfully! Your plan is now active.");
+          await fetchBusinessData();
+        } else {
+          setVerificationError(
+            data.error || "Payment verification pending or unsuccessful. If charged, your plan will activate shortly.",
+          );
+        }
+      } catch (err) {
+        setVerificationError("Network error while verifying payment reference.");
+      } finally {
+        setVerifying(false);
+        // Clean up URL reference param without full page refresh
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("reference");
+        newUrl.searchParams.delete("trxref");
+        router.replace(newUrl.pathname);
+      }
+    }
+
+    verifyTransaction();
+  }, [referenceParam]);
 
   const handleUpgrade = async (planKey: string) => {
     if (!businessId) return;
@@ -188,8 +188,9 @@ function BillingContent() {
         body: JSON.stringify({ plan: planKey, businessId }),
       });
       const data = await res.json();
-      if (data.url) setCheckoutUrl(data.url);
-      else {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
         alert(data.error || "Couldn't start checkout. Please try again.");
         setLoadingPlan(null);
       }
@@ -199,9 +200,41 @@ function BillingContent() {
     }
   };
 
-  const isActive =
-    subscriptionStatus === "active" || subscriptionStatus === "on_trial";
-  const isFree = currentPlan === "free" || !isActive;
+  const handleCancelSubscription = async () => {
+    if (!businessId) return;
+    if (!confirm("Are you sure you want to cancel your subscription? Your plan will return to Free.")) {
+      return;
+    }
+
+    setCancelling(true);
+    try {
+      const res = await fetch("/api/billing/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessId }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        alert("Subscription cancelled successfully.");
+        await fetchBusinessData();
+      } else {
+        alert(data.error || "Failed to cancel subscription.");
+      }
+    } catch {
+      alert("An error occurred while cancelling your subscription.");
+    } finally {
+      setCancelling(false);
+    }
+  };
+
+  const currentPlan = PLANS[currentPlanKey] || PLANS.free;
+  const isActive = subscriptionStatus === "active";
+  const isPastDue = subscriptionStatus === "past_due";
+  const isCancelled = subscriptionStatus === "cancelled";
+  const isFree = currentPlanKey === "free" || !isActive;
+
+  const planList: PlanConfig[] = [PLANS.starter, PLANS.pro, PLANS.scale];
 
   return (
     <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
@@ -212,13 +245,44 @@ function BillingContent() {
         </h1>
         <p className="text-zinc-500 text-sm leading-relaxed max-w-xl">
           {isFree
-            ? "You're on the free tier — 50 conversations a month. Enough to see it work. Upgrade to let it run without limits."
-            : "Manage your subscription and unlock more as your business grows."}
+            ? `You're on the Free tier — ${PLANS.free.monthlyLimit} conversations a month. Enough to see it work. Upgrade to let it run without limits.`
+            : "Manage your subscription and unlock more capacity as your business grows."}
         </p>
       </Reveal>
 
-      {/* Success banner */}
-      {success && (
+      {/* Verification Loading Banner */}
+      {verifying && (
+        <Reveal distance={16} className="mb-6">
+          <div className="flex items-center gap-3 bg-blue-500/[0.07] border border-blue-500/20 rounded-xl px-4 py-3.5 text-blue-300">
+            <svg
+              className="animate-spin h-5 w-5 text-blue-400 shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8H4z"
+              />
+            </svg>
+            <div>
+              <p className="font-medium text-sm">Verifying payment with Paystack...</p>
+              <p className="text-zinc-400 text-[13px] mt-0.5">Please wait a moment while we confirm your transaction.</p>
+            </div>
+          </div>
+        </Reveal>
+      )}
+
+      {/* Verification Success banner */}
+      {verificationSuccess && (
         <Reveal distance={16} className="mb-6">
           <div className="flex items-center gap-3 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-xl px-4 py-3.5">
             <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0">
@@ -229,7 +293,26 @@ function BillingContent() {
                 You're all set — welcome aboard
               </p>
               <p className="text-zinc-500 text-[13px] mt-0.5">
-                Your plan is active and the limits are lifted.
+                {verificationSuccess}
+              </p>
+            </div>
+          </div>
+        </Reveal>
+      )}
+
+      {/* Verification Error banner */}
+      {verificationError && (
+        <Reveal distance={16} className="mb-6">
+          <div className="flex items-center gap-3 bg-red-500/[0.07] border border-red-500/20 rounded-xl px-4 py-3.5">
+            <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center text-red-400 shrink-0">
+              !
+            </div>
+            <div>
+              <p className="text-red-300 font-medium text-sm">
+                Payment Verification Notice
+              </p>
+              <p className="text-zinc-400 text-[13px] mt-0.5">
+                {verificationError}
               </p>
             </div>
           </div>
@@ -252,31 +335,46 @@ function BillingContent() {
               ) : (
                 <div className="flex flex-wrap items-center gap-2.5">
                   <p className="text-xl font-semibold capitalize tracking-tight">
-                    {currentPlan}
+                    {currentPlan.name}
                   </p>
                   <span
-                    className={`text-[11px] px-2 py-0.5 rounded-full font-medium border flex items-center gap-1.5 ${isActive ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800/80 text-zinc-500 border-zinc-700"}`}
+                    className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium border flex items-center gap-1.5 ${
+                      isActive
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        : isPastDue
+                          ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          : isCancelled
+                            ? "bg-zinc-800 text-zinc-400 border-zinc-700"
+                            : "bg-zinc-800/80 text-zinc-500 border-zinc-700"
+                    }`}
                   >
                     {isActive && (
                       <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
                     )}
                     {isActive
-                      ? subscriptionStatus === "on_trial"
-                        ? "Free trial"
-                        : "Active"
-                      : "Free tier"}
+                      ? "Active"
+                      : isPastDue
+                        ? "Payment past due"
+                        : isCancelled
+                          ? "Cancelled"
+                          : "Free tier"}
                   </span>
                 </div>
               )}
-              {isFree && !pageLoading && (
-                <p className="text-zinc-600 text-[13px] mt-2">
-                  50 conversations/month · Upgrade anytime
+              {!pageLoading && (
+                <p className="text-zinc-400 text-[13px] mt-2">
+                  Usage: <span className="text-white font-medium">{monthlyUsage}</span> /{" "}
+                  {currentPlan.monthlyLimit} conversations this month
                 </p>
               )}
             </div>
-            {isActive && (
-              <button className="text-[13px] text-zinc-500 hover:text-red-400 transition-colors border border-zinc-800 hover:border-red-500/20 px-3 py-1.5 rounded-lg shrink-0">
-                Cancel
+            {isActive && !isFree && (
+              <button
+                onClick={handleCancelSubscription}
+                disabled={cancelling}
+                className="text-[13px] text-zinc-400 hover:text-red-400 transition-colors border border-zinc-800 hover:border-red-500/20 px-3.5 py-1.5 rounded-lg shrink-0 disabled:opacity-50"
+              >
+                {cancelling ? "Cancelling..." : "Cancel Subscription"}
               </button>
             )}
           </div>
@@ -291,7 +389,7 @@ function BillingContent() {
               What you're leaving on the table
             </h2>
             <p className="text-zinc-500 text-[13px]">
-              Every day on free, here's what slips by.
+              Every day on Free, here's what slips by.
             </p>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -320,10 +418,10 @@ function BillingContent() {
             <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-white font-semibold text-[15px] mb-1">
-                  One extra lead pays for three months
+                  One extra lead pays for months of service
                 </p>
                 <p className="text-zinc-400 text-[13px] leading-relaxed max-w-lg">
-                  If your average deal is worth $150+, Pro pays for itself the
+                  If your average deal is worth ₦20,000+, Pro pays for itself the
                   moment it captures a single lead you'd have missed.
                 </p>
               </div>
@@ -350,8 +448,8 @@ function BillingContent() {
       </Reveal>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-        {PLANS.map((plan, i) => {
-          const isCurrent = currentPlan === plan.key && isActive;
+        {planList.map((plan, i) => {
+          const isCurrent = currentPlanKey === plan.key && isActive;
           const isLoading = loadingPlan === plan.key;
           return (
             <Reveal key={plan.key} delay={i * 90} direction="up">
@@ -364,7 +462,11 @@ function BillingContent() {
                   </div>
                 )}
                 <div
-                  className={`relative h-full bg-zinc-900/40 border rounded-xl p-5 flex flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 ${plan.popular ? "border-blue-500/30 hover:border-blue-500/50" : "border-zinc-800 hover:border-zinc-700"} ${isCurrent ? "ring-1 ring-emerald-500/30" : ""}`}
+                  className={`relative h-full bg-zinc-900/40 border rounded-xl p-5 flex flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 ${
+                    plan.popular
+                      ? "border-blue-500/30 hover:border-blue-500/50"
+                      : "border-zinc-800 hover:border-zinc-700"
+                  } ${isCurrent ? "ring-1 ring-emerald-500/30" : ""}`}
                 >
                   {plan.popular && (
                     <>
@@ -388,10 +490,10 @@ function BillingContent() {
                     </p>
                     <div className="flex items-end gap-1 mb-1.5">
                       <span className="text-[34px] leading-none font-semibold tracking-tight">
-                        {plan.price}
+                        ₦{plan.priceNGN.toLocaleString()}
                       </span>
                       <span className="text-zinc-500 text-[13px] mb-1">
-                        {plan.per}
+                        /mo
                       </span>
                     </div>
                     <p className="text-zinc-500 text-[12px] leading-relaxed">
@@ -418,7 +520,13 @@ function BillingContent() {
                   <button
                     onClick={() => !isCurrent && handleUpgrade(plan.key)}
                     disabled={isCurrent || !!loadingPlan || !businessId}
-                    className={`relative w-full py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed ${isCurrent ? "bg-zinc-800/60 text-zinc-500 border border-zinc-700" : plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white" : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700"}`}
+                    className={`relative w-full py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed ${
+                      isCurrent
+                        ? "bg-zinc-800/60 text-zinc-500 border border-zinc-700"
+                        : plan.popular
+                          ? "bg-blue-600 hover:bg-blue-500 text-white"
+                          : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700"
+                    }`}
                   >
                     {isLoading ? (
                       <span className="flex items-center justify-center gap-2">
@@ -462,16 +570,19 @@ function BillingContent() {
           Compare plans
         </h2>
         <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
-          <div className="grid grid-cols-5 text-[11px] font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 border-b border-zinc-800/60">
+          <div className="grid grid-cols-6 text-[11px] font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 border-b border-zinc-800/60">
             <div className="col-span-2">Feature</div>
             <div className="text-center">Free</div>
             <div className="text-center text-zinc-400">Starter</div>
             <div className="text-center text-blue-400">Pro</div>
+            <div className="text-center text-purple-400">Scale</div>
           </div>
           {COMPARISON.map((row, i) => (
             <div
               key={row.feature}
-              className={`grid grid-cols-5 text-[13px] px-4 py-3 items-center ${i < COMPARISON.length - 1 ? "border-b border-zinc-800/40" : ""}`}
+              className={`grid grid-cols-6 text-[13px] px-4 py-3 items-center ${
+                i < COMPARISON.length - 1 ? "border-b border-zinc-800/40" : ""
+              }`}
             >
               <div className="col-span-2 text-zinc-400">{row.feature}</div>
               <div className="text-center text-zinc-500">
@@ -507,6 +618,17 @@ function BillingContent() {
                   row.pro
                 )}
               </div>
+              <div className="text-center text-purple-400 font-medium">
+                {typeof row.scale === "boolean" ? (
+                  row.scale ? (
+                    <Check className="w-3.5 h-3.5 text-purple-400 mx-auto" />
+                  ) : (
+                    <Dash />
+                  )
+                ) : (
+                  row.scale
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -518,8 +640,8 @@ function BillingContent() {
           {[
             "Secure payments via Paystack",
             "Cancel anytime",
-            "14-day free trial",
             "Instant activation",
+            "Automatic renewal",
           ].map((text) => (
             <div key={text} className="flex items-center gap-1.5">
               <Check className="w-3 h-3 text-zinc-600" />

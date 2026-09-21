@@ -1,53 +1,109 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
-
-const PLAN_MAP: Record<string, string> = {
-  PLN_l45c6u49b4rtphi: "starter",
-  PLN_mdtlpytqpous1zr: "pro",
-  PLN_jw99ak49aljjjd4: "scale",
-};
+import { PLANS, getPlanByPaystackCode } from "@/lib/plans";
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
   const signature = req.headers.get("x-paystack-signature") ?? "";
   const secret = process.env.PAYSTACK_SECRET_KEY ?? "";
 
-  // Verify webhook signature
+  if (!secret) {
+    console.error("PAYSTACK_SECRET_KEY is missing in webhook handler");
+    return NextResponse.json(
+      { error: "Webhook secret unconfigured" },
+      { status: 500 },
+    );
+  }
+
+  // 1. Verify webhook signature HMAC SHA512
   const hash = crypto
     .createHmac("sha512", secret)
     .update(rawBody)
     .digest("hex");
 
-  if (hash !== signature) {
+  const hashBuffer = Buffer.from(hash, "utf8");
+  const signatureBuffer = Buffer.from(signature, "utf8");
+
+  if (
+    hashBuffer.length !== signatureBuffer.length ||
+    !crypto.timingSafeEqual(hashBuffer, signatureBuffer)
+  ) {
     console.error("Invalid Paystack webhook signature");
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  const event = JSON.parse(rawBody);
+  let event: any;
+  try {
+    event = JSON.parse(rawBody);
+  } catch (err) {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
   const eventType = event.event as string;
-  console.log("Paystack webhook:", eventType);
+  const data = event.data || {};
+  console.log(`Paystack webhook received: ${eventType}`);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  // Handle successful subscription
+  // 2. Idempotency Check
+  const eventId =
+    event.id !== undefined && event.id !== null
+      ? String(event.id)
+      : `${eventType}:${data.reference || data.subscription_code || data.id || Date.now()}`;
+
+  const { error: idempotencyError } = await supabase
+    .from("paystack_webhook_events")
+    .insert({
+      event_id: eventId,
+      event_type: eventType,
+      processed: true,
+      business_id: data.metadata?.business_id || null,
+      raw_metadata: data.metadata || null,
+    });
+
+  if (idempotencyError) {
+    // Unique constraint violation code '23505' or duplicate event
+    if (
+      idempotencyError.code === "23505" ||
+      idempotencyError.message?.includes("unique")
+    ) {
+      console.log(`Duplicate webhook event ignored (${eventId})`);
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+    // Log other DB errors, but continue processing if table doesn't exist yet
+    console.warn("Webhook idempotency table warning:", idempotencyError.message);
+  }
+
+  // 3. Handle Successful Payments & Subscriptions
   if (eventType === "subscription.create" || eventType === "charge.success") {
-    const data = event.data;
     const planCode = data.plan?.plan_code || data.plan_code;
+    const metadataPlan = data.metadata?.plan;
     const customerEmail = data.customer?.email;
-    const subscriptionCode = data.subscription_code || data.reference;
+    const subscriptionCode =
+      data.subscription_code || data.subscription?.subscription_code || data.reference;
+    const customerCode = data.customer?.customer_code;
+    const authorizationCode = data.authorization?.authorization_code;
     const businessId = data.metadata?.business_id;
 
-    const plan = PLAN_MAP[planCode];
-    if (!plan) {
-      console.log("Unknown plan code:", planCode);
+    // Resolve plan
+    let planKey: string | undefined;
+    if (metadataPlan && PLANS[metadataPlan]) {
+      planKey = metadataPlan;
+    } else if (planCode) {
+      const planConfig = getPlanByPaystackCode(planCode);
+      planKey = planConfig?.key;
+    }
+
+    if (!planKey) {
+      console.log("Unknown plan in webhook event:", planCode, metadataPlan);
       return NextResponse.json({ received: true });
     }
 
-    // Find business - try by metadata first, then by customer email
+    // Resolve target business ID
     let bizId = businessId;
 
     if (!bizId && customerEmail) {
@@ -64,34 +120,77 @@ export async function POST(req: NextRequest) {
     }
 
     if (bizId) {
+      const updateData: Record<string, any> = {
+        plan: planKey,
+        subscription_id: subscriptionCode,
+        subscription_status: "active",
+      };
+
+      if (customerCode) updateData.paystack_customer_code = customerCode;
+      if (authorizationCode) updateData.paystack_authorization_code = authorizationCode;
+      if (subscriptionCode) updateData.paystack_subscription_code = subscriptionCode;
+
       const { error } = await supabase
         .from("businesses")
-        .update({
-          plan,
-          subscription_id: subscriptionCode,
-          subscription_status: "active",
-        })
+        .update(updateData)
         .eq("id", bizId);
-      if (error) console.error("Update error:", error);
-      else console.log(`Upgraded business ${bizId} to ${plan}`);
+
+      if (error) console.error("Webhook activation DB error:", error);
+      else console.log(`Activated business ${bizId} on plan ${planKey}`);
+    } else {
+      console.warn("Could not find matching business for webhook:", customerEmail);
     }
   }
 
-  // Handle subscription cancellation
+  // 4. Handle Subscription Cancellation / Non-Renewal
   if (
     eventType === "subscription.disable" ||
     eventType === "subscription.not_renew"
   ) {
-    const data = event.data;
-    const subscriptionCode = data.subscription_code;
+    const subscriptionCode = data.subscription_code || data.code;
 
-    const { error } = await supabase
-      .from("businesses")
-      .update({ plan: "free", subscription_status: "cancelled" })
-      .eq("subscription_id", subscriptionCode);
+    if (subscriptionCode) {
+      const { error } = await supabase
+        .from("businesses")
+        .update({ plan: "free", subscription_status: "cancelled" })
+        .or(
+          `subscription_id.eq.${subscriptionCode},paystack_subscription_code.eq.${subscriptionCode}`,
+        );
 
-    if (error) console.error("Downgrade error:", error);
-    else console.log(`Downgraded subscription ${subscriptionCode} to free`);
+      if (error) console.error("Webhook downgrade DB error:", error);
+      else console.log(`Downgraded subscription ${subscriptionCode} to free`);
+    }
+  }
+
+  // 5. Handle Failed Payments / Invoices
+  if (
+    eventType === "charge.failed" ||
+    eventType === "invoice.payment_failed"
+  ) {
+    const subscriptionCode = data.subscription_code || data.code;
+    const customerCode = data.customer?.customer_code;
+    const businessId = data.metadata?.business_id;
+
+    if (businessId) {
+      await supabase
+        .from("businesses")
+        .update({ subscription_status: "past_due" })
+        .eq("id", businessId);
+    } else if (subscriptionCode) {
+      await supabase
+        .from("businesses")
+        .update({ subscription_status: "past_due" })
+        .or(
+          `subscription_id.eq.${subscriptionCode},paystack_subscription_code.eq.${subscriptionCode}`,
+        );
+    } else if (customerCode) {
+      await supabase
+        .from("businesses")
+        .update({ subscription_status: "past_due" })
+        .eq("paystack_customer_code", customerCode);
+    }
+
+    console.log("Recorded payment failure / past_due status");
   }
 
   return NextResponse.json({ received: true });
