@@ -124,20 +124,40 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const customerCode =
+      tx.customer?.customer_code ||
+      (typeof tx.customer === "string" ? tx.customer : null) ||
+      tx.customer_code ||
+      null;
+
+    const authorizationCode =
+      tx.authorization?.authorization_code ||
+      (typeof tx.authorization === "string" ? tx.authorization : null) ||
+      tx.authorization_code ||
+      null;
+
     const subscriptionCode =
-      tx.subscription?.subscription_code || tx.subscription_code || reference;
-    const customerCode = tx.customer?.customer_code || null;
-    const authorizationCode = tx.authorization?.authorization_code || null;
+      tx.subscription?.subscription_code ||
+      (typeof tx.subscription === "string" ? tx.subscription : null) ||
+      tx.subscription_code ||
+      reference;
+
+    console.log("Paystack verify extracted codes:", {
+      customerCode,
+      authorizationCode,
+      subscriptionCode,
+    });
 
     // Update business subscription state
     const updateData: Record<string, any> = {
       plan: planConfig.key,
       subscription_id: subscriptionCode,
       subscription_status: "active",
-      paystack_customer_code: customerCode,
-      paystack_authorization_code: authorizationCode,
-      paystack_subscription_code: subscriptionCode,
     };
+
+    if (customerCode) updateData.paystack_customer_code = customerCode;
+    if (authorizationCode) updateData.paystack_authorization_code = authorizationCode;
+    if (subscriptionCode) updateData.paystack_subscription_code = subscriptionCode;
 
     const { error: updateError } = await adminSupabase
       .from("businesses")
