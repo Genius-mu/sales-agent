@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Reveal from "@/app/components/Reveal";
+import Logo from "@/app/components/Logo";
 
 const STATS = [
   { value: "78%", label: "of leads never get a response within 5 minutes" },
@@ -101,7 +102,7 @@ export default function LandingPage() {
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-5 sm:px-10 py-3.5 border-b border-white/5 bg-[#08090b]/85 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[13px] font-semibold shadow-[0_0_16px_-4px_rgba(59,130,246,0.6)]">S</div>
+          <Logo size={28} className="w-7 h-7 shrink-0" />
           <span className="font-semibold text-[15px] tracking-tight text-white">Saim</span>
         </div>
         <div className="hidden md:flex items-center gap-8">
