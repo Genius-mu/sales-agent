@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabase } from "@/lib/supabase";
 import Link from "next/link";
+import Logo from "@/app/components/Logo";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -185,9 +186,7 @@ export default function LoginPage() {
           href="/"
           className="flex items-center justify-center gap-2.5 mb-8 group"
         >
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-semibold text-[13px] shadow-[0_0_18px_-4px_rgba(59,130,246,0.6)] group-hover:scale-105 transition-transform">
-            S
-          </div>
+          <Logo size={36} className="w-9 h-9 group-hover:scale-105 transition-transform shrink-0" />
           <span className="font-semibold text-[17px] tracking-tight">Saim</span>
         </Link>
 
