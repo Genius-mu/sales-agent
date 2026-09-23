@@ -136,28 +136,33 @@ export async function POST(req: NextRequest) {
       tx.authorization_code ||
       null;
 
-    const subscriptionCode =
+    const realSubscriptionCode =
       tx.subscription?.subscription_code ||
       (typeof tx.subscription === "string" ? tx.subscription : null) ||
-      tx.subscription_code ||
-      reference;
+      (typeof tx.subscription_code === "string" && tx.subscription_code.startsWith("SUB_")
+        ? tx.subscription_code
+        : null) ||
+      null;
+
+    const subscriptionId = realSubscriptionCode || reference;
 
     console.log("Paystack verify extracted codes:", {
       customerCode,
       authorizationCode,
-      subscriptionCode,
+      realSubscriptionCode,
+      subscriptionId,
     });
 
     // Update business subscription state
     const updateData: Record<string, any> = {
       plan: planConfig.key,
-      subscription_id: subscriptionCode,
+      subscription_id: subscriptionId,
       subscription_status: "active",
     };
 
     if (customerCode) updateData.paystack_customer_code = customerCode;
     if (authorizationCode) updateData.paystack_authorization_code = authorizationCode;
-    if (subscriptionCode) updateData.paystack_subscription_code = subscriptionCode;
+    if (realSubscriptionCode) updateData.paystack_subscription_code = realSubscriptionCode;
 
     const { error: updateError } = await adminSupabase
       .from("businesses")

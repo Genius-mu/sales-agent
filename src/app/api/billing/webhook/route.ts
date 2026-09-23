@@ -83,10 +83,25 @@ export async function POST(req: NextRequest) {
     const planCode = data.plan?.plan_code || data.plan_code;
     const metadataPlan = data.metadata?.plan;
     const customerEmail = data.customer?.email;
-    const subscriptionCode =
-      data.subscription_code || data.subscription?.subscription_code || data.reference;
-    const customerCode = data.customer?.customer_code;
-    const authorizationCode = data.authorization?.authorization_code;
+
+    const realSubscriptionCode =
+      data.subscription_code ||
+      data.subscription?.subscription_code ||
+      (typeof data.code === "string" && data.code.startsWith("SUB_") ? data.code : null) ||
+      null;
+
+    const subscriptionId = realSubscriptionCode || data.reference || null;
+
+    const customerCode =
+      data.customer?.customer_code ||
+      (typeof data.customer === "string" ? data.customer : null) ||
+      null;
+
+    const authorizationCode =
+      data.authorization?.authorization_code ||
+      (typeof data.authorization === "string" ? data.authorization : null) ||
+      null;
+
     const businessId = data.metadata?.business_id;
 
     // Resolve plan
@@ -106,6 +121,26 @@ export async function POST(req: NextRequest) {
     // Resolve target business ID
     let bizId = businessId;
 
+    if (!bizId && realSubscriptionCode) {
+      const { data: biz } = await supabase
+        .from("businesses")
+        .select("id")
+        .or(
+          `paystack_subscription_code.eq.${realSubscriptionCode},subscription_id.eq.${realSubscriptionCode}`,
+        )
+        .maybeSingle();
+      bizId = biz?.id;
+    }
+
+    if (!bizId && customerCode) {
+      const { data: biz } = await supabase
+        .from("businesses")
+        .select("id")
+        .eq("paystack_customer_code", customerCode)
+        .maybeSingle();
+      bizId = biz?.id;
+    }
+
     if (!bizId && customerEmail) {
       const { data: authData } = await supabase.auth.admin.listUsers();
       const user = authData?.users?.find((u) => u.email === customerEmail);
@@ -122,13 +157,13 @@ export async function POST(req: NextRequest) {
     if (bizId) {
       const updateData: Record<string, any> = {
         plan: planKey,
-        subscription_id: subscriptionCode,
         subscription_status: "active",
       };
 
+      if (subscriptionId) updateData.subscription_id = subscriptionId;
       if (customerCode) updateData.paystack_customer_code = customerCode;
       if (authorizationCode) updateData.paystack_authorization_code = authorizationCode;
-      if (subscriptionCode) updateData.paystack_subscription_code = subscriptionCode;
+      if (realSubscriptionCode) updateData.paystack_subscription_code = realSubscriptionCode;
 
       const { error } = await supabase
         .from("businesses")
@@ -148,8 +183,17 @@ export async function POST(req: NextRequest) {
     eventType === "subscription.not_renew"
   ) {
     const subscriptionCode = data.subscription_code || data.code;
+    const customerCode = data.customer?.customer_code;
+    const businessId = data.metadata?.business_id;
 
-    if (subscriptionCode) {
+    if (businessId) {
+      const { error } = await supabase
+        .from("businesses")
+        .update({ plan: "free", subscription_status: "cancelled" })
+        .eq("id", businessId);
+
+      if (error) console.error("Webhook downgrade DB error by businessId:", error);
+    } else if (subscriptionCode) {
       const { error } = await supabase
         .from("businesses")
         .update({ plan: "free", subscription_status: "cancelled" })
@@ -157,8 +201,15 @@ export async function POST(req: NextRequest) {
           `subscription_id.eq.${subscriptionCode},paystack_subscription_code.eq.${subscriptionCode}`,
         );
 
-      if (error) console.error("Webhook downgrade DB error:", error);
+      if (error) console.error("Webhook downgrade DB error by subscriptionCode:", error);
       else console.log(`Downgraded subscription ${subscriptionCode} to free`);
+    } else if (customerCode) {
+      const { error } = await supabase
+        .from("businesses")
+        .update({ plan: "free", subscription_status: "cancelled" })
+        .eq("paystack_customer_code", customerCode);
+
+      if (error) console.error("Webhook downgrade DB error by customerCode:", error);
     }
   }
 
@@ -171,18 +222,26 @@ export async function POST(req: NextRequest) {
     const customerCode = data.customer?.customer_code;
     const businessId = data.metadata?.business_id;
 
-    if (businessId) {
-      await supabase
-        .from("businesses")
-        .update({ subscription_status: "past_due" })
-        .eq("id", businessId);
-    } else if (subscriptionCode) {
+    if (subscriptionCode) {
       await supabase
         .from("businesses")
         .update({ subscription_status: "past_due" })
         .or(
           `subscription_id.eq.${subscriptionCode},paystack_subscription_code.eq.${subscriptionCode}`,
         );
+    } else if (businessId) {
+      const { data: biz } = await supabase
+        .from("businesses")
+        .select("plan")
+        .eq("id", businessId)
+        .single();
+
+      if (biz && biz.plan !== "free") {
+        await supabase
+          .from("businesses")
+          .update({ subscription_status: "past_due" })
+          .eq("id", businessId);
+      }
     } else if (customerCode) {
       await supabase
         .from("businesses")
