@@ -1,4 +1,4 @@
-import React from "react";
+import Image from "next/image";
 
 interface LogoProps {
   className?: string;
@@ -7,108 +7,13 @@ interface LogoProps {
 
 export default function Logo({ className = "w-8 h-8", size = 32 }: LogoProps) {
   return (
-    <svg
+    <Image
+      src="/logo.png"
+      alt="Saim Logo"
       width={size}
       height={size}
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-    >
-      {/* Top Leaf */}
-      <path
-        d="M50 12C54 12 62 16 64 26C54 28 48 22 50 12Z"
-        fill="#2563eb"
-      />
-      
-      {/* Left Leaf/Wing */}
-      <path
-        d="M26 48C17 50 11 55 9 58C12 61 21 64 28 63C26 58 26 53 26 48Z"
-        fill="#2563eb"
-      />
-
-      {/* Right Leaf/Wing */}
-      <path
-        d="M74 48C83 50 89 55 91 58C88 61 79 64 72 63C74 58 74 53 74 48Z"
-        fill="#2563eb"
-      />
-
-      {/* Main Apple Body */}
-      <path
-        d="M50 30C41.5 30 33.5 34.5 28.5 42.5C22 52.5 22.5 68.5 28.5 77.5C33.5 85 41.5 89 50 89C58.5 89 66.5 85 71.5 77.5C77.5 68.5 78 52.5 71.5 42.5C66.5 34.5 58.5 30 50 30Z"
-        fill="#2563eb"
-      />
-
-      {/* Center White Circle */}
-      <circle cx="50" cy="62" r="17" fill="#ffffff" />
-
-      {/* Green Growth Chart inside Circle */}
-      {/* Chart container base */}
-      <rect
-        x="40"
-        y="69"
-        width="20"
-        height="3.5"
-        rx="1.75"
-        stroke="#22c55e"
-        strokeWidth="1.8"
-        fill="none"
-      />
-
-      {/* Bar 1 (Left - Short) */}
-      <rect
-        x="42.5"
-        y="63"
-        width="3"
-        height="6"
-        rx="1"
-        stroke="#22c55e"
-        strokeWidth="1.5"
-        fill="none"
-      />
-
-      {/* Bar 2 (Middle - Medium) */}
-      <rect
-        x="48.5"
-        y="59"
-        width="3"
-        height="10"
-        rx="1"
-        stroke="#22c55e"
-        strokeWidth="1.5"
-        fill="none"
-      />
-
-      {/* Bar 3 (Right - Tall with dots) */}
-      <rect
-        x="54.5"
-        y="55"
-        width="3"
-        height="14"
-        rx="1"
-        stroke="#22c55e"
-        strokeWidth="1.5"
-        fill="none"
-      />
-
-      {/* Trend Arrow Line */}
-      <path
-        d="M42 61.5L47.5 55L51 58L57 51"
-        stroke="#22c55e"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-      {/* Arrow Tip */}
-      <path
-        d="M54 51H57V54"
-        stroke="#22c55e"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
-      />
-    </svg>
+      priority
+      className={`object-contain ${className}`}
+    />
   );
 }
