@@ -48,9 +48,7 @@ export default function DashboardNav() {
       <div className="flex items-center justify-between px-5 md:px-8 py-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0 group">
-          <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[13px] font-semibold shadow-[0_0_16px_-4px_rgba(59,130,246,0.6)] group-hover:scale-105 transition-transform">
-            S
-          </div>
+          <Logo size={28} className="w-7 h-7 group-hover:scale-105 transition-transform shrink-0" />
           <span className="text-white font-semibold text-[15px] tracking-tight">
             Saim
           </span>
