@@ -5,6 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
 
+import Logo from "@/app/components/Logo";
+
 const links = [
   { href: "/dashboard", label: "Overview" },
   { href: "/dashboard/analytics", label: "Analytics" },
