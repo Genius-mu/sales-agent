@@ -29,15 +29,6 @@
   launcher.innerHTML = iconChat();
   document.body.appendChild(launcher);
 
-  var iframeWrap = document.createElement("iframe");
-  iframeWrap.id = "sa-iframe-wrap";
-  iframeWrap.setAttribute("title", "Saim Assistant");
-  iframeWrap.setAttribute("frameborder", "0");
-  iframeWrap.style.transform = "scale(0.92) translateY(12px)";
-  iframeWrap.style.opacity = "0";
-  iframeWrap.style.pointerEvents = "none";
-  document.body.appendChild(iframeWrap);
-
   var widgetCSS = [
     "*{box-sizing:border-box;margin:0;padding:0;}",
     "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fff;display:flex;flex-direction:column;height:100%;min-height:100vh;overflow:hidden;}",
@@ -90,7 +81,17 @@
     '<div id="sa-branding">Powered by Saim</div>' +
     "</body></html>";
 
-  // Fetch widget config (agent name + color) then inject
+  var iframeWrap = document.createElement("iframe");
+  iframeWrap.id = "sa-iframe-wrap";
+  iframeWrap.setAttribute("title", "Saim Assistant");
+  iframeWrap.setAttribute("frameborder", "0");
+  iframeWrap.style.transform = "scale(0.92) translateY(12px)";
+  iframeWrap.style.opacity = "0";
+  iframeWrap.style.pointerEvents = "none";
+  iframeWrap.srcdoc = widgetHTML;
+  document.body.appendChild(iframeWrap);
+
+  // Fetch widget config (agent name + color) then update dynamically
   fetch(baseUrl + "/api/widget-config?businessId=" + businessId)
     .then(function (r) {
       return r.json();
@@ -101,24 +102,30 @@
     .then(function (cfg) {
       var agentName = cfg.agent_name || "Sales Assistant";
       var color = cfg.widget_color || "#2563eb";
-
-      // Apply color + agent name to HTML
-      var html = widgetHTML
-        .replace(/#2563eb/g, color)
-        .replace(/#1d4ed8/g, darkenColor(color))
-        .replace(">Sales Assistant<", ">" + escapeHtml(agentName) + "<")
-        .replace(
-          ">S<",
-          ">" + escapeHtml(agentName.charAt(0).toUpperCase()) + "<",
-        );
-
-      iframeWrap.srcdoc = html;
-
-      // Also update launcher color
-      launcherStyle.textContent = launcherStyle.textContent
-        .replace(/#2563eb/g, color)
-        .replace(/#1d4ed8/g, darkenColor(color));
+      updateWidgetConfig(agentName, color);
     });
+
+  function updateWidgetConfig(agentName, color) {
+    waitForIframe(function (doc) {
+      var header = doc.getElementById("sa-header");
+      if (header) header.style.backgroundColor = color;
+
+      var titleEl = doc.getElementById("sa-header-title");
+      if (titleEl) titleEl.textContent = agentName;
+
+      var avatarEl = doc.getElementById("sa-avatar");
+      if (avatarEl && !avatarEl.querySelector("img")) {
+        avatarEl.textContent = agentName.charAt(0).toUpperCase();
+      }
+
+      var sendBtn = doc.getElementById("sa-send");
+      if (sendBtn) sendBtn.style.backgroundColor = color;
+    });
+
+    launcherStyle.textContent = launcherStyle.textContent
+      .replace(/#2563eb/g, color)
+      .replace(/#1d4ed8/g, darkenColor(color));
+  }
 
   function darkenColor(hex) {
     var r = parseInt(hex.slice(1, 3), 16);
