@@ -152,19 +152,83 @@
     }, 100);
   }
 
-  function escapeHtml(text) {
-    return text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+  function appendSafeLink(doc, container, rawUrl, rawLabel) {
+    var cleanUrl = (rawUrl || "").trim();
+    var labelText = (rawLabel || cleanUrl).replace(/<[^>]*>/g, "");
+
+    var isSafe = false;
+    try {
+      if (cleanUrl.indexOf("/") === 0) {
+        isSafe = true;
+      } else {
+        var parsed = new URL(cleanUrl, "https://example.com");
+        if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+          isSafe = true;
+        }
+      }
+    } catch (e) {
+      isSafe = false;
+    }
+
+    if (cleanUrl.toLowerCase().indexOf("javascript:") === 0) {
+      isSafe = false;
+    }
+
+    if (isSafe) {
+      var a = doc.createElement("a");
+      a.href = cleanUrl;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = labelText;
+      container.appendChild(a);
+    } else {
+      container.appendChild(doc.createTextNode(labelText));
+    }
   }
 
-  function formatText(text) {
-    return escapeHtml(text)
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\*(.*?)\*/g, "<em>$1</em>")
-      .replace(/\n/g, "<br>");
+  function parseLineTokens(doc, container, text) {
+    var pattern = /(?:<a\s+[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>|\[([^\]]+)\]\(([^)]+)\)|\*\*(.*?)\*\*|\*(.*?)\*)/gi;
+    var lastIndex = 0;
+    var match;
+
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        container.appendChild(
+          doc.createTextNode(text.substring(lastIndex, match.index)),
+        );
+      }
+
+      if (match[1] !== undefined) {
+        appendSafeLink(doc, container, match[1], match[2]);
+      } else if (match[3] !== undefined) {
+        appendSafeLink(doc, container, match[4], match[3]);
+      } else if (match[5] !== undefined) {
+        var strong = doc.createElement("strong");
+        strong.textContent = match[5];
+        container.appendChild(strong);
+      } else if (match[6] !== undefined) {
+        var em = doc.createElement("em");
+        em.textContent = match[6];
+        container.appendChild(em);
+      }
+
+      lastIndex = pattern.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      container.appendChild(doc.createTextNode(text.substring(lastIndex)));
+    }
+  }
+
+  function renderMessageContent(doc, container, content) {
+    container.textContent = "";
+    var lines = (content || "").split("\n");
+    lines.forEach(function (line, idx) {
+      if (idx > 0) {
+        container.appendChild(doc.createElement("br"));
+      }
+      parseLineTokens(doc, container, line);
+    });
   }
 
   waitForIframe(function (doc) {
@@ -178,12 +242,7 @@
         var div = doc.createElement("div");
         div.className =
           "msg " + (msg.role === "user" ? "msg-user" : "msg-agent");
-        // Allow anchor tags for upgrade links; format the rest safely
-        if (msg.content.indexOf("<a ") !== -1) {
-          div.innerHTML = msg.content;
-        } else {
-          div.innerHTML = formatText(msg.content);
-        }
+        renderMessageContent(doc, div, msg.content);
         messagesEl.appendChild(div);
       });
       messagesEl.scrollTop = messagesEl.scrollHeight;
