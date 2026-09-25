@@ -447,7 +447,7 @@ function BillingContent() {
         </div>
       </Reveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
         {planList.map((plan, i) => {
           const isCurrent = currentPlanKey === plan.key && isActive;
           const isLoading = loadingPlan === plan.key;
@@ -455,62 +455,62 @@ function BillingContent() {
             <Reveal key={plan.key} delay={i * 90} direction="up">
               <div className="relative h-full">
                 {plan.badge && (
-                  <div className="absolute -top-2.5 left-5 z-20">
-                    <span className="bg-blue-600 text-white text-[11px] font-medium px-2.5 py-1 rounded-full">
+                  <div className="absolute -top-3 left-6 z-20">
+                    <span className="bg-blue-600 text-white text-[11px] font-medium px-3 py-1 rounded-full shadow-[0_0_16px_rgba(37,99,235,0.6)] tracking-wide">
                       {plan.badge}
                     </span>
                   </div>
                 )}
                 <div
-                  className={`relative h-full bg-zinc-900/40 border rounded-xl p-5 flex flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 ${
+                  className={`relative h-full bg-[#0d0f17]/80 backdrop-blur-xl border rounded-[28px] p-6 sm:p-7 flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-[-12px_-12px_36px_rgba(255,255,255,0.02),16px_16px_45px_rgba(0,0,0,0.85)] ${
                     plan.popular
-                      ? "border-blue-500/30 hover:border-blue-500/50"
-                      : "border-zinc-800 hover:border-zinc-700"
-                  } ${isCurrent ? "ring-1 ring-emerald-500/30" : ""}`}
+                      ? "border-blue-500/40 shadow-[0_0_50px_rgba(37,99,235,0.18)]"
+                      : "border-white/[0.08]"
+                  } ${isCurrent ? "ring-2 ring-emerald-500/40" : ""}`}
                 >
                   {plan.popular && (
                     <>
-                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
-                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-40 h-28 bg-blue-600/[0.12] rounded-full blur-3xl pointer-events-none" />
+                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
+                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-32 bg-blue-600/[0.15] rounded-full blur-3xl pointer-events-none" />
                     </>
                   )}
 
                   {isCurrent && (
-                    <div className="absolute top-4 right-4">
-                      <span className="text-[11px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium flex items-center gap-1.5">
-                        <span className="w-1 h-1 bg-emerald-400 rounded-full" />
+                    <div className="absolute top-6 right-6">
+                      <span className="text-[11px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
                         Current
                       </span>
                     </div>
                   )}
 
-                  <div className="relative mb-4">
-                    <p className="text-zinc-400 text-[11px] font-medium tracking-[0.12em] uppercase mb-3">
+                  <div className="relative mb-5">
+                    <p className="text-zinc-400 text-[11px] font-semibold tracking-[0.14em] uppercase mb-3">
                       {plan.name}
                     </p>
-                    <div className="flex items-end gap-1 mb-1.5">
-                      <span className="text-[34px] leading-none font-semibold tracking-tight">
+                    <div className="flex items-end gap-1 mb-2">
+                      <span className="text-[38px] leading-none font-semibold tracking-tight text-white">
                         ₦{plan.priceNGN.toLocaleString()}
                       </span>
-                      <span className="text-zinc-500 text-[13px] mb-1">
+                      <span className="text-zinc-400 text-sm mb-1 font-normal">
                         /mo
                       </span>
                     </div>
-                    <p className="text-zinc-500 text-[12px] leading-relaxed">
+                    <p className="text-zinc-400 text-[13px] leading-relaxed">
                       {plan.desc}
                     </p>
                   </div>
 
-                  <div className="h-px bg-zinc-800/80 mb-4" />
+                  <div className="h-px bg-zinc-800/80 mb-5" />
 
-                  <ul className="space-y-2.5 flex-1 mb-5">
+                  <ul className="space-y-3 flex-1 mb-6">
                     {plan.features.map((f) => (
                       <li
                         key={f}
-                        className="flex items-start gap-2.5 text-[13px] text-zinc-300"
+                        className="flex items-start gap-2.5 text-[13px] text-zinc-200"
                       >
                         <span className="text-emerald-400 mt-0.5 shrink-0">
-                          <Check className="w-3.5 h-3.5" />
+                          <Check className="w-4 h-4" />
                         </span>
                         {f}
                       </li>
@@ -520,18 +520,18 @@ function BillingContent() {
                   <button
                     onClick={() => !isCurrent && handleUpgrade(plan.key)}
                     disabled={isCurrent || !!loadingPlan || !businessId}
-                    className={`relative w-full py-2.5 rounded-lg text-[13px] font-medium transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed ${
+                    className={`relative w-full py-3.5 rounded-full text-sm font-medium transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed shadow-md border ${
                       isCurrent
-                        ? "bg-zinc-800/60 text-zinc-500 border border-zinc-700"
+                        ? "bg-zinc-800/60 text-zinc-500 border-zinc-700/60"
                         : plan.popular
-                          ? "bg-blue-600 hover:bg-blue-500 text-white"
-                          : "bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700"
+                          ? "bg-blue-600 hover:bg-blue-500 text-white border-blue-500/40 shadow-[0_0_24px_rgba(37,99,235,0.4)]"
+                          : "bg-[#161824] hover:bg-[#1c1f2e] text-white border-white/[0.08]"
                     }`}
                   >
                     {isLoading ? (
                       <span className="flex items-center justify-center gap-2">
                         <svg
-                          className="animate-spin h-3.5 w-3.5"
+                          className="animate-spin h-4 w-4"
                           fill="none"
                           viewBox="0 0 24 24"
                         >
