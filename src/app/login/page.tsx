@@ -95,8 +95,15 @@ export default function LoginPage() {
         }
       );
       setLoading(false);
-      if (e) setError(e.message);
-      else setSuccess("Password reset link sent. Check your email.");
+      if (e) {
+        if (e.message.toLowerCase().includes("rate limit") || e.status === 429) {
+          setError("Email rate limit exceeded. Please wait a few minutes before trying again or configure a custom SMTP in Supabase Dashboard.");
+        } else {
+          setError(e.message);
+        }
+      } else {
+        setSuccess("Password reset link sent. Check your email.");
+      }
       return;
     }
 
@@ -121,7 +128,11 @@ export default function LoginPage() {
       });
       setLoading(false);
       if (e) {
-        setError(e.message);
+        if (e.message.toLowerCase().includes("rate limit") || e.status === 429) {
+          setError("Email rate limit exceeded. Please wait a few minutes before trying again or configure custom SMTP in Supabase.");
+        } else {
+          setError(e.message);
+        }
         return;
       }
       if (data.user) {
@@ -155,7 +166,18 @@ export default function LoginPage() {
       },
     });
     setLoading(false);
-    if (e) setError(e.message);
+    if (e) {
+      if (
+        e.message.toLowerCase().includes("provider is not enabled") ||
+        e.message.toLowerCase().includes("unsupported provider")
+      ) {
+        setError(
+          "Google Sign-In is not enabled. Please enable the Google Provider under Authentication -> Providers in your Supabase Dashboard."
+        );
+      } else {
+        setError(e.message);
+      }
+    }
   };
 
   const titles = {
