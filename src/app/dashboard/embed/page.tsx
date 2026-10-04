@@ -46,7 +46,9 @@ export default function EmbedPage() {
     });
   }, []);
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://yourapp.com";
+  const appUrl = (
+    process.env.NEXT_PUBLIC_APP_URL ?? "https://yourapp.com"
+  ).replace(/\/+$/, "");
 
   const embedCode = `<!-- Saim Widget -->
 <script>
