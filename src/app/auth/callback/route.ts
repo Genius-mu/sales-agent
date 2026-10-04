@@ -6,6 +6,21 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url);
   const code = searchParams.get("code");
+  const next = searchParams.get("next") ?? "/dashboard";
+  const error = searchParams.get("error");
+  const error_description = searchParams.get("error_description");
+
+  if (error || error_description) {
+    const errorMsg = error_description || error || "Authentication error";
+    if (next.startsWith("/auth/reset-password")) {
+      return NextResponse.redirect(
+        `${origin}/auth/reset-password?error=${encodeURIComponent(errorMsg)}`
+      );
+    }
+    return NextResponse.redirect(
+      `${origin}/login?error=${encodeURIComponent(errorMsg)}`
+    );
+  }
 
   if (code) {
     const cookieStore = await cookies();
@@ -78,5 +93,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/dashboard`);
+  return NextResponse.redirect(`${origin}${next}`);
 }

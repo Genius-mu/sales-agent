@@ -91,7 +91,7 @@ export default function LoginPage() {
       const { error: e } = await getSupabase().auth.resetPasswordForEmail(
         email,
         {
-          redirectTo: `${window.location.origin}/auth/reset-password`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/auth/reset-password`,
         }
       );
       setLoading(false);
