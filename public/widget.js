@@ -3,7 +3,8 @@
 
   var config = window.SaimConfig || {};
   var businessId = config.businessId;
-  var baseUrl = config.baseUrl || "https://sales-agent-jet.vercel.app";
+  var rawBaseUrl = config.baseUrl || "https://sales-agent-jet.vercel.app";
+  var baseUrl = rawBaseUrl.replace(/\/+$/, "");
 
   if (!businessId) {
     console.warn("[Saim] No businessId provided in SaimConfig.");
