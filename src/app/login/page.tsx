@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation";
 import { getSupabase } from "@/lib/supabase";
 import Link from "next/link";
 import Logo from "@/app/components/Logo";
-import { Mascot, Sparkle } from "@/app/components/Illustrations";
-import Tilt3D from "@/app/components/Tilt3D";
+import DeviceMockup from "@/app/components/DeviceMockup";
 import TagButton from "@/app/components/TagButton";
 
 type Mode = "login" | "signup" | "forgot";
@@ -398,32 +397,13 @@ export default function LoginPage() {
   );
 }
 
-const SHOWCASE_CHIPS = [
-  { text: "💬 “How much for 3 bedrooms?”", className: "top-[6%] left-0" },
-  { text: "⚡ Replied in 2s", className: "top-[40%] -right-2 [animation-delay:-2s]" },
-  { text: "🎉 New lead captured!", className: "bottom-[8%] left-[6%] [animation-delay:-4s]" },
-];
-
 function AuthShowcase() {
   return (
     <div className="hidden lg:block text-center">
-      <div className="relative mx-auto w-full max-w-[400px] mb-6">
-        <div className="absolute inset-[12%] rounded-full bg-gradient-to-br from-blue-200 via-indigo-100 to-pink-100 blur-2xl" aria-hidden="true" />
-        <Tilt3D max={10} glare={false}>
-          <Mascot className="relative w-full h-auto" />
-        </Tilt3D>
-        {SHOWCASE_CHIPS.map((c) => (
-          <div key={c.text} className={`absolute chip-float ${c.className}`}>
-            <span className="block bg-white border-2 border-slate-900 rounded-xl px-3 py-1.5 text-[13px] font-semibold shadow-[2px_3px_0_#0f172a] whitespace-nowrap">
-              {c.text}
-            </span>
-          </div>
-        ))}
-        <Sparkle className="absolute top-[20%] right-[12%] w-6 h-6 chip-float [animation-delay:-1s]" color="#f9a8d4" />
+      <div className="relative mx-auto w-full max-w-[520px] mb-8">
+        <DeviceMockup />
       </div>
-      <h2 className="text-[34px] font-bold tracking-tight leading-tight mb-2">
-        Every visitor answered.
-      </h2>
+      <h2 className="text-[34px] font-bold tracking-tight leading-tight mb-2">Every visitor answered.</h2>
       <p className="text-slate-500 text-[16px]">Live in 5 minutes. Free to start.</p>
     </div>
   );
