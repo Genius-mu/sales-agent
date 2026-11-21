@@ -7,6 +7,7 @@ import HeroOrb from "@/app/components/HeroOrb";
 import LiveChatDemo from "@/app/components/LiveChatDemo";
 import RoiCalculator from "@/app/components/RoiCalculator";
 import PageEffects from "@/app/components/PageEffects";
+import TagButton from "@/app/components/TagButton";
 import { cookies, headers } from "next/headers";
 import { CURRENCY_COOKIE, PLANS, currencyForCountry, isCurrency } from "@/lib/plans";
 
@@ -107,7 +108,9 @@ export default async function LandingPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link href="/login" className="text-zinc-400 hover:text-white text-[13px] transition-colors hidden sm:block font-medium">Sign in</Link>
-          <Link href={SIGNUP} className="text-[13px] bg-white text-black font-medium px-4 py-2 rounded-lg hover:bg-zinc-200 transition-colors active:scale-[0.98]">Start free</Link>
+          <TagButton href={SIGNUP} variant="light" slant="down" width={112} height={36} className="[&_.tag-btn-label]:text-[13px] [&_.tag-btn-label]:px-3">
+            Start free
+          </TagButton>
         </div>
       </nav>
 
@@ -158,14 +161,13 @@ export default async function LandingPage() {
             </Reveal>
 
             <Reveal delay={240} distance={18} repeat={false}>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-5">
-                <Link href={SIGNUP} className="group relative w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium px-7 py-3.5 rounded-xl text-[15px] transition-all active:scale-[0.98] text-center shadow-[0_0_30px_-6px_rgba(59,130,246,0.7)] hover:shadow-[0_0_44px_-4px_rgba(59,130,246,0.95)] overflow-hidden">
-                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  <span className="relative">Get my free sales agent →</span>
-                </Link>
-                <a href="#demo" className="w-full sm:w-auto text-zinc-300 hover:text-white text-[14px] transition-colors font-medium px-7 py-3.5 rounded-xl border border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/40 text-center backdrop-blur-sm">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-5">
+                <TagButton href={SIGNUP} variant="primary" slant="down" width={262} height={50}>
+                  Get my free sales agent →
+                </TagButton>
+                <TagButton href="#demo" variant="secondary" slant="up" width={230} height={50}>
                   Watch it close a lead
-                </a>
+                </TagButton>
               </div>
               <p className="text-zinc-500 text-[12px]">Free plan · No card needed · Live in 5 minutes</p>
             </Reveal>
@@ -368,7 +370,9 @@ export default async function LandingPage() {
               <div className="relative">
                 <h2 className="text-[32px] sm:text-5xl font-semibold tracking-tight mb-4 leading-tight bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">Tonight, someone will visit your site with a question.</h2>
                 <p className="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto mb-9 leading-relaxed">Make sure someone answers. Set up Saim in five minutes and start capturing the leads you&apos;re missing today.</p>
-                <Link href={SIGNUP} className="inline-block w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-medium px-10 py-3.5 rounded-xl text-[15px] transition-all active:scale-[0.98] text-center shadow-[0_0_28px_-6px_rgba(59,130,246,0.7)] hover:shadow-[0_0_36px_-4px_rgba(59,130,246,0.9)]">Get my free sales agent →</Link>
+                <TagButton href={SIGNUP} variant="primary" slant="down" width={270} height={52}>
+                  Get my free sales agent →
+                </TagButton>
                 <p className="text-zinc-500 text-[12px] mt-5">Free plan · No card needed · Cancel anytime</p>
               </div>
             </div>
