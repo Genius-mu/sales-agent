@@ -7,38 +7,32 @@ import LiveChatDemo from "@/app/components/LiveChatDemo";
 import RoiCalculator from "@/app/components/RoiCalculator";
 import PageEffects from "@/app/components/PageEffects";
 import TagButton from "@/app/components/TagButton";
-import {
-  Mascot,
-  IconBolt,
-  IconTarget,
-  IconMail,
-  IconMoon,
-  IconLink,
-  IconVoice,
-  IconCode,
-  Sparkle,
-} from "@/app/components/Illustrations";
+import { Sparkle } from "@/app/components/Illustrations";
+import DeviceMockup from "@/app/components/DeviceMockup";
+import PhysicsTags, { type Tag } from "@/app/components/PhysicsTags";
+import ScrollStack from "@/app/components/ScrollStack";
 import { cookies, headers } from "next/headers";
 import { CURRENCY_COOKIE, PLANS, currencyForCountry, isCurrency } from "@/lib/plans";
 
 const SIGNUP = "/login?mode=signup";
 
-const BENEFITS = [
-  { Icon: IconBolt, title: "Instant replies", desc: "Answers in seconds." },
-  { Icon: IconTarget, title: "Qualifies leads", desc: "Needs, budget, timing." },
-  { Icon: IconMail, title: "Grabs emails", desc: "No forms needed." },
-  { Icon: IconMoon, title: "Never sleeps", desc: "Works 24/7." },
-];
-
-const STEPS = [
-  { Icon: IconLink, title: "Paste your link", desc: "Saim learns your business." },
-  { Icon: IconVoice, title: "Pick its voice", desc: "Friendly, formal, or fun." },
-  { Icon: IconCode, title: "Add one line", desc: "Live on your site." },
-];
-
-const INDUSTRIES = [
-  "🏠 Real estate", "🦷 Clinics", "🎨 Agencies", "🛍️ Online stores", "🎓 Schools",
-  "💼 Consultants", "🏨 Shortlets", "💻 SaaS", "⚖️ Law firms", "🎉 Event planners", "🚗 Car dealers", "🏋️ Gyms",
+const INDUSTRY_TAGS: Tag[] = [
+  { label: "Real estate", bg: "#2563eb", fg: "#ffffff" },
+  { label: "Clinics", bg: "#fde047", fg: "#0f172a" },
+  { label: "Online stores", bg: "#0f172a", fg: "#ffffff" },
+  { label: "Agencies", bg: "#f9a8d4", fg: "#0f172a" },
+  { label: "Schools", bg: "#86efac", fg: "#0f172a" },
+  { label: "Consultants", bg: "#c4b5fd", fg: "#0f172a" },
+  { label: "Shortlets", bg: "#fb923c", fg: "#0f172a" },
+  { label: "SaaS", bg: "#dbeafe", fg: "#1e3a8a" },
+  { label: "Law firms", bg: "#4f46e5", fg: "#ffffff" },
+  { label: "Event planners", bg: "#14b8a6", fg: "#ffffff" },
+  { label: "Car dealers", bg: "#fecdd3", fg: "#0f172a" },
+  { label: "Gyms", bg: "#ef4444", fg: "#ffffff" },
+  { label: "Restaurants", bg: "#fef3c7", fg: "#0f172a" },
+  { label: "Logistics", bg: "#22c55e", fg: "#ffffff" },
+  { label: "Coaches", bg: "#e0e7ff", fg: "#3730a3" },
+  { label: "Fintech", bg: "#111827", fg: "#ffffff" },
 ];
 
 const FAQ = [
@@ -46,12 +40,6 @@ const FAQ = [
   { q: "Will it work on my site?", a: "If you can paste a line of code (WordPress, Wix, Shopify, Webflow…), yes." },
   { q: "Do I need a card?", a: `No. The Free plan gives you ${PLANS.free.monthlyLimit} chats a month.` },
   { q: "Can I cancel?", a: "Anytime, in one click. You drop back to the Free plan." },
-];
-
-const CHIPS = [
-  { text: "⚡ Replied in 2s", className: "top-[8%] -left-2 sm:left-0" },
-  { text: "🎯 Lead qualified", className: "top-[44%] -right-2 sm:right-0 [animation-delay:-2s]" },
-  { text: "✉️ Email captured", className: "bottom-[10%] left-[4%] [animation-delay:-4s]" },
 ];
 
 function Heading({ kicker, title }: { kicker: string; title: React.ReactNode }) {
@@ -72,7 +60,7 @@ export default async function LandingPage() {
     : currencyForCountry((await headers()).get("x-vercel-ip-country"));
 
   return (
-    <div className="min-h-screen bg-[#f7f8fc] text-slate-900 font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-[#f7f8fc] text-slate-900 font-sans antialiased overflow-x-clip">
       <PageEffects />
 
       {/* Soft pastel background + dot grid */}
@@ -156,89 +144,41 @@ export default async function LandingPage() {
             </Reveal>
           </div>
 
-          <Reveal repeat={false} delay={120} distance={24} className="relative mx-auto w-full max-w-[440px]">
-            <div className="absolute inset-[12%] rounded-full bg-gradient-to-br from-blue-200 via-indigo-100 to-pink-100 blur-2xl" aria-hidden="true" />
-            <div className="absolute inset-[6%] rounded-full border-2 border-dashed border-slate-300 spin-slow" aria-hidden="true" />
-            <Tilt3D max={10} glare={false}>
-              <Mascot className="relative w-full h-auto" />
-            </Tilt3D>
-            {CHIPS.map((c) => (
-              <div key={c.text} className={`absolute chip-float ${c.className}`}>
-                <span className="block bg-white border-2 border-slate-900 rounded-xl px-3 py-1.5 text-[13px] font-semibold shadow-[2px_3px_0_#0f172a] whitespace-nowrap">
-                  {c.text}
-                </span>
-              </div>
-            ))}
-            <Sparkle className="absolute top-[18%] right-[14%] w-6 h-6 chip-float [animation-delay:-1s]" color="#f9a8d4" />
-            <Sparkle className="absolute bottom-[30%] left-[10%] w-5 h-5 chip-float [animation-delay:-3s]" color="#93c5fd" />
+          <Reveal repeat={false} delay={120} distance={24} className="relative mx-auto w-full max-w-[560px]">
+            <DeviceMockup />
           </Reveal>
         </section>
 
-        {/* BENEFITS */}
-        <section className="px-5 sm:px-8 pb-16 sm:pb-24 max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            {BENEFITS.map(({ Icon, title, desc }, i) => (
-              <Reveal key={title} delay={i * 80} className="h-full">
-                <Tilt3D max={10}>
-                  <div className="h-full bg-white border-2 border-slate-900 rounded-3xl p-5 text-center shadow-[4px_5px_0_#0f172a]">
-                    <Icon className="w-20 h-20 mx-auto mb-2 icon-bob" />
-                    <h3 className="font-bold text-[17px] mb-0.5">{title}</h3>
-                    <p className="text-slate-500 text-[14px]">{desc}</p>
-                  </div>
-                </Tilt3D>
-              </Reveal>
-            ))}
+        {/* INDUSTRIES: physics pile */}
+        <section className="px-5 sm:px-8 pb-16 sm:pb-24 max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-0 items-end bg-white border-2 border-slate-900 rounded-[32px] shadow-[5px_6px_0_#0f172a] overflow-hidden">
+            <Reveal className="p-7 sm:p-10 lg:border-r-2 border-slate-900/10 self-stretch flex flex-col justify-between">
+              <div>
+                <p className="text-[56px] sm:text-[72px] font-bold leading-none tracking-tight text-blue-600 mb-3">01</p>
+                <h2 className="text-[34px] sm:text-[48px] font-bold tracking-tight leading-[1.04]">
+                  Made for every business that sells by chatting.
+                </h2>
+              </div>
+              <p className="hidden lg:block text-slate-400 text-[14px] mt-8">👆 Go on, grab one and throw it.</p>
+            </Reveal>
+            <PhysicsTags tags={INDUSTRY_TAGS} className="h-[380px] sm:h-[440px] w-full" />
           </div>
         </section>
 
-        {/* INDUSTRIES */}
-        <section className="pb-16 sm:pb-24">
-          <p className="text-center text-slate-500 text-[14px] font-medium mb-4">Made for businesses that sell by chatting</p>
-          <div className="marquee overflow-hidden py-2">
-            <div className="marquee-track">
-              {[...INDUSTRIES, ...INDUSTRIES].map((name, i) => (
-                <span key={i} className="shrink-0 text-[14px] font-medium bg-white border-2 border-slate-900 rounded-full px-4 py-2 shadow-[2px_2px_0_#0f172a]">
-                  {name}
-                </span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* HOW IT WORKS */}
+        {/* HOW IT WORKS: scroll stack */}
         <section id="how" className="px-5 sm:px-8 pb-16 sm:pb-24 max-w-5xl mx-auto scroll-mt-28">
-          <Heading kicker="How it works" title={<>Live in <span className="text-blue-600">5 minutes</span></>} />
-          <div className="grid sm:grid-cols-3 gap-5">
-            {STEPS.map(({ Icon, title, desc }, i) => (
-              <Reveal key={title} delay={i * 100} className="h-full">
-                <Tilt3D max={8}>
-                  <div className="relative h-full bg-white border-2 border-slate-900 rounded-3xl p-6 pt-8 text-center shadow-[4px_5px_0_#0f172a]">
-                    <span className="absolute -top-4 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-yellow-300 border-2 border-slate-900 flex items-center justify-center font-bold shadow-[2px_2px_0_#0f172a]">
-                      {i + 1}
-                    </span>
-                    <Icon className="w-24 h-24 mx-auto mb-3 icon-bob" />
-                    <h3 className="font-bold text-[18px] mb-1">{title}</h3>
-                    <p className="text-slate-500 text-[14px]">{desc}</p>
-                  </div>
-                </Tilt3D>
-              </Reveal>
-            ))}
-          </div>
+          <Heading kicker="How it works" title={<>From visitor to <span className="text-blue-600">customer</span></>} />
+          <ScrollStack />
         </section>
 
         {/* DEMO */}
         <section id="demo" className="px-5 sm:px-8 pb-16 sm:pb-24 max-w-5xl mx-auto scroll-mt-28">
           <Heading kicker="Watch it work" title={<>Question in. <span className="text-blue-600">Lead out.</span></>} />
-          <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-8 items-center">
-            <Reveal direction="left" className="hidden lg:block">
-              <Mascot className="w-full max-w-[300px] mx-auto h-auto" waving={false} />
-            </Reveal>
-            <Reveal direction="right">
-              <Tilt3D max={4} glare={false}>
-                <LiveChatDemo />
-              </Tilt3D>
-            </Reveal>
-          </div>
+          <Reveal className="max-w-xl mx-auto">
+            <Tilt3D max={4} glare={false}>
+              <LiveChatDemo />
+            </Tilt3D>
+          </Reveal>
         </section>
 
         {/* ROI */}
@@ -279,16 +219,15 @@ export default async function LandingPage() {
         {/* FINAL CTA */}
         <section className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto">
           <Reveal distance={28}>
-            <div className="relative overflow-hidden bg-blue-600 border-2 border-slate-900 rounded-[32px] px-6 sm:px-12 py-10 sm:py-12 shadow-[6px_7px_0_#0f172a] grid md:grid-cols-[1fr_auto] gap-6 items-center">
+            <div className="relative overflow-hidden bg-blue-600 border-2 border-slate-900 rounded-[32px] px-6 sm:px-12 py-10 sm:py-12 shadow-[6px_7px_0_#0f172a] text-center">
               <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(#fff 1.5px, transparent 1.5px)", backgroundSize: "20px 20px" }} aria-hidden="true" />
-              <div className="relative text-center md:text-left">
+              <div className="relative flex flex-col items-center">
                 <h2 className="text-[32px] sm:text-5xl font-bold tracking-tight leading-[1.05] text-white mb-3">Never miss a lead again.</h2>
                 <p className="text-blue-100 text-lg mb-7">Set it up tonight. Wake up to leads.</p>
                 <TagButton href={SIGNUP} variant="light" slant="right" width={236} height={52}>
                   Get my free agent →
                 </TagButton>
               </div>
-              <Mascot className="relative hidden md:block w-[230px] h-auto" />
             </div>
           </Reveal>
         </section>
