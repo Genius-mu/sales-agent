@@ -58,8 +58,8 @@ const CustomTooltip = ({
 }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-zinc-950/95 border border-zinc-800 rounded-xl px-3.5 py-3 shadow-xl backdrop-blur-sm">
-      <p className="text-zinc-500 text-[11px] mb-2.5 font-medium">{label}</p>
+    <div className="bg-white border border-slate-200 rounded-xl px-3.5 py-3 shadow-xl backdrop-blur-sm">
+      <p className="text-slate-500 text-[11px] mb-2.5 font-medium">{label}</p>
       <div className="space-y-1.5">
         {payload.map((p) => (
           <div
@@ -71,9 +71,9 @@ const CustomTooltip = ({
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: p.color }}
               />
-              <span className="text-zinc-400 text-[13px]">{p.name}</span>
+              <span className="text-slate-500 text-[13px]">{p.name}</span>
             </div>
-            <span className="text-white text-[13px] font-medium tabular-nums">
+            <span className="text-slate-900 text-[13px] font-medium tabular-nums">
               {p.value}
             </span>
           </div>
@@ -181,10 +181,10 @@ export default function AnalyticsPage() {
       : 0;
 
   return (
-    <div className="min-h-screen bg-[#08090b] text-white">
+    <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
       {/* Subtle ambient background */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-700/30 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-300/70 to-transparent" />
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/[0.04] rounded-full blur-[120px]" />
       </div>
 
@@ -198,19 +198,19 @@ export default function AnalyticsPage() {
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
           >
             <div>
-              <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
+              <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-slate-900 mb-1">
                 Analytics
               </h1>
-              <p className="text-zinc-500 text-sm">
+              <p className="text-slate-500 text-sm">
                 Track how your agent performs over time.
               </p>
             </div>
-            <div className="flex items-center bg-zinc-900/60 border border-zinc-800 rounded-lg p-0.5 gap-0.5 self-start">
+            <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5 gap-0.5 self-start">
               {([7, 30, 90] as Range[]).map((r) => (
                 <button
                   key={r}
                   onClick={() => setRange(r)}
-                  className={`px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-colors ${range === r ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+                  className={`px-3.5 py-1.5 rounded-md text-[13px] font-medium transition-colors ${range === r ? "bg-slate-100 text-slate-900" : "text-slate-500 hover:text-slate-900"}`}
                 >
                   {r} days
                 </button>
@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
                 <Reveal key={m.key} delay={i * 70} distance={22}>
                   <button
                     onClick={() => toggleMetric(m.key)}
-                    className={`group w-full text-left relative bg-zinc-900/40 border rounded-xl p-4 overflow-hidden transition-all duration-200 h-full ${isActive ? "border-zinc-800 hover:border-zinc-700" : "border-zinc-800/40 opacity-45 hover:opacity-75"}`}
+                    className={`group w-full text-left relative bg-white border rounded-xl p-4 overflow-hidden transition-all duration-200 h-full ${isActive ? "border-slate-200 hover:border-slate-300" : "border-slate-200 opacity-45 hover:opacity-75"}`}
                   >
                     <div
                       className="absolute -top-12 left-1/2 -translate-x-1/2 w-32 h-20 rounded-full blur-2xl transition-opacity duration-300"
@@ -251,18 +251,18 @@ export default function AnalyticsPage() {
                         className="w-1.5 h-1.5 rounded-full"
                         style={{ backgroundColor: m.color }}
                       />
-                      <span className="text-zinc-400 text-[13px] font-medium">
+                      <span className="text-slate-500 text-[13px] font-medium">
                         {m.label}
                       </span>
                     </div>
                     <p className="relative text-[28px] leading-none font-semibold tabular-nums tracking-tight mb-2">
                       {loading ? (
-                        <span className="inline-block w-12 h-7 bg-zinc-800/80 rounded animate-pulse" />
+                        <span className="inline-block w-12 h-7 bg-slate-100 rounded animate-pulse" />
                       ) : (
                         totals[m.key].toLocaleString()
                       )}
                     </p>
-                    <p className="relative text-zinc-600 text-[11px]">
+                    <p className="relative text-slate-400 text-[11px]">
                       {extra}
                     </p>
                   </button>
@@ -273,13 +273,13 @@ export default function AnalyticsPage() {
 
           {/* Chart */}
           <Reveal>
-            <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-4 border-b border-zinc-800/60 gap-3">
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between px-5 py-4 border-b border-slate-200 gap-3">
                 <div>
-                  <h2 className="text-[15px] font-semibold text-white tracking-tight">
+                  <h2 className="text-[15px] font-semibold text-slate-900 tracking-tight">
                     Activity over time
                   </h2>
-                  <p className="text-zinc-500 text-[13px] mt-0.5">
+                  <p className="text-slate-500 text-[13px] mt-0.5">
                     Select metrics above to compare
                   </p>
                 </div>
@@ -288,13 +288,13 @@ export default function AnalyticsPage() {
                     (m) => (
                       <div
                         key={m.key}
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium border border-zinc-800 bg-zinc-900/60"
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[12px] font-medium border border-slate-200 bg-white"
                       >
                         <div
                           className="w-1.5 h-1.5 rounded-full"
                           style={{ backgroundColor: m.color }}
                         />
-                        <span className="text-zinc-400">{m.label}</span>
+                        <span className="text-slate-500">{m.label}</span>
                       </div>
                     ),
                   )}
@@ -304,8 +304,8 @@ export default function AnalyticsPage() {
               <div className="p-4 sm:p-5">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center h-56 gap-3">
-                    <div className="w-7 h-7 border-2 border-zinc-800 border-t-blue-500 rounded-full animate-spin" />
-                    <p className="text-zinc-600 text-[13px]">Loading data</p>
+                    <div className="w-7 h-7 border-2 border-slate-200 border-t-blue-500 rounded-full animate-spin" />
+                    <p className="text-slate-400 text-[13px]">Loading data</p>
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height={280}>
@@ -338,18 +338,18 @@ export default function AnalyticsPage() {
                       </defs>
                       <CartesianGrid
                         strokeDasharray="3 3"
-                        stroke="#1c1c1f"
+                        stroke="#e2e8f0"
                         vertical={false}
                       />
                       <XAxis
                         dataKey="date"
-                        tick={{ fill: "#52525b", fontSize: 11 }}
+                        tick={{ fill: "#64748b", fontSize: 11 }}
                         tickLine={false}
                         axisLine={false}
                         interval={range === 7 ? 0 : range === 30 ? 6 : 13}
                       />
                       <YAxis
-                        tick={{ fill: "#52525b", fontSize: 11 }}
+                        tick={{ fill: "#64748b", fontSize: 11 }}
                         tickLine={false}
                         axisLine={false}
                         allowDecimals={false}
@@ -358,7 +358,7 @@ export default function AnalyticsPage() {
                       <Tooltip
                         content={<CustomTooltip />}
                         cursor={{
-                          stroke: "#3f3f46",
+                          stroke: "#cbd5e1",
                           strokeWidth: 1,
                           strokeDasharray: "4 4",
                         }}
@@ -392,11 +392,11 @@ export default function AnalyticsPage() {
           {/* Empty state */}
           {!loading && totals.conversations === 0 && (
             <Reveal delay={80}>
-              <div className="mt-4 flex flex-col items-center justify-center py-14 bg-zinc-900/30 border border-zinc-800/60 rounded-xl text-center px-4">
-                <div className="w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-3">
+              <div className="mt-4 flex flex-col items-center justify-center py-14 bg-white border border-slate-200 rounded-xl text-center px-4">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center mb-3">
                   <svg width="18" height="18" fill="none" viewBox="0 0 24 24">
                     <path
-                      stroke="#52525b"
+                      stroke="#94a3b8"
                       strokeWidth="1.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -404,10 +404,10 @@ export default function AnalyticsPage() {
                     />
                   </svg>
                 </div>
-                <p className="text-zinc-300 text-sm font-medium mb-1">
+                <p className="text-slate-700 text-sm font-medium mb-1">
                   No data yet
                 </p>
-                <p className="text-zinc-600 text-[13px] max-w-xs">
+                <p className="text-slate-400 text-[13px] max-w-xs">
                   Once visitors start chatting with your agent, their activity
                   shows up here.
                 </p>

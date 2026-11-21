@@ -49,12 +49,12 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 rounded-xl p-5 transition-colors">
+    <div className="bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-5 transition-colors">
       <div className="mb-3.5">
-        <label className="block text-[13px] font-medium text-zinc-200">
+        <label className="block text-[13px] font-medium text-slate-700">
           {label}
         </label>
-        <p className="text-zinc-500 text-[12px] mt-0.5">{hint}</p>
+        <p className="text-slate-500 text-[12px] mt-0.5">{hint}</p>
       </div>
       {children}
     </div>
@@ -173,12 +173,12 @@ export default function SetupPage() {
     : 0;
 
   const inputCls =
-    "w-full bg-zinc-800/60 border border-zinc-700/80 focus:border-blue-500/60 rounded-lg px-3.5 py-2.5 text-[13px] text-white placeholder:text-zinc-600 outline-none transition-colors focus:bg-zinc-800";
+    "w-full bg-slate-100 border border-slate-200 focus:border-blue-500/60 rounded-lg px-3.5 py-2.5 text-[13px] text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:bg-white";
 
   return (
-    <div className="min-h-screen bg-[#08090b] text-white">
+    <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-700/30 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-300/70 to-transparent" />
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/[0.04] rounded-full blur-[120px]" />
       </div>
 
@@ -189,10 +189,10 @@ export default function SetupPage() {
           {/* Header */}
           <Reveal distance={20}>
             <div className="mb-7">
-              <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
+              <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-slate-900 mb-1">
                 Agent setup
               </h1>
-              <p className="text-zinc-500 text-sm leading-relaxed">
+              <p className="text-slate-500 text-sm leading-relaxed">
                 Train your agent on your business so it can qualify leads and
                 answer questions around the clock.
               </p>
@@ -210,16 +210,16 @@ export default function SetupPage() {
               ].map((step, i) => (
                 <div key={step.n} className="flex items-center gap-2 shrink-0">
                   <div
-                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[12px] font-medium whitespace-nowrap transition-colors ${step.done ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-400" : "bg-zinc-900/60 border-zinc-800 text-zinc-500"}`}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[12px] font-medium whitespace-nowrap transition-colors ${step.done ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-600" : "bg-white border-slate-200 text-slate-500"}`}
                   >
                     <span
-                      className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 ${step.done ? "bg-emerald-500 text-white" : "bg-zinc-800 text-zinc-500"}`}
+                      className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[10px] font-medium shrink-0 ${step.done ? "bg-emerald-500 text-white" : "bg-slate-100 text-slate-500"}`}
                     >
                       {step.done ? "✓" : step.n}
                     </span>
                     <span className="hidden sm:inline">{step.label}</span>
                   </div>
-                  {i < 3 && <div className="w-4 h-px bg-zinc-800 shrink-0" />}
+                  {i < 3 && <div className="w-4 h-px bg-slate-100 shrink-0" />}
                 </div>
               ))}
             </div>
@@ -230,10 +230,10 @@ export default function SetupPage() {
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5 animate-pulse"
+                  className="bg-white border border-slate-200 rounded-xl p-5 animate-pulse"
                 >
-                  <div className="w-28 h-3.5 bg-zinc-800 rounded mb-3" />
-                  <div className="w-full h-9 bg-zinc-800 rounded-lg" />
+                  <div className="w-28 h-3.5 bg-slate-100 rounded mb-3" />
+                  <div className="w-full h-9 bg-slate-100 rounded-lg" />
                 </div>
               ))}
             </div>
@@ -274,11 +274,11 @@ export default function SetupPage() {
                     }}
                   />
                   <div className="flex items-center justify-between mt-2">
-                    <p className="text-zinc-600 text-[12px]">
+                    <p className="text-slate-400 text-[12px]">
                       The more detail, the better the answers.
                     </p>
                     <span
-                      className={`text-[12px] tabular-nums ${descWordCount > 20 ? "text-emerald-500" : "text-zinc-600"}`}
+                      className={`text-[12px] tabular-nums ${descWordCount > 20 ? "text-emerald-500" : "text-slate-400"}`}
                     >
                       {descWordCount} words
                     </span>
@@ -303,7 +303,7 @@ export default function SetupPage() {
                     <button
                       onClick={handleScrape}
                       disabled={scraping || !url || !businessId}
-                      className="sm:w-auto w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white text-[13px] font-medium rounded-lg transition-colors active:scale-[0.98] whitespace-nowrap disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="sm:w-auto w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-100 disabled:text-slate-400 text-white text-[13px] font-medium rounded-lg transition-colors active:scale-[0.98] whitespace-nowrap disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {scraping ? (
                         <>
@@ -336,19 +336,19 @@ export default function SetupPage() {
                     </button>
                   </div>
                   {scraped && preview && (
-                    <div className="bg-zinc-800/40 border border-zinc-700/60 rounded-lg p-3.5">
+                    <div className="bg-slate-100 border border-slate-200 rounded-lg p-3.5">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-1.5">
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                          <p className="text-emerald-400 text-[12px] font-medium">
+                          <p className="text-emerald-600 text-[12px] font-medium">
                             Content loaded
                           </p>
                         </div>
-                        <span className="text-zinc-600 text-[12px]">
+                        <span className="text-slate-400 text-[12px]">
                           {charCount.toLocaleString()} chars
                         </span>
                       </div>
-                      <p className="text-zinc-500 text-[12px] leading-relaxed line-clamp-3">
+                      <p className="text-slate-500 text-[12px] leading-relaxed line-clamp-3">
                         {preview}…
                       </p>
                     </div>
@@ -382,7 +382,7 @@ export default function SetupPage() {
                       type="color"
                       value={widgetColor}
                       onChange={(e) => setWidgetColor(e.target.value)}
-                      className="w-10 h-10 rounded-lg cursor-pointer border border-zinc-700 bg-transparent p-0.5 shrink-0"
+                      className="w-10 h-10 rounded-lg cursor-pointer border border-slate-300 bg-transparent p-0.5 shrink-0"
                     />
                     <div className="flex items-center gap-1.5 flex-1">
                       {COLORS.map((c) => (
@@ -398,12 +398,12 @@ export default function SetupPage() {
                         />
                       ))}
                     </div>
-                    <code className="text-zinc-500 text-[12px] font-mono">
+                    <code className="text-slate-500 text-[12px] font-mono">
                       {widgetColor}
                     </code>
                   </div>
                   {/* Preview */}
-                  <div className="mt-3.5 flex items-center gap-3 p-3 bg-zinc-800/40 rounded-lg">
+                  <div className="mt-3.5 flex items-center gap-3 p-3 bg-slate-100 rounded-lg">
                     <div
                       className="w-8 h-8 rounded-full flex items-center justify-center"
                       style={{ backgroundColor: widgetColor }}
@@ -424,11 +424,11 @@ export default function SetupPage() {
                       className="flex-1 h-7 rounded-md flex items-center px-3"
                       style={{ backgroundColor: widgetColor }}
                     >
-                      <span className="text-white text-[12px] font-medium">
+                      <span className="text-slate-900 text-[12px] font-medium">
                         {agentName}
                       </span>
                     </div>
-                    <span className="text-zinc-600 text-[12px]">Preview</span>
+                    <span className="text-slate-400 text-[12px]">Preview</span>
                   </div>
                 </Field>
               </Reveal>
@@ -446,14 +446,14 @@ export default function SetupPage() {
                         <button
                           key={p.value}
                           onClick={() => setPersona(p.value)}
-                          className={`relative text-left px-3.5 py-3 rounded-lg transition-colors border ${active ? "bg-blue-600/15 border-blue-500/50" : "bg-zinc-800/40 border-zinc-700/60 hover:border-zinc-600 hover:bg-zinc-800/70"}`}
+                          className={`relative text-left px-3.5 py-3 rounded-lg transition-colors border ${active ? "bg-blue-600/15 border-blue-500/50" : "bg-slate-100 border-slate-200 hover:border-slate-400 hover:bg-slate-100"}`}
                         >
                           <p
-                            className={`font-medium text-[13px] mb-0.5 ${active ? "text-blue-300" : "text-zinc-200"}`}
+                            className={`font-medium text-[13px] mb-0.5 ${active ? "text-blue-700" : "text-slate-700"}`}
                           >
                             {p.label}
                           </p>
-                          <p className="text-zinc-500 text-[12px]">{p.desc}</p>
+                          <p className="text-slate-500 text-[12px]">{p.desc}</p>
                           {active && (
                             <div className="absolute top-3 right-3 w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
                               <svg
@@ -481,7 +481,7 @@ export default function SetupPage() {
 
               {/* Feedback */}
               {error && (
-                <div className="flex items-start gap-2.5 text-red-400 bg-red-500/[0.07] border border-red-500/20 rounded-lg px-4 py-3">
+                <div className="flex items-start gap-2.5 text-red-600 bg-red-500/[0.07] border border-red-500/20 rounded-lg px-4 py-3">
                   <svg
                     width="15"
                     height="15"
@@ -501,7 +501,7 @@ export default function SetupPage() {
                 </div>
               )}
               {success && (
-                <div className="flex items-center gap-2.5 text-emerald-400 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-lg px-4 py-3">
+                <div className="flex items-center gap-2.5 text-emerald-600 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-lg px-4 py-3">
                   <svg
                     width="15"
                     height="15"
@@ -526,7 +526,7 @@ export default function SetupPage() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white font-medium py-3 rounded-lg text-[13px] transition-colors active:scale-[0.99] disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-100 disabled:text-slate-400 text-white font-medium py-3 rounded-lg text-[13px] transition-colors active:scale-[0.99] disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {saving ? (
                     <>

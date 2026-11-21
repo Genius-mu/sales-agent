@@ -64,7 +64,7 @@ const Dash = () => (
     height="12"
     fill="none"
     viewBox="0 0 24 24"
-    className="text-zinc-700 mx-auto"
+    className="text-slate-300 mx-auto"
   >
     <path
       stroke="currentColor"
@@ -245,10 +245,10 @@ function BillingContent() {
     <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
       {/* Header */}
       <Reveal distance={20} className="mb-8">
-        <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-white mb-1">
+        <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-slate-900 mb-1">
           {isFree ? "Your agent is running on limits" : "Billing"}
         </h1>
-        <p className="text-zinc-500 text-sm leading-relaxed max-w-xl">
+        <p className="text-slate-500 text-sm leading-relaxed max-w-xl">
           {isFree
             ? `You're on the Free tier — ${PLANS.free.monthlyLimit} conversations a month. Enough to see it work. Upgrade to let it run without limits.`
             : "Manage your subscription and unlock more capacity as your business grows."}
@@ -258,9 +258,9 @@ function BillingContent() {
       {/* Verification Loading Banner */}
       {verifying && (
         <Reveal distance={16} className="mb-6">
-          <div className="flex items-center gap-3 bg-blue-500/[0.07] border border-blue-500/20 rounded-xl px-4 py-3.5 text-blue-300">
+          <div className="flex items-center gap-3 bg-blue-500/[0.07] border border-blue-500/20 rounded-xl px-4 py-3.5 text-blue-700">
             <svg
-              className="animate-spin h-5 w-5 text-blue-400 shrink-0"
+              className="animate-spin h-5 w-5 text-blue-600 shrink-0"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -280,7 +280,7 @@ function BillingContent() {
             </svg>
             <div>
               <p className="font-medium text-sm">Verifying payment with Paystack...</p>
-              <p className="text-zinc-400 text-[13px] mt-0.5">Please wait a moment while we confirm your transaction.</p>
+              <p className="text-slate-500 text-[13px] mt-0.5">Please wait a moment while we confirm your transaction.</p>
             </div>
           </div>
         </Reveal>
@@ -290,14 +290,14 @@ function BillingContent() {
       {verificationSuccess && (
         <Reveal distance={16} className="mb-6">
           <div className="flex items-center gap-3 bg-emerald-500/[0.07] border border-emerald-500/20 rounded-xl px-4 py-3.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-emerald-600 shrink-0">
               <Check />
             </div>
             <div>
-              <p className="text-emerald-300 font-medium text-sm">
+              <p className="text-emerald-700 font-medium text-sm">
                 You're all set — welcome aboard
               </p>
-              <p className="text-zinc-500 text-[13px] mt-0.5">
+              <p className="text-slate-500 text-[13px] mt-0.5">
                 {verificationSuccess}
               </p>
             </div>
@@ -309,14 +309,14 @@ function BillingContent() {
       {verificationError && (
         <Reveal distance={16} className="mb-6">
           <div className="flex items-center gap-3 bg-red-500/[0.07] border border-red-500/20 rounded-xl px-4 py-3.5">
-            <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center text-red-400 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-red-500/15 flex items-center justify-center text-red-600 shrink-0">
               !
             </div>
             <div>
-              <p className="text-red-300 font-medium text-sm">
+              <p className="text-red-700 font-medium text-sm">
                 Payment Verification Notice
               </p>
-              <p className="text-zinc-400 text-[13px] mt-0.5">
+              <p className="text-slate-500 text-[13px] mt-0.5">
                 {verificationError}
               </p>
             </div>
@@ -326,16 +326,16 @@ function BillingContent() {
 
       {/* Current plan */}
       <Reveal delay={60} className="mb-8">
-        <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5">
+        <div className="bg-white border border-slate-200 rounded-xl p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-zinc-500 text-[11px] mb-2 tracking-[0.12em] uppercase font-medium">
+              <p className="text-slate-500 text-[11px] mb-2 tracking-[0.12em] uppercase font-medium">
                 Current plan
               </p>
               {pageLoading ? (
                 <div className="flex items-center gap-3">
-                  <div className="w-24 h-7 bg-zinc-800 rounded-lg animate-pulse" />
-                  <div className="w-14 h-5 bg-zinc-800 rounded-full animate-pulse" />
+                  <div className="w-24 h-7 bg-slate-100 rounded-lg animate-pulse" />
+                  <div className="w-14 h-5 bg-slate-100 rounded-full animate-pulse" />
                 </div>
               ) : (
                 <div className="flex flex-wrap items-center gap-2.5">
@@ -345,12 +345,12 @@ function BillingContent() {
                   <span
                     className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium border flex items-center gap-1.5 ${
                       isActive
-                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                         : isPastDue
-                          ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
                           : isCancelled
-                            ? "bg-zinc-800 text-zinc-400 border-zinc-700"
-                            : "bg-zinc-800/80 text-zinc-500 border-zinc-700"
+                            ? "bg-slate-100 text-slate-500 border-slate-300"
+                            : "bg-slate-100 text-slate-500 border-slate-300"
                     }`}
                   >
                     {isActive && (
@@ -367,8 +367,8 @@ function BillingContent() {
                 </div>
               )}
               {!pageLoading && (
-                <p className="text-zinc-400 text-[13px] mt-2">
-                  Usage: <span className="text-white font-medium">{monthlyUsage}</span> /{" "}
+                <p className="text-slate-500 text-[13px] mt-2">
+                  Usage: <span className="text-slate-900 font-medium">{monthlyUsage}</span> /{" "}
                   {currentPlan.monthlyLimit} conversations this month
                 </p>
               )}
@@ -377,7 +377,7 @@ function BillingContent() {
               <button
                 onClick={handleCancelSubscription}
                 disabled={cancelling}
-                className="text-[13px] text-zinc-400 hover:text-red-400 transition-colors border border-zinc-800 hover:border-red-500/20 px-3.5 py-1.5 rounded-lg shrink-0 disabled:opacity-50"
+                className="text-[13px] text-slate-500 hover:text-red-600 transition-colors border border-slate-200 hover:border-red-500/20 px-3.5 py-1.5 rounded-lg shrink-0 disabled:opacity-50"
               >
                 {cancelling ? "Cancelling..." : "Cancel Subscription"}
               </button>
@@ -390,21 +390,21 @@ function BillingContent() {
       {isFree && !pageLoading && (
         <div className="mb-8">
           <Reveal className="mb-4">
-            <h2 className="text-[15px] font-semibold text-white mb-1">
+            <h2 className="text-[15px] font-semibold text-slate-900 mb-1">
               What you're leaving on the table
             </h2>
-            <p className="text-zinc-500 text-[13px]">
+            <p className="text-slate-500 text-[13px]">
               Every day on Free, here's what slips by.
             </p>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {PAIN_POINTS.map((p, i) => (
               <Reveal key={p.title} delay={i * 80} direction="up">
-                <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 h-full">
-                  <h3 className="text-white text-[13px] font-medium mb-1.5">
+                <div className="bg-white border border-slate-200 rounded-xl p-4 h-full">
+                  <h3 className="text-slate-900 text-[13px] font-medium mb-1.5">
                     {p.title}
                   </h3>
-                  <p className="text-zinc-500 text-[12px] leading-relaxed">
+                  <p className="text-slate-500 text-[12px] leading-relaxed">
                     {p.desc}
                   </p>
                 </div>
@@ -417,15 +417,15 @@ function BillingContent() {
       {/* ROI callout */}
       {isFree && !pageLoading && (
         <Reveal delay={60} distance={24} className="mb-8">
-          <div className="relative overflow-hidden bg-zinc-900/40 border border-blue-500/20 rounded-xl px-5 sm:px-6 py-5">
+          <div className="relative overflow-hidden bg-white border border-blue-500/20 rounded-xl px-5 sm:px-6 py-5">
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent" />
             <div className="absolute -top-16 left-1/4 w-48 h-32 bg-blue-600/10 rounded-full blur-3xl" />
             <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <p className="text-white font-semibold text-[15px] mb-1">
+                <p className="text-slate-900 font-semibold text-[15px] mb-1">
                   One extra lead pays for months of service
                 </p>
-                <p className="text-zinc-400 text-[13px] leading-relaxed max-w-lg">
+                <p className="text-slate-500 text-[13px] leading-relaxed max-w-lg">
                   If your average deal is worth{" "}
                   {currency === "USD" ? "$50" : "₦68,000"}+, Pro pays for itself
                   the moment it captures a single lead you&apos;d have missed.
@@ -446,12 +446,12 @@ function BillingContent() {
       {/* Plans */}
       <Reveal>
         <div className="flex items-center gap-4 mb-5">
-          <h2 className="text-[15px] font-semibold text-zinc-300 shrink-0">
+          <h2 className="text-[15px] font-semibold text-slate-700 shrink-0">
             {isActive ? "Change plan" : "Choose a plan"}
           </h2>
-          <div className="h-px flex-1 bg-zinc-800/60" />
+          <div className="h-px flex-1 bg-slate-100" />
           {canChooseCurrency && (
-            <CurrencyToggle value={currency} onChange={setCurrency} />
+            <CurrencyToggle value={currency} onChange={setCurrency} theme="light" />
           )}
         </div>
       </Reveal>
@@ -471,10 +471,10 @@ function BillingContent() {
                   </div>
                 )}
                 <div
-                  className={`relative h-full bg-[#0d0f17]/80 backdrop-blur-xl border rounded-[28px] p-6 sm:p-7 flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-[-12px_-12px_36px_rgba(255,255,255,0.02),16px_16px_45px_rgba(0,0,0,0.85)] ${
+                  className={`relative h-full bg-white backdrop-blur-xl border rounded-[28px] p-6 sm:p-7 flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-[0_1px_2px_rgba(15,23,42,0.05),0_8px_24px_-14px_rgba(15,23,42,0.18)] ${
                     plan.popular
                       ? "border-blue-500/40 shadow-[0_0_50px_rgba(37,99,235,0.18)]"
-                      : "border-white/[0.08]"
+                      : "border-slate-200"
                   } ${isCurrent ? "ring-2 ring-emerald-500/40" : ""}`}
                 >
                   {plan.popular && (
@@ -486,7 +486,7 @@ function BillingContent() {
 
                   {isCurrent && (
                     <div className="absolute top-6 right-6">
-                      <span className="text-[11px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5">
+                      <span className="text-[11px] bg-emerald-500/15 text-emerald-600 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
                         Current
                       </span>
@@ -494,31 +494,31 @@ function BillingContent() {
                   )}
 
                   <div className="relative mb-5">
-                    <p className="text-zinc-400 text-[11px] font-semibold tracking-[0.14em] uppercase mb-3">
+                    <p className="text-slate-500 text-[11px] font-semibold tracking-[0.14em] uppercase mb-3">
                       {plan.name}
                     </p>
                     <div className="flex items-end gap-1 mb-2">
-                      <span className="text-[38px] leading-none font-semibold tracking-tight text-white">
+                      <span className="text-[38px] leading-none font-semibold tracking-tight text-slate-900">
                         {formatPlanPrice(plan, currency)}
                       </span>
-                      <span className="text-zinc-400 text-sm mb-1 font-normal">
+                      <span className="text-slate-500 text-sm mb-1 font-normal">
                         /mo
                       </span>
                     </div>
-                    <p className="text-zinc-400 text-[13px] leading-relaxed">
+                    <p className="text-slate-500 text-[13px] leading-relaxed">
                       {plan.desc}
                     </p>
                   </div>
 
-                  <div className="h-px bg-zinc-800/80 mb-5" />
+                  <div className="h-px bg-slate-100 mb-5" />
 
                   <ul className="space-y-3 flex-1 mb-6">
                     {plan.features.map((f) => (
                       <li
                         key={f}
-                        className="flex items-start gap-2.5 text-[13px] text-zinc-200"
+                        className="flex items-start gap-2.5 text-[13px] text-slate-700"
                       >
-                        <span className="text-emerald-400 mt-0.5 shrink-0">
+                        <span className="text-emerald-600 mt-0.5 shrink-0">
                           <Check className="w-4 h-4" />
                         </span>
                         {f}
@@ -531,10 +531,10 @@ function BillingContent() {
                     disabled={isCurrent || !!loadingPlan || !businessId}
                     className={`relative w-full py-3.5 rounded-full text-sm font-medium transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed shadow-md border ${
                       isCurrent
-                        ? "bg-zinc-800/60 text-zinc-500 border-zinc-700/60"
+                        ? "bg-slate-100 text-slate-500 border-slate-200"
                         : plan.popular
                           ? "bg-blue-600 hover:bg-blue-500 text-white border-blue-500/40 shadow-[0_0_24px_rgba(37,99,235,0.4)]"
-                          : "bg-[#161824] hover:bg-[#1c1f2e] text-white border-white/[0.08]"
+                          : "bg-white hover:bg-slate-50 text-slate-900 border-slate-200"
                     }`}
                   >
                     {isLoading ? (
@@ -575,29 +575,29 @@ function BillingContent() {
 
       {/* Comparison table */}
       <Reveal className="mb-10">
-        <h2 className="text-[15px] font-semibold text-zinc-300 mb-4">
+        <h2 className="text-[15px] font-semibold text-slate-700 mb-4">
           Compare plans
         </h2>
-        <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
-          <div className="grid grid-cols-6 text-[11px] font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 border-b border-zinc-800/60">
+        <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+          <div className="grid grid-cols-6 text-[11px] font-medium text-slate-500 uppercase tracking-wider px-4 py-3 border-b border-slate-200">
             <div className="col-span-2">Feature</div>
             <div className="text-center">Free</div>
-            <div className="text-center text-zinc-400">Starter</div>
-            <div className="text-center text-blue-400">Pro</div>
-            <div className="text-center text-purple-400">Scale</div>
+            <div className="text-center text-slate-500">Starter</div>
+            <div className="text-center text-blue-600">Pro</div>
+            <div className="text-center text-purple-600">Scale</div>
           </div>
           {COMPARISON.map((row, i) => (
             <div
               key={row.feature}
               className={`grid grid-cols-6 text-[13px] px-4 py-3 items-center ${
-                i < COMPARISON.length - 1 ? "border-b border-zinc-800/40" : ""
+                i < COMPARISON.length - 1 ? "border-b border-slate-200" : ""
               }`}
             >
-              <div className="col-span-2 text-zinc-400">{row.feature}</div>
-              <div className="text-center text-zinc-500">
+              <div className="col-span-2 text-slate-500">{row.feature}</div>
+              <div className="text-center text-slate-500">
                 {typeof row.free === "boolean" ? (
                   row.free ? (
-                    <Check className="w-3.5 h-3.5 text-zinc-400 mx-auto" />
+                    <Check className="w-3.5 h-3.5 text-slate-500 mx-auto" />
                   ) : (
                     <Dash />
                   )
@@ -605,10 +605,10 @@ function BillingContent() {
                   row.free
                 )}
               </div>
-              <div className="text-center text-zinc-300">
+              <div className="text-center text-slate-700">
                 {typeof row.starter === "boolean" ? (
                   row.starter ? (
-                    <Check className="w-3.5 h-3.5 text-zinc-300 mx-auto" />
+                    <Check className="w-3.5 h-3.5 text-slate-700 mx-auto" />
                   ) : (
                     <Dash />
                   )
@@ -616,10 +616,10 @@ function BillingContent() {
                   row.starter
                 )}
               </div>
-              <div className="text-center text-blue-400 font-medium">
+              <div className="text-center text-blue-600 font-medium">
                 {typeof row.pro === "boolean" ? (
                   row.pro ? (
-                    <Check className="w-3.5 h-3.5 text-blue-400 mx-auto" />
+                    <Check className="w-3.5 h-3.5 text-blue-600 mx-auto" />
                   ) : (
                     <Dash />
                   )
@@ -627,10 +627,10 @@ function BillingContent() {
                   row.pro
                 )}
               </div>
-              <div className="text-center text-purple-400 font-medium">
+              <div className="text-center text-purple-600 font-medium">
                 {typeof row.scale === "boolean" ? (
                   row.scale ? (
-                    <Check className="w-3.5 h-3.5 text-purple-400 mx-auto" />
+                    <Check className="w-3.5 h-3.5 text-purple-600 mx-auto" />
                   ) : (
                     <Dash />
                   )
@@ -653,8 +653,8 @@ function BillingContent() {
             "Automatic renewal",
           ].map((text) => (
             <div key={text} className="flex items-center gap-1.5">
-              <Check className="w-3 h-3 text-zinc-600" />
-              <span className="text-zinc-600 text-[12px]">{text}</span>
+              <Check className="w-3 h-3 text-slate-400" />
+              <span className="text-slate-400 text-[12px]">{text}</span>
             </div>
           ))}
         </div>
@@ -665,9 +665,9 @@ function BillingContent() {
 
 export default function BillingPage() {
   return (
-    <div className="min-h-screen bg-[#08090b] text-white">
+    <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-700/30 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-300/70 to-transparent" />
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/[0.04] rounded-full blur-[120px]" />
       </div>
       <div className="relative z-10">
@@ -675,8 +675,8 @@ export default function BillingPage() {
         <Suspense
           fallback={
             <div className="max-w-5xl mx-auto px-5 sm:px-8 py-10">
-              <div className="w-44 h-8 bg-zinc-800 rounded-lg animate-pulse mb-3" />
-              <div className="w-full h-24 bg-zinc-900 rounded-xl animate-pulse" />
+              <div className="w-44 h-8 bg-slate-100 rounded-lg animate-pulse mb-3" />
+              <div className="w-full h-24 bg-white rounded-xl animate-pulse" />
             </div>
           }
         >
