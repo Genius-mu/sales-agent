@@ -3,6 +3,7 @@ import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
 import { PLANS, formatPlanPrice } from "@/lib/plans";
 import { resolvePersona } from "@/lib/personas";
+import { siteFromOrigin, isExemptSite } from "@/lib/sites";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const corsHeaders = {
@@ -221,6 +222,35 @@ export async function POST(req: NextRequest) {
 
   const plan = (business.plan as string) || "free";
   const limit = PLANS[plan]?.monthlyLimit ?? 20;
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || "https://sales-agent-jet.vercel.app").replace(/\/+$/, "");
+
+  // Site limit: the widget only runs on as many websites as the plan allows.
+  // A new site is registered on its first chat while there's room.
+  // (Requests with no Origin come from server tools, not the widget, and an
+  // Origin can be faked by those anyway, so they're not counted.)
+  const site = siteFromOrigin(req.headers.get("origin"));
+  if (site && !isExemptSite(site, [appUrl, req.headers.get("host")])) {
+    const maxSites = PLANS[plan]?.maxSites ?? 1;
+    const { data: siteAllowed, error: siteErr } = await supabase.rpc("register_site", {
+      p_business_id: businessId,
+      p_host: site,
+      p_limit: maxSites,
+    });
+    if (siteErr) {
+      // Don't break chat if the check itself fails; log it instead
+      console.error("register_site failed:", siteErr.message);
+    } else if (siteAllowed === false) {
+      return NextResponse.json(
+        {
+          reply: null,
+          siteLimitReached: true,
+          plan,
+          upgradeUrl: `${appUrl}/dashboard/billing`,
+        },
+        { headers: corsHeaders },
+      );
+    }
+  }
 
   // PHASE 4: Atomic Conversation Quota Check & Reservation BEFORE Gemini API
   if (limit !== Infinity) {

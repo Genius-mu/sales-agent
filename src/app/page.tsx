@@ -12,6 +12,7 @@ import DeviceMockup from "@/app/components/DeviceMockup";
 import PhysicsTags, { type Tag } from "@/app/components/PhysicsTags";
 import ScrollStack from "@/app/components/ScrollStack";
 import LagosStreet from "@/app/components/LagosStreet";
+import { LegalLinks } from "@/app/components/LegalPage";
 import { cookies, headers } from "next/headers";
 import { CURRENCY_COOKIE, PLANS, currencyForCountry, isCurrency } from "@/lib/plans";
 
@@ -248,7 +249,10 @@ export default async function LandingPage() {
             <a href="#faq">FAQ</a>
             <Link href="/login">Login</Link>
           </div>
-          <p>© 2026 Saim</p>
+          <div className="flex flex-col sm:items-end gap-1 text-center sm:text-right">
+            <LegalLinks className="justify-center sm:justify-end" />
+            <p>© 2026 Saim</p>
+          </div>
         </footer>
       </main>
     </div>

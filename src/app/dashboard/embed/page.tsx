@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
 import Reveal from "@/app/components/Reveal";
 import { getBusinessId } from "@/lib/supabase";
+import ConnectedSites from "@/app/components/ConnectedSites";
 
 const PLATFORMS = [
   { name: "Webflow", path: "Project Settings → Custom Code → Footer Code" },
@@ -283,6 +284,11 @@ export default function EmbedPage() {
                   ))}
                 </div>
               </div>
+            </Reveal>
+
+            {/* Connected websites (site limits) */}
+            <Reveal delay={80}>
+              <ConnectedSites businessId={businessId} />
             </Reveal>
 
             {/* Help note */}
