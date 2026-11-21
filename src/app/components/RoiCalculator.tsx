@@ -88,7 +88,7 @@ export default function RoiCalculator({ initialCurrency }: { initialCurrency: Cu
           {money(revenue, currency)}
           <span className="text-blue-100 text-lg font-medium">/mo</span>
         </p>
-        <TagButton href="/login?mode=signup" variant="light" slant="down" fullWidth height={48} className="relative">
+        <TagButton href="/login?mode=signup" variant="light" slant="right" fullWidth height={48} className="relative">
           Get these leads free →
         </TagButton>
       </div>
