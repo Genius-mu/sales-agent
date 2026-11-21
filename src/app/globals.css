@@ -397,3 +397,26 @@ h3 {
   .dm-stage { animation: none; }
   .dm-msg, .dm-notif { animation: none; opacity: 1; }
 }
+
+/* Lagos street footer scene */
+.ls-danfo { animation: lsDrive 16s linear infinite; }
+@keyframes lsDrive { from { transform: translateX(-280px); } to { transform: translateX(1640px); } }
+.ls-danfo-body { animation: lsBob 0.5s ease-in-out infinite alternate; }
+@keyframes lsBob { from { transform: translateY(0); } to { transform: translateY(-2px); } }
+.ls-wheel { animation: lsSpin 0.6s linear infinite; }
+@keyframes lsSpin { to { transform: rotate(360deg); } }
+.ls-clouds { animation: lsClouds 60s linear infinite alternate; }
+@keyframes lsClouds { from { transform: translateX(0); } to { transform: translateX(80px); } }
+.ls-bubble { opacity: 0; animation: lsBubble 16s ease-out infinite; }
+.ls-b1 { animation-delay: 1.5s; } .ls-b2 { animation-delay: 6.5s; } .ls-b3 { animation-delay: 11.5s; }
+@keyframes lsBubble {
+  0% { opacity: 0; transform: translateY(14px) scale(0.6); }
+  3% { opacity: 1; transform: translateY(-4px) scale(1.06); }
+  5%, 26% { opacity: 1; transform: none; }
+  30%, 100% { opacity: 0; transform: translateY(-8px) scale(0.95); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ls-danfo { animation: none; transform: translateX(640px); }
+  .ls-danfo-body, .ls-wheel, .ls-clouds { animation: none; }
+  .ls-bubble { animation: none; opacity: 1; }
+}
