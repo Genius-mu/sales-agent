@@ -5,35 +5,41 @@ import { useEffect, useId, useRef, useState } from "react";
 
 type Variant = "primary" | "secondary" | "light";
 /**
- * Which way the right edge slants.
- * - "down": top-right corner sticks out, edge slants inward going down
- * - "up":   bottom-right corner sticks out, edge slants inward going up
- * Put a "down" button next to an "up" one so a pair reads as a set.
+ * Which edge carries the slant.
+ * - "right": the original. Right edge slants from the top (longer) down
+ *   to the bottom (shorter).
+ * - "left":  the original turned 180°. Left edge slants with the bottom
+ *   longer than the top.
+ * A "right" button followed by a "left" button interlocks like two halves
+ * of one button cut on a diagonal.
  */
-type Slant = "down" | "up";
+type Slant = "right" | "left";
 
+/** Colours tuned for the light theme: bold navy outline = cartoon look. */
 const COLORS: Record<Variant, { face: string; rim: string; depth: string; swipe: string; outline: string; text: string }> = {
-  primary: { face: "#2563eb", rim: "#93c5fd", depth: "#1e3a8a", swipe: "#3b82f6", outline: "#0b1a4a", text: "text-white" },
-  secondary: { face: "#1b1e2c", rim: "#52525b", depth: "#050608", swipe: "#2b2f44", outline: "#000000", text: "text-zinc-100" },
-  light: { face: "#ffffff", rim: "#ffffff", depth: "#9ca3af", swipe: "#e4e4e7", outline: "#27272a", text: "text-black" },
+  primary: { face: "#2563eb", rim: "#93c5fd", depth: "#1e3a8a", swipe: "#3b82f6", outline: "#0f172a", text: "text-white" },
+  secondary: { face: "#ffffff", rim: "#ffffff", depth: "#cbd5e1", swipe: "#eff6ff", outline: "#0f172a", text: "text-slate-900" },
+  light: { face: "#fde047", rim: "#fef9c3", depth: "#ca8a04", swipe: "#facc15", outline: "#0f172a", text: "text-slate-900" },
 };
 
 /** Builds the tag outline for any width/height (the 180×40 original, generalised). */
 function tagPath(w: number, h: number, slant: Slant) {
-  const y = (v: number) => (slant === "down" ? v : h - v);
-  const pts = [
-    `M 12,${y(0)}`,
-    `L ${w - 14},${y(0)}`,
-    `Q ${w},${y(0)} ${w - 2},${y(h * 0.25)}`,
-    `L ${w - 12},${y(h * 0.8)}`,
-    `Q ${w - 14},${y(h)} ${w - 28},${y(h)}`,
-    `L 12,${y(h)}`,
-    `Q 0,${y(h)} 0,${y(h - 10)}`,
-    `L 0,${y(10)}`,
-    `Q 0,${y(0)} 12,${y(0)}`,
+  // "left" is the same shape rotated 180° around the centre.
+  const X = (v: number) => (slant === "right" ? v : w - v);
+  const Y = (v: number) => (slant === "right" ? v : h - v);
+  const p = (x: number, y: number) => `${X(x)},${Y(y)}`;
+  return [
+    `M ${p(12, 0)}`,
+    `L ${p(w - 14, 0)}`,
+    `Q ${p(w, 0)} ${p(w - 2, h * 0.25)}`,
+    `L ${p(w - 12, h * 0.8)}`,
+    `Q ${p(w - 14, h)} ${p(w - 28, h)}`,
+    `L ${p(12, h)}`,
+    `Q ${p(0, h)} ${p(0, h - 10)}`,
+    `L ${p(0, 10)}`,
+    `Q ${p(0, 0)} ${p(12, 0)}`,
     "Z",
-  ];
-  return pts.join(" ");
+  ].join(" ");
 }
 
 interface TagButtonProps {
@@ -60,7 +66,7 @@ export default function TagButton({
   type = "button",
   disabled = false,
   variant = "primary",
-  slant = "down",
+  slant = "right",
   width = 220,
   height = 46,
   fullWidth = false,
@@ -111,12 +117,12 @@ export default function TagButton({
             {/* Swipe fill, grows from the left on hover */}
             <rect className="tag-btn-swipe" x="0" y="0" width={w} height={h} fill={c.swipe} />
             {/* Glossy top highlight */}
-            <rect x="0" y="0" width={w} height={h * 0.42} fill="#ffffff" opacity={variant === "light" ? 0.5 : 0.13} />
+            <rect x="0" y="0" width={w} height={h * 0.42} fill="#ffffff" opacity={variant === "primary" ? 0.16 : 0.45} />
             {/* Shine that sweeps across on hover */}
             <rect className="tag-btn-shine" x="-60" y={-h} width="26" height={h * 3} fill="#ffffff" opacity="0.35" />
           </g>
           {/* Inner rim + bold outline for the cartoon look */}
-          <path d={d} fill="none" stroke={c.rim} strokeOpacity={variant === "light" ? 0 : 0.55} strokeWidth="1.5" transform={`translate(0 0.75)`} />
+          <path d={d} fill="none" stroke={c.rim} strokeOpacity={variant === "secondary" ? 0 : 0.6} strokeWidth="1.5" transform="translate(0 0.75)" />
           <path d={d} fill="none" stroke={c.outline} strokeWidth="2" />
         </g>
       </svg>
@@ -127,7 +133,7 @@ export default function TagButton({
   );
 
   const shared = {
-    className: `tag-btn group relative inline-flex items-center justify-center select-none outline-none focus-visible:ring-2 focus-visible:ring-blue-400/60 rounded-xl ${
+    className: `tag-btn group relative inline-flex items-center justify-center select-none outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl ${
       disabled ? "opacity-50 pointer-events-none" : ""
     }`,
     style: { width: w, height: h, "--w": `${w}px` } as React.CSSProperties,

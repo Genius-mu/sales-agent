@@ -32,8 +32,8 @@ function Slider({
   return (
     <label className="block">
       <div className="flex items-center justify-between mb-2.5">
-        <span className="text-zinc-400 text-[13px]">{label}</span>
-        <span className="text-white text-[14px] font-medium tabular-nums">{display}</span>
+        <span className="text-slate-600 text-[14px] font-medium">{label}</span>
+        <span className="text-slate-900 text-[15px] font-bold tabular-nums">{display}</span>
       </div>
       <input
         type="range"
@@ -67,31 +67,29 @@ export default function RoiCalculator({ initialCurrency }: { initialCurrency: Cu
   }, [visitors, dealUSD, leadRate, closeRate]);
 
   return (
-    <div className="relative grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-px bg-zinc-800/60 rounded-[28px] overflow-hidden border border-zinc-800">
-      <div className="bg-[#0b0c11] p-6 sm:p-8 space-y-6">
-        <Slider label="Website visitors per month" value={visitors} display={visitors.toLocaleString("en-US")} min={200} max={50000} step={100} onChange={setVisitors} />
-        <Slider label="Average value of a customer" value={dealUSD} display={money(dealUSD, currency)} min={10} max={5000} step={10} onChange={setDealUSD} />
-        <Slider label="Visitors who'd chat and leave contact details" value={leadRate} display={`${leadRate}%`} min={0.5} max={10} step={0.5} onChange={setLeadRate} />
-        <Slider label="Leads you'd turn into customers" value={closeRate} display={`${closeRate}%`} min={1} max={50} step={1} onChange={setCloseRate} />
-        <p className="text-zinc-600 text-[12px] leading-relaxed">
-          Your numbers, your assumptions. Move the sliders to match your business. This is an estimate, not a promise.
-        </p>
+    <div className="relative grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] rounded-[28px] overflow-hidden border-2 border-slate-900 bg-white shadow-[5px_6px_0_#0f172a]">
+      <div className="bg-white p-6 sm:p-8 space-y-6 border-b-2 lg:border-b-0 lg:border-r-2 border-slate-900">
+        <Slider label="👀 Visitors / month" value={visitors} display={visitors.toLocaleString("en-US")} min={200} max={50000} step={100} onChange={setVisitors} />
+        <Slider label="💰 Value of a customer" value={dealUSD} display={money(dealUSD, currency)} min={10} max={5000} step={10} onChange={setDealUSD} />
+        <Slider label="💬 Visitors who become leads" value={leadRate} display={`${leadRate}%`} min={0.5} max={10} step={0.5} onChange={setLeadRate} />
+        <Slider label="🤝 Leads you close" value={closeRate} display={`${closeRate}%`} min={1} max={50} step={1} onChange={setCloseRate} />
+        <p className="text-slate-400 text-[12px]">Your numbers. An estimate, not a promise.</p>
       </div>
-      <div className="relative bg-[#0d0f17] p-6 sm:p-8 flex flex-col justify-center overflow-hidden">
-        <div className="absolute -top-20 -right-20 w-64 h-64 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-        <p className="relative text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-3">Every month you could capture</p>
+      <div className="relative bg-blue-600 p-6 sm:p-8 flex flex-col justify-center overflow-hidden text-white">
+        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: "radial-gradient(#fff 1.5px, transparent 1.5px)", backgroundSize: "20px 20px" }} />
+        <p className="relative text-blue-100 text-[13px] font-semibold mb-2">Every month you could get</p>
         <div className="relative flex items-baseline gap-2 mb-1">
-          <span className="text-5xl font-semibold tracking-tight tabular-nums text-white">{leads.toLocaleString("en-US")}</span>
-          <span className="text-zinc-400 text-[15px]">qualified leads</span>
+          <span className="text-6xl font-bold tracking-tight tabular-nums">{leads.toLocaleString("en-US")}</span>
+          <span className="text-blue-100 text-[16px] font-medium">leads</span>
         </div>
-        <p className="relative text-zinc-500 text-[13px] mb-7">≈ {deals.toFixed(deals < 10 ? 1 : 0)} new customers</p>
-        <p className="relative text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-2">Worth about</p>
-        <p className="relative text-4xl sm:text-5xl font-semibold tracking-tight tabular-nums bg-gradient-to-r from-blue-300 via-cyan-200 to-emerald-300 bg-clip-text text-transparent mb-8">
+        <p className="relative text-blue-100 text-[14px] mb-6">≈ {deals.toFixed(deals < 10 ? 1 : 0)} new customers</p>
+        <p className="relative text-blue-100 text-[13px] font-semibold mb-1">Worth about</p>
+        <p className="relative text-4xl sm:text-5xl font-bold tracking-tight tabular-nums text-yellow-300 mb-8">
           {money(revenue, currency)}
-          <span className="text-zinc-500 text-lg font-normal">/mo</span>
+          <span className="text-blue-100 text-lg font-medium">/mo</span>
         </p>
         <TagButton href="/login?mode=signup" variant="light" slant="down" fullWidth height={48} className="relative">
-          Start capturing them, free
+          Get these leads free →
         </TagButton>
       </div>
     </div>
