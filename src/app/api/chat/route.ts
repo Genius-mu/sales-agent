@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
-import { PLANS } from "@/lib/plans";
+import { PLANS, formatPlanPrice } from "@/lib/plans";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const corsHeaders = {
@@ -44,7 +44,7 @@ async function sendLimitEmail(
               </p>
             </div>
             <div style="background:#f4f4f5;border-radius:12px;padding:20px;margin-bottom:24px;">
-              <p style="color:#18181b;font-size:13px;font-weight:600;margin:0 0 12px;">What you get on Starter (₦7,500/mo):</p>
+              <p style="color:#18181b;font-size:13px;font-weight:600;margin:0 0 12px;">What you get on Starter (${formatPlanPrice(PLANS.starter, "USD")}/mo, or ${formatPlanPrice(PLANS.starter, "NGN")}/mo in Nigeria):</p>
               <ul style="color:#52525b;font-size:13px;line-height:2;margin:0;padding-left:16px;">
                 <li>300 conversations/month</li>
                 <li>Lead capture & dashboard</li>

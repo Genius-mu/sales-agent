@@ -5,7 +5,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import DashboardNav from "@/app/components/DashboardNav";
 import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
-import { PLANS, PlanConfig } from "@/lib/plans";
+import { PLANS, PlanConfig, formatPlanPrice } from "@/lib/plans";
+import { useBillingCurrency } from "@/lib/currency";
+import CurrencyToggle from "@/app/components/CurrencyToggle";
 
 const PAIN_POINTS = [
   {
@@ -92,6 +94,9 @@ function BillingContent() {
 
   // Cancellation state
   const [cancelling, setCancelling] = useState(false);
+
+  const { currency, setCurrency, canChoose: canChooseCurrency } =
+    useBillingCurrency();
 
   const fetchBusinessData = async () => {
     const sb = getSupabase();
@@ -185,7 +190,7 @@ function BillingContent() {
       const res = await fetch("/api/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planKey, businessId }),
+        body: JSON.stringify({ plan: planKey, businessId, currency }),
       });
       const data = await res.json();
       if (data.url) {
@@ -421,8 +426,9 @@ function BillingContent() {
                   One extra lead pays for months of service
                 </p>
                 <p className="text-zinc-400 text-[13px] leading-relaxed max-w-lg">
-                  If your average deal is worth ₦20,000+, Pro pays for itself the
-                  moment it captures a single lead you'd have missed.
+                  If your average deal is worth{" "}
+                  {currency === "USD" ? "$50" : "₦20,000"}+, Pro pays for itself
+                  the moment it captures a single lead you&apos;d have missed.
                 </p>
               </div>
               <button
@@ -444,6 +450,9 @@ function BillingContent() {
             {isActive ? "Change plan" : "Choose a plan"}
           </h2>
           <div className="h-px flex-1 bg-zinc-800/60" />
+          {canChooseCurrency && (
+            <CurrencyToggle value={currency} onChange={setCurrency} />
+          )}
         </div>
       </Reveal>
 
@@ -490,7 +499,7 @@ function BillingContent() {
                     </p>
                     <div className="flex items-end gap-1 mb-2">
                       <span className="text-[38px] leading-none font-semibold tracking-tight text-white">
-                        ₦{plan.priceNGN.toLocaleString()}
+                        {formatPlanPrice(plan, currency)}
                       </span>
                       <span className="text-zinc-400 text-sm mb-1 font-normal">
                         /mo

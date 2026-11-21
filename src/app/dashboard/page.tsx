@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import DashboardNav from "@/app/components/DashboardNav";
+import CurrencyToggle from "@/app/components/CurrencyToggle";
+import { useBillingCurrency } from "@/lib/currency";
+import { PLANS, formatPlanPrice } from "@/lib/plans";
 import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
 
@@ -65,10 +68,10 @@ function greeting() {
   return "Good evening";
 }
 
-const PLANS = [
+const UPGRADE_PLANS = [
   {
+    key: "starter",
     name: "Starter",
-    price: "₦7,500",
     period: "/mo",
     desc: "For founders ready to stop losing leads",
     badge: null,
@@ -83,8 +86,8 @@ const PLANS = [
     cta: "Upgrade to Starter",
   },
   {
+    key: "pro",
     name: "Pro",
-    price: "₦18,000",
     period: "/mo",
     desc: "For businesses that can't afford to miss a sale",
     badge: "Most popular",
@@ -100,8 +103,8 @@ const PLANS = [
     cta: "Upgrade to Pro",
   },
   {
+    key: "scale",
     name: "Scale",
-    price: "₦40,000",
     period: "/mo",
     desc: "For agencies running multiple client sites",
     badge: null,
@@ -116,7 +119,7 @@ const PLANS = [
     ],
     cta: "Upgrade to Scale",
   },
-];
+] as const;
 
 const Check = ({ className = "" }: { className?: string }) => (
   <svg
@@ -151,6 +154,8 @@ const Arrow = () => (
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const { currency, setCurrency, canChoose: canChooseCurrency } =
+    useBillingCurrency();
 
   const convCount = useCountUp(stats?.conversations ?? 0);
   const leadsCount = useCountUp(stats?.leads ?? 0);
@@ -699,11 +704,18 @@ export default function DashboardPage() {
                 Capture one extra lead a month and Saim pays for itself many
                 times over.
               </p>
+              {canChooseCurrency && (
+                <CurrencyToggle
+                  value={currency}
+                  onChange={setCurrency}
+                  className="mt-5"
+                />
+              )}
             </div>
           </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-            {PLANS.map((plan, i) => (
+            {UPGRADE_PLANS.map((plan, i) => (
               <Reveal
                 key={plan.name}
                 delay={i * 90}
@@ -732,7 +744,7 @@ export default function DashboardPage() {
                     </p>
                     <div className="flex items-end gap-1 mb-2">
                       <span className="text-[38px] leading-none font-semibold tracking-tight text-white">
-                        {plan.price}
+                        {formatPlanPrice(PLANS[plan.key], currency)}
                       </span>
                       <span className="text-zinc-400 text-sm mb-1 font-normal">
                         {plan.period}
