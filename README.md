@@ -210,7 +210,7 @@ Prices live in one place: `src/lib/plans.ts` (`priceUSD` / `priceNGN`).
 To turn on USD billing:
 
 1. Enable USD on your Paystack account.
-2. Create three monthly USD plans in Paystack ($12, $29, $59).
+2. Create three monthly USD plans in Paystack ($13, $29, $59).
 3. Add their plan codes to your Vercel env vars:
 
 ```env
