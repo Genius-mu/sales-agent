@@ -11,6 +11,7 @@ import { Sparkle } from "@/app/components/Illustrations";
 import DeviceMockup from "@/app/components/DeviceMockup";
 import PhysicsTags, { type Tag } from "@/app/components/PhysicsTags";
 import ScrollStack from "@/app/components/ScrollStack";
+import LagosStreet from "@/app/components/LagosStreet";
 import { cookies, headers } from "next/headers";
 import { CURRENCY_COOKIE, PLANS, currencyForCountry, isCurrency } from "@/lib/plans";
 
@@ -217,7 +218,7 @@ export default async function LandingPage() {
         </section>
 
         {/* FINAL CTA */}
-        <section className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto">
+        <section className="px-5 sm:px-8 pb-6 sm:pb-10 max-w-5xl mx-auto">
           <Reveal distance={28}>
             <div className="relative overflow-hidden bg-blue-600 border-2 border-slate-900 rounded-[32px] px-6 sm:px-12 py-10 sm:py-12 shadow-[6px_7px_0_#0f172a] text-center">
               <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(#fff 1.5px, transparent 1.5px)", backgroundSize: "20px 20px" }} aria-hidden="true" />
@@ -232,15 +233,20 @@ export default async function LandingPage() {
           </Reveal>
         </section>
 
-        <footer className="border-t-2 border-slate-900/10 px-5 sm:px-10 py-8 flex flex-col sm:flex-row items-center sm:justify-between gap-4 text-slate-500 text-[13px]">
+        {/* Lagos street scene (footer illustration) */}
+        <div className="relative">
+          <LagosStreet className="block w-full h-[260px] sm:h-[340px] lg:h-auto" />
+        </div>
+
+        <footer className="bg-[#4b5563] text-slate-300 [&_a:hover]:text-white [&_span.font-bold]:text-white px-5 sm:px-10 py-8 flex flex-col sm:flex-row items-center sm:justify-between gap-4 text-[13px]">
           <div className="flex items-center gap-2">
             <Logo size={24} className="w-6 h-6 shrink-0" />
-            <span className="font-bold text-slate-900">Saim</span>
+            <span className="font-bold">Saim</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#pricing" className="hover:text-slate-900">Pricing</a>
-            <a href="#faq" className="hover:text-slate-900">FAQ</a>
-            <Link href="/login" className="hover:text-slate-900">Login</Link>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            <Link href="/login">Login</Link>
           </div>
           <p>© 2026 Saim</p>
         </footer>
