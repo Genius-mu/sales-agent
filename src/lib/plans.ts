@@ -1,10 +1,34 @@
+export type Currency = "USD" | "NGN";
+
+export const CURRENCY_COOKIE = "saim_currency";
+
+export function isCurrency(value: unknown): value is Currency {
+  return value === "USD" || value === "NGN";
+}
+
+/** Nigeria sees naira; everyone else sees dollars. */
+export function currencyForCountry(country: string | null | undefined): Currency {
+  return country?.toUpperCase() === "NG" ? "NGN" : "USD";
+}
+
 export interface PlanConfig {
   key: "free" | "starter" | "pro" | "scale";
   name: string;
+  /** Naira price (charged to Nigerian customers). */
   priceNGN: number;
   priceKobo: number;
+  /** Dollar price (default for everyone outside Nigeria). */
+  priceUSD: number;
+  priceUSDCents: number;
   monthlyLimit: number;
+  /** Paystack plan code for NGN billing. */
   paystackPlanCode: string | null;
+  /**
+   * Paystack plan code for USD billing. Create USD plans in the Paystack
+   * dashboard (your account must have USD enabled), then set the
+   * NEXT_PUBLIC_PAYSTACK_PLAN_*_USD env vars. Until then, checkout charges NGN.
+   */
+  paystackPlanCodeUSD: string | null;
   isFree: boolean;
   desc: string;
   accent: string;
@@ -20,8 +44,11 @@ export const PLANS: Record<string, PlanConfig> = {
     name: "Free",
     priceNGN: 0,
     priceKobo: 0,
+    priceUSD: 0,
+    priceUSDCents: 0,
     monthlyLimit: 20,
     paystackPlanCode: null,
+    paystackPlanCodeUSD: null,
     isFree: true,
     desc: "For trying out Saim on your website",
     accent: "#71717a",
@@ -40,8 +67,11 @@ export const PLANS: Record<string, PlanConfig> = {
     name: "Starter",
     priceNGN: 7500,
     priceKobo: 750000,
+    priceUSD: 12,
+    priceUSDCents: 1200,
     monthlyLimit: 300,
     paystackPlanCode: "PLN_l45c6u49b4rtphi",
+    paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_USD || null,
     isFree: false,
     desc: "For founders ready to stop losing leads",
     accent: "#71717a",
@@ -61,8 +91,11 @@ export const PLANS: Record<string, PlanConfig> = {
     name: "Pro",
     priceNGN: 18000,
     priceKobo: 1800000,
+    priceUSD: 29,
+    priceUSDCents: 2900,
     monthlyLimit: 1200,
     paystackPlanCode: "PLN_mdtlpytqpous1zr",
+    paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_USD || null,
     isFree: false,
     desc: "For businesses that can't afford to miss a sale",
     accent: "#3b82f6",
@@ -83,8 +116,11 @@ export const PLANS: Record<string, PlanConfig> = {
     name: "Scale",
     priceNGN: 40000,
     priceKobo: 4000000,
+    priceUSD: 59,
+    priceUSDCents: 5900,
     monthlyLimit: 3000,
     paystackPlanCode: "PLN_jw99ak49aljjjd4",
+    paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_USD || null,
     isFree: false,
     desc: "For agencies running multiple client sites",
     accent: "#71717a",
@@ -107,5 +143,36 @@ export function getPlanByKey(key: string): PlanConfig {
 }
 
 export function getPlanByPaystackCode(code: string): PlanConfig | undefined {
-  return Object.values(PLANS).find((plan) => plan.paystackPlanCode === code);
+  return Object.values(PLANS).find(
+    (plan) =>
+      plan.paystackPlanCode === code || plan.paystackPlanCodeUSD === code,
+  );
+}
+
+/** True once every paid plan has a USD Paystack plan code configured. */
+export const USD_BILLING_ENABLED = [PLANS.starter, PLANS.pro, PLANS.scale].every(
+  (plan) => !!plan.paystackPlanCodeUSD,
+);
+
+/** Amount in the smallest unit (kobo / cents) and plan code for a currency. */
+export function getPlanCharge(plan: PlanConfig, currency: Currency) {
+  if (currency === "USD") {
+    return {
+      currency,
+      amount: plan.priceUSDCents,
+      paystackPlanCode: plan.paystackPlanCodeUSD,
+    };
+  }
+  return {
+    currency,
+    amount: plan.priceKobo,
+    paystackPlanCode: plan.paystackPlanCode,
+  };
+}
+
+/** "$12" or "₦7,500" */
+export function formatPlanPrice(plan: PlanConfig, currency: Currency): string {
+  return currency === "USD"
+    ? `$${plan.priceUSD.toLocaleString("en-US")}`
+    : `₦${plan.priceNGN.toLocaleString("en-US")}`;
 }

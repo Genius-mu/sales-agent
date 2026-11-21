@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase-server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
-import { PLANS } from "@/lib/plans";
+import { PLANS, getPlanCharge } from "@/lib/plans";
 
 export async function POST(req: NextRequest) {
   try {
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check currency
-    if (tx.currency !== "NGN") {
+    if (tx.currency !== "NGN" && tx.currency !== "USD") {
       return NextResponse.json(
         { error: "Invalid transaction currency" },
         { status: 400 },
@@ -94,10 +94,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify amount matches expected plan amount
-    if (tx.amount !== planConfig.priceKobo) {
+    // Verify amount matches the plan's price in the charged currency
+    const expected = getPlanCharge(planConfig, tx.currency);
+    if (tx.amount !== expected.amount) {
       console.error(
-        `Amount mismatch for reference ${reference}: expected ${planConfig.priceKobo}, got ${tx.amount}`,
+        `Amount mismatch for reference ${reference}: expected ${expected.amount} ${tx.currency}, got ${tx.amount}`,
       );
       return NextResponse.json(
         { error: "Transaction amount does not match expected plan price" },

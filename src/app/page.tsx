@@ -1,6 +1,9 @@
 import Link from "next/link";
 import Reveal from "@/app/components/Reveal";
 import Logo from "@/app/components/Logo";
+import LandingPricing from "@/app/components/LandingPricing";
+import { cookies, headers } from "next/headers";
+import { CURRENCY_COOKIE, currencyForCountry, isCurrency } from "@/lib/plans";
 
 const STATS = [
   { value: "78%", label: "of leads never get a response within 5 minutes" },
@@ -23,56 +26,6 @@ const FEATURES = [
   { title: "Every lead, tracked", desc: "Full conversation history, captured emails, engagement analytics. See exactly what visitors ask and where deals form." },
 ];
 
-const PLANS = [
-  {
-    name: "Starter",
-    price: "₦7,500",
-    per: "/mo",
-    desc: "For founders ready to stop losing leads",
-    popular: false,
-    features: [
-      "300 conversations/month",
-      "Lead capture & email collection",
-      "Full conversation dashboard",
-      "1 site embed",
-      "Email support",
-    ],
-    cta: "Start capturing leads",
-  },
-  {
-    name: "Pro",
-    price: "₦18,000",
-    per: "/mo",
-    desc: "For businesses that can't afford to miss a sale",
-    popular: true,
-    features: [
-      "1,200 conversations/month",
-      "Lead capture + CRM export",
-      "Advanced analytics dashboard",
-      "Up to 5 site embeds",
-      "Custom agent persona",
-      "Priority support",
-    ],
-    cta: "Start free trial",
-  },
-  {
-    name: "Scale",
-    price: "₦40,000",
-    per: "/mo",
-    desc: "For agencies running multiple client sites",
-    popular: false,
-    features: [
-      "3,000 conversations/month",
-      "Unlimited site embeds",
-      "White-label widget",
-      "Custom AI persona per client",
-      "Dedicated account support",
-      "Priority API access",
-    ],
-    cta: "Talk to us",
-  },
-];
-
 const TESTIMONIALS = [
   { quote: "We went from responding to leads in four hours to instantly. Closed three deals in the first week we'd have lost before.", name: "James O.", role: "Founder, B2B SaaS", avatar: "J" },
   { quote: "Our discovery calls are completely different now. Prospects already know our pricing and process — they're pre-sold before they book.", name: "Sarah M.", role: "Agency owner", avatar: "S" },
@@ -93,7 +46,12 @@ const Check = ({ className = "" }: { className?: string }) => (
   </svg>
 );
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const savedCurrency = (await cookies()).get(CURRENCY_COOKIE)?.value;
+  const initialCurrency = isCurrency(savedCurrency)
+    ? savedCurrency
+    : currencyForCountry((await headers()).get("x-vercel-ip-country"));
+
   return (
     <div className="min-h-screen bg-[#08090b] text-white font-sans antialiased overflow-x-hidden">
       {/* Ambient background */}
@@ -371,50 +329,12 @@ export default function LandingPage() {
 
         {/* PRICING */}
         <section id="pricing" className="px-5 sm:px-8 pb-20 sm:pb-28 max-w-5xl mx-auto">
-          <Reveal className="text-center mb-12">
+          <Reveal className="text-center mb-8">
             <p className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium mb-4">Pricing</p>
             <h2 className="text-[28px] sm:text-4xl font-semibold tracking-tight mb-3 leading-tight">Less than one lost deal a month</h2>
             <p className="text-zinc-500 text-base max-w-md mx-auto">Capture one extra lead a month and Saim pays for itself many times over.</p>
           </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-            {PLANS.map((plan, i) => (
-              <Reveal key={plan.name} delay={i * 90} direction="up" className="relative">
-                {plan.popular && (
-                  <div className="absolute -top-3 left-6 z-20">
-                    <span className="bg-blue-600 text-white text-[11px] font-medium px-3 py-1 rounded-full shadow-[0_0_16px_rgba(37,99,235,0.6)] tracking-wide">Most popular</span>
-                  </div>
-                )}
-                <div className={`relative h-full bg-[#0d0f17]/80 backdrop-blur-xl border rounded-[28px] p-6 sm:p-7 flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 text-left shadow-[-12px_-12px_36px_rgba(255,255,255,0.02),16px_16px_45px_rgba(0,0,0,0.85)] ${plan.popular ? "border-blue-500/40 shadow-[0_0_50px_rgba(37,99,235,0.18)]" : "border-white/[0.08]"}`}>
-                  {plan.popular && (
-                    <>
-                      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent" />
-                      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-32 bg-blue-600/[0.15] rounded-full blur-3xl pointer-events-none" />
-                    </>
-                  )}
-                  <div className="relative mb-5">
-                    <p className="text-zinc-400 text-[11px] font-semibold tracking-[0.14em] uppercase mb-3">{plan.name}</p>
-                    <div className="flex items-end gap-1 mb-2">
-                      <span className="text-[38px] leading-none font-semibold tracking-tight text-white">{plan.price}</span>
-                      <span className="text-zinc-400 text-sm mb-1 font-normal">{plan.per}</span>
-                    </div>
-                    <p className="text-zinc-400 text-[13px] leading-relaxed">{plan.desc}</p>
-                  </div>
-                  <div className="h-px bg-zinc-800/80 mb-5" />
-                  <ul className="space-y-3 flex-1 mb-6">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-[13px] text-zinc-200">
-                        <span className="text-emerald-400 mt-0.5 shrink-0"><Check className="w-4 h-4" /></span>
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link href="/login" className={`block w-full py-3.5 rounded-full text-sm font-medium text-center transition-all duration-200 active:scale-[0.98] shadow-md border ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white border-blue-500/40 shadow-[0_0_24px_rgba(37,99,235,0.4)]" : "bg-[#161824] hover:bg-[#1c1f2e] text-white border-white/[0.08]"}`}>
-                    {plan.cta}
-                  </Link>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <LandingPricing initialCurrency={initialCurrency} />
           <Reveal>
             <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-zinc-600 text-[12px]">
               {["14-day free trial", "No credit card required", "Cancel anytime", "Live in under 5 minutes"].map((t) => (

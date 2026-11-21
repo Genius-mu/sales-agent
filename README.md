@@ -199,3 +199,24 @@ vercel deploy
 ## License
 
 MIT
+
+## Pricing & currencies
+
+Prices live in one place: `src/lib/plans.ts` (`priceUSD` / `priceNGN`).
+
+- **Landing page:** visitors in Nigeria see naira, everyone else sees dollars (via Vercel's `x-vercel-ip-country` header). A toggle lets anyone switch, and their choice is saved in a cookie.
+- **Dashboard & billing:** show naira only until USD billing is turned on, so the price shown always matches the price charged.
+
+To turn on USD billing:
+
+1. Enable USD on your Paystack account.
+2. Create three monthly USD plans in Paystack ($12, $29, $59).
+3. Add their plan codes to your Vercel env vars:
+
+```env
+NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_USD=PLN_xxx
+NEXT_PUBLIC_PAYSTACK_PLAN_PRO_USD=PLN_xxx
+NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_USD=PLN_xxx
+```
+
+Once all three are set, the currency toggle appears on the dashboard and billing pages and USD checkout works.

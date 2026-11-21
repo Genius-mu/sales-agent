@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase-server";
-import { PLANS } from "@/lib/plans";
+import { PLANS, getPlanCharge, isCurrency } from "@/lib/plans";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { plan, businessId } = body || {};
+    const { plan, businessId, currency: requestedCurrency } = body || {};
 
     if (!businessId || typeof businessId !== "string") {
       return NextResponse.json(
@@ -34,6 +34,16 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
+
+    // Charge in USD only when asked for and a USD Paystack plan exists;
+    // otherwise fall back to NGN.
+    const usdCharge = getPlanCharge(planConfig, "USD");
+    const charge =
+      isCurrency(requestedCurrency) &&
+      requestedCurrency === "USD" &&
+      usdCharge.paystackPlanCode
+        ? usdCharge
+        : getPlanCharge(planConfig, "NGN");
 
     // Verify user owns businessId
     const { data: business, error: bizError } = await supabase
@@ -78,12 +88,14 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         email,
-        plan: planConfig.paystackPlanCode,
-        amount: planConfig.priceKobo,
+        plan: charge.paystackPlanCode,
+        amount: charge.amount,
+        currency: charge.currency,
         callback_url: `${appUrl}/dashboard/billing`,
         metadata: {
           business_id: businessId,
           plan: planConfig.key,
+          currency: charge.currency,
           user_id: user.id,
           cancel_action: `${appUrl}/dashboard/billing`,
         },
