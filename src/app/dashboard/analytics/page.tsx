@@ -13,6 +13,8 @@ import {
 import DashboardNav from "@/app/components/DashboardNav";
 import Reveal from "@/app/components/Reveal";
 import { getSupabase } from "@/lib/supabase";
+import LockedFeature from "@/app/components/LockedFeature";
+import { hasFeature } from "@/lib/plans";
 
 type Range = 7 | 30 | 90;
 
@@ -85,6 +87,7 @@ const CustomTooltip = ({
 
 export default function AnalyticsPage() {
   const [businessId, setBusinessId] = useState<string | null>(null);
+  const [plan, setPlan] = useState<string | null>(null);
   const [range, setRange] = useState<Range>(30);
   const [data, setData] = useState<DayData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,16 +117,25 @@ export default function AnalyticsPage() {
       if (!session?.user) return;
       const { data } = await sb
         .from("businesses")
-        .select("id")
+        .select("id, plan")
         .eq("user_id", session.user.id)
         .maybeSingle();
-      if (data) setBusinessId((data as { id: string }).id);
+      if (data) {
+        const biz = data as { id: string; plan: string | null };
+        setPlan(biz.plan || "free");
+        setBusinessId(biz.id);
+      } else {
+        setPlan("free");
+      }
     }
     loadBiz();
   }, []);
 
+  const unlocked = hasFeature(plan, "analytics");
+
   useEffect(() => {
-    if (!businessId) return;
+    // Don't load analytics data for plans that don't include it
+    if (!businessId || !unlocked) return;
     async function load() {
       setLoading(true);
       const since = new Date();
@@ -163,7 +175,7 @@ export default function AnalyticsPage() {
       setLoading(false);
     }
     load();
-  }, [businessId, range]);
+  }, [businessId, range, unlocked]);
 
   const totals = data.reduce(
     (acc, d) => ({
@@ -179,6 +191,23 @@ export default function AnalyticsPage() {
     totals.conversations > 0
       ? Math.round((totals.leads / totals.conversations) * 100)
       : 0;
+
+  if (plan !== null && !unlocked) {
+    return (
+      <div className="min-h-screen bg-[#f7f8fc] text-slate-900">
+        <DashboardNav />
+        <LockedFeature
+          feature="analytics"
+          title="See what turns visitors into leads"
+          points={[
+            "Conversations, leads and messages over time",
+            "Your lead conversion rate",
+            "Which days bring in the most chats",
+          ]}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f7f8fc] text-slate-900">

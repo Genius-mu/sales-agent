@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { hasFeature } from "@/lib/plans";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -34,13 +35,13 @@ export async function GET(req: NextRequest) {
   // so a duplicate/missing row no longer silently forces the default color.
   const { data, error } = await supabase
     .from("businesses")
-    .select("agent_name, widget_color")
+    .select("agent_name, widget_color, plan")
     .eq("id", businessId)
     .maybeSingle();
 
   if (error || !data) {
     return NextResponse.json(
-      { agent_name: "Sales Assistant", widget_color: "#2563eb" },
+      { agent_name: "Sales Assistant", widget_color: "#2563eb", show_branding: true },
       { headers: corsHeaders },
     );
   }
@@ -49,6 +50,7 @@ export async function GET(req: NextRequest) {
     {
       agent_name: data.agent_name || "Sales Assistant",
       widget_color: data.widget_color || "#2563eb",
+      show_branding: !hasFeature(data.plan, "whiteLabel"),
     },
     { headers: corsHeaders },
   );

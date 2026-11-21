@@ -104,6 +104,13 @@
       var agentName = cfg.agent_name || "Sales Assistant";
       var color = cfg.widget_color || "#2563eb";
       updateWidgetConfig(agentName, color);
+      // White-label (Scale plan): the server decides whether branding shows
+      if (cfg.show_branding === false) {
+        waitForIframe(function (doc) {
+          var b = doc.getElementById("sa-branding");
+          if (b) b.style.display = "none";
+        });
+      }
     });
 
   function updateWidgetConfig(agentName, color) {

@@ -3,30 +3,10 @@
 import { useState, useEffect } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
 import Reveal from "@/app/components/Reveal";
+import Link from "next/link";
 import { getSupabase, getBusinessId } from "@/lib/supabase";
-
-const PERSONAS = [
-  {
-    value: "friendly and professional",
-    label: "Friendly & professional",
-    desc: "Warm, helpful, builds trust",
-  },
-  {
-    value: "direct and concise",
-    label: "Direct & concise",
-    desc: "Gets to the point fast",
-  },
-  {
-    value: "enthusiastic and energetic",
-    label: "Enthusiastic & energetic",
-    desc: "High energy, exciting",
-  },
-  {
-    value: "warm and consultative",
-    label: "Warm & consultative",
-    desc: "Advisory, thoughtful",
-  },
-];
+import { PERSONAS, MAX_CUSTOM_PERSONA, isPresetPersona } from "@/lib/personas";
+import { hasFeature, planFor } from "@/lib/plans";
 
 const COLORS = [
   "#2563eb",
@@ -67,6 +47,10 @@ export default function SetupPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [persona, setPersona] = useState(PERSONAS[0].value);
+  const [plan, setPlan] = useState<string>("free");
+  const [customPersona, setCustomPersona] = useState("");
+  const canCustomPersona = hasFeature(plan, "customPersona");
+  const usingCustom = !isPresetPersona(persona);
   const [agentName, setAgentName] = useState("Sales Assistant");
   const [widgetColor, setWidgetColor] = useState("#2563eb");
   const [scraping, setScraping] = useState(false);
@@ -103,10 +87,13 @@ export default function SetupPage() {
           description: string | null;
           agent_name?: string;
           widget_color?: string;
+          plan?: string | null;
         };
         setName(d.name || "");
         setUrl(d.website_url || "");
+        setPlan(d.plan || "free");
         setPersona(d.agent_persona || PERSONAS[0].value);
+        if (d.agent_persona && !isPresetPersona(d.agent_persona)) setCustomPersona(d.agent_persona);
         setDescription(d.description || "");
         setAgentName(d.agent_name || "Sales Assistant");
         setWidgetColor(d.widget_color || "#2563eb");
@@ -157,7 +144,12 @@ export default function SetupPage() {
       .update({
         name,
         website_url: url,
-        agent_persona: persona,
+        agent_persona:
+          usingCustom && canCustomPersona
+            ? customPersona.trim().slice(0, MAX_CUSTOM_PERSONA) || PERSONAS[0].value
+            : isPresetPersona(persona)
+              ? persona
+              : PERSONAS[0].value,
         description,
         agent_name: agentName,
         widget_color: widgetColor,
@@ -476,6 +468,36 @@ export default function SetupPage() {
                       );
                     })}
                   </div>
+
+                  {/* Write your own (Pro and Scale) */}
+                  {canCustomPersona ? (
+                    <div className={`mt-2 rounded-lg border px-3.5 py-3 transition-colors ${usingCustom ? "bg-blue-600/10 border-blue-500/50" : "bg-slate-50 border-slate-200"}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <p className={`font-medium text-[13px] ${usingCustom ? "text-blue-700" : "text-slate-700"}`}>✍️ Write your own</p>
+                        <span className="text-slate-400 text-[11px] tabular-nums">{customPersona.length}/{MAX_CUSTOM_PERSONA}</span>
+                      </div>
+                      <textarea
+                        value={customPersona}
+                        maxLength={MAX_CUSTOM_PERSONA}
+                        onFocus={() => setPersona(customPersona || "custom")}
+                        onChange={(e) => {
+                          setCustomPersona(e.target.value);
+                          setPersona(e.target.value || "custom");
+                        }}
+                        rows={3}
+                        placeholder="e.g. Speak like a friendly Lagos estate agent. Use simple English, a little Pidgin is fine, and always offer a viewing."
+                        className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-[13px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 resize-none"
+                      />
+                    </div>
+                  ) : (
+                    <Link
+                      href="/dashboard/billing"
+                      className="mt-2 flex items-center justify-between rounded-lg border border-dashed border-slate-300 px-3.5 py-3 text-[13px] text-slate-500 hover:border-slate-400 hover:text-slate-800 transition-colors"
+                    >
+                      <span>🔒 Write your own personality</span>
+                      <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 rounded-full px-2 py-0.5">{planFor("customPersona").name}</span>
+                    </Link>
+                  )}
                 </Field>
               </Reveal>
 
