@@ -269,3 +269,42 @@ h3 {
   .word-swap > span:first-child { opacity: 1; }
   .tilt-3d-inner { transform: none !important; }
 }
+
+/* Tag buttons: cartoon 3D (thick outline + "depth" layer that the face lifts off and presses into) */
+.tag-btn { -webkit-tap-highlight-color: transparent; }
+.tag-btn-depth { transform: translateY(5px); }
+.tag-btn-face,
+.tag-btn-label { transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.tag-btn:hover .tag-btn-face,
+.tag-btn:hover .tag-btn-label { transform: translateY(-2px); }
+.tag-btn:active .tag-btn-face,
+.tag-btn:active .tag-btn-label { transform: translateY(4px); transition-duration: 0.06s; }
+.tag-btn-label { text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
+.tag-btn-svg { filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.45)); }
+
+.tag-btn-swipe {
+  transform-box: fill-box;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform 0.35s ease-out;
+}
+.tag-btn:hover .tag-btn-swipe { transform-origin: left; transform: scaleX(1); }
+
+.tag-btn-shine { transform: translateX(0) skewX(-20deg); transform-box: fill-box; }
+.tag-btn:hover .tag-btn-shine { transform: translateX(calc(var(--w, 220px) + 120px)) skewX(-20deg); transition: transform 0.7s ease-out; }
+
+/* Jelly squash-and-stretch when you hover */
+.tag-btn:hover { animation: tagJelly 0.55s ease; }
+@keyframes tagJelly {
+  0% { transform: scale(1, 1); }
+  30% { transform: scale(1.06, 0.92) rotate(-1deg); }
+  50% { transform: scale(0.97, 1.05) rotate(0.6deg); }
+  70% { transform: scale(1.02, 0.98); }
+  100% { transform: scale(1, 1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag-btn:hover { animation: none; }
+  .tag-btn-shine, .tag-btn:hover .tag-btn-shine { transition: none; }
+}
+.tag-btn-label.text-black { text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); }

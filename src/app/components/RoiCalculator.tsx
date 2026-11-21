@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import TagButton from "@/app/components/TagButton";
 import { useCurrency } from "@/lib/currency";
 import { NGN_PER_USD, type Currency } from "@/lib/plans";
 
@@ -90,9 +90,9 @@ export default function RoiCalculator({ initialCurrency }: { initialCurrency: Cu
           {money(revenue, currency)}
           <span className="text-zinc-500 text-lg font-normal">/mo</span>
         </p>
-        <Link href="/login" className="relative inline-flex justify-center bg-white text-black font-medium text-[14px] px-6 py-3 rounded-full hover:bg-zinc-200 transition-colors active:scale-[0.98]">
+        <TagButton href="/login?mode=signup" variant="light" slant="down" fullWidth height={48} className="relative">
           Start capturing them, free
-        </Link>
+        </TagButton>
       </div>
     </div>
   );
