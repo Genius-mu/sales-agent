@@ -392,7 +392,10 @@ export default function LoginPage() {
           </div>
 
           <p className="text-center text-slate-500 text-xs mt-6">
-            By continuing you agree to our Terms of Service &amp; Privacy Policy
+            By continuing you agree to our{" "}
+            <Link href="/terms" className="underline underline-offset-2 hover:text-slate-700">Terms of Service</Link>
+            {" "}&amp;{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-slate-700">Privacy Policy</Link>
           </p>
         </div>
       </div>

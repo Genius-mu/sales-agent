@@ -303,7 +303,13 @@
         })
         .then(function (data) {
           hideTyping();
-          if (data.limitReached) {
+          if (data.siteLimitReached) {
+            messages.push({
+              role: "assistant",
+              content:
+                "This chat isn't available on this website yet. If you own this site, connect it from your Saim dashboard.",
+            });
+          } else if (data.limitReached) {
             var upgradeUrl =
               data.upgradeUrl ||
               "https://sales-agent-jet.vercel.app/dashboard/billing";

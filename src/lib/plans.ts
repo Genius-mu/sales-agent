@@ -21,6 +21,8 @@ export interface PlanConfig {
   priceUSD: number;
   priceUSDCents: number;
   monthlyLimit: number;
+  /** Websites the widget may run on; null = unlimited. */
+  maxSites: number | null;
   /** Paystack plan code for NGN billing. */
   paystackPlanCode: string | null;
   /**
@@ -54,6 +56,7 @@ export const PLANS: Record<string, PlanConfig> = {
     priceUSD: 0,
     priceUSDCents: 0,
     monthlyLimit: 20,
+    maxSites: 1,
     paystackPlanCode: null,
     paystackPlanCodeUSD: null,
     isFree: true,
@@ -77,6 +80,7 @@ export const PLANS: Record<string, PlanConfig> = {
     priceUSD: 11,
     priceUSDCents: 1100,
     monthlyLimit: 300,
+    maxSites: 1,
     paystackPlanCode:
       process.env.NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_NGN || "PLN_l45c6u49b4rtphi",
     paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_USD || null,
@@ -102,6 +106,7 @@ export const PLANS: Record<string, PlanConfig> = {
     priceUSD: 25,
     priceUSDCents: 2500,
     monthlyLimit: 1200,
+    maxSites: 5,
     paystackPlanCode:
       process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_NGN || "PLN_mdtlpytqpous1zr",
     paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_USD || null,
@@ -128,6 +133,7 @@ export const PLANS: Record<string, PlanConfig> = {
     priceUSD: 49,
     priceUSDCents: 4900,
     monthlyLimit: 3000,
+    maxSites: null,
     paystackPlanCode:
       process.env.NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_NGN || "PLN_jw99ak49aljjjd4",
     paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_USD || null,
