@@ -303,9 +303,9 @@ export default function DashboardPage() {
   const allDone = completedSteps === checklist.length;
 
   return (
-    <div className="min-h-screen bg-[#08090b] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#f7f8fc] text-slate-900 overflow-x-hidden">
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-zinc-700/30 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-300/70 to-transparent" />
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-600/[0.04] rounded-full blur-[120px]" />
       </div>
 
@@ -319,10 +319,10 @@ export default function DashboardPage() {
             className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-7 sm:mb-8"
           >
             <div className="min-w-0 flex-1">
-              <p className="text-zinc-500 text-[13px] mb-1">{greeting()} 👋</p>
-              <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-white mb-1 leading-tight">
+              <p className="text-slate-500 text-[13px] mb-1">{greeting()} 👋</p>
+              <h1 className="text-2xl sm:text-[28px] font-semibold tracking-tight text-slate-900 mb-1 leading-tight">
                 {loading ? (
-                  <span className="inline-block w-44 h-7 bg-zinc-800/80 rounded-lg animate-pulse" />
+                  <span className="inline-block w-44 h-7 bg-slate-100 rounded-lg animate-pulse" />
                 ) : (
                   stats?.businessName
                 )}
@@ -332,14 +332,14 @@ export default function DashboardPage() {
                   href={stats.websiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-zinc-500 text-[13px] hover:text-zinc-300 transition-colors truncate max-w-xs inline-flex items-center gap-1.5"
+                  className="text-slate-500 text-[13px] hover:text-slate-900 transition-colors truncate max-w-xs inline-flex items-center gap-1.5"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   {stats.websiteUrl.replace(/^https?:\/\//, "")}
                 </a>
               ) : (
                 !loading && (
-                  <p className="text-zinc-500 text-[13px]">
+                  <p className="text-slate-500 text-[13px]">
                     Here's how your agent is doing.
                   </p>
                 )
@@ -348,7 +348,7 @@ export default function DashboardPage() {
             {!loading && (
               <Link
                 href="/dashboard/embed"
-                className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium bg-zinc-900/60 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-200 px-4 py-2 rounded-lg transition-colors shrink-0"
+                className="hidden sm:inline-flex items-center gap-2 text-[13px] font-medium bg-white hover:bg-slate-100 border border-slate-200 hover:border-slate-300 text-slate-700 px-4 py-2 rounded-lg transition-colors shrink-0"
               >
                 Get embed code
                 <Arrow />
@@ -366,7 +366,7 @@ export default function DashboardPage() {
                     height="18"
                     fill="none"
                     viewBox="0 0 24 24"
-                    className="text-amber-400 shrink-0 mt-0.5"
+                    className="text-amber-600 shrink-0 mt-0.5"
                   >
                     <path
                       stroke="currentColor"
@@ -377,10 +377,10 @@ export default function DashboardPage() {
                     />
                   </svg>
                   <div>
-                    <p className="text-amber-200 font-medium text-[13px]">
+                    <p className="text-amber-700 font-medium text-[13px]">
                       Your agent isn't live yet
                     </p>
-                    <p className="text-zinc-500 text-[12px] mt-0.5">
+                    <p className="text-slate-500 text-[12px] mt-0.5">
                       Add a description or website URL to activate it and start
                       capturing leads.
                     </p>
@@ -388,7 +388,7 @@ export default function DashboardPage() {
                 </div>
                 <Link
                   href="/dashboard/setup"
-                  className="text-[13px] bg-amber-500 hover:bg-amber-400 text-zinc-950 font-medium px-4 py-2 rounded-lg transition-colors active:scale-[0.98] shrink-0 w-full sm:w-auto text-center"
+                  className="text-[13px] bg-amber-500 hover:bg-amber-400 text-slate-950 font-medium px-4 py-2 rounded-lg transition-colors active:scale-[0.98] shrink-0 w-full sm:w-auto text-center"
                 >
                   Set up agent
                 </Link>
@@ -400,7 +400,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             {STAT_CARDS.map((card, i) => (
               <Reveal key={card.label} delay={i * 70} distance={22}>
-                <div className="relative bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700 rounded-xl p-4 sm:p-5 overflow-hidden transition-colors h-full">
+                <div className="relative bg-white border border-slate-200 hover:border-slate-300 rounded-xl p-4 sm:p-5 overflow-hidden transition-colors h-full">
                   <div
                     className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-16 rounded-full blur-2xl"
                     style={{ backgroundColor: card.color, opacity: 0.1 }}
@@ -411,7 +411,7 @@ export default function DashboardPage() {
                         className="w-1.5 h-1.5 rounded-full shrink-0"
                         style={{ backgroundColor: card.color }}
                       />
-                      <span className="text-zinc-400 text-[13px] font-medium truncate">
+                      <span className="text-slate-500 text-[13px] font-medium truncate">
                         {card.label}
                       </span>
                     </div>
@@ -428,12 +428,12 @@ export default function DashboardPage() {
                   </div>
                   <p className="relative text-2xl sm:text-[28px] leading-none font-semibold mb-1.5 tabular-nums tracking-tight">
                     {card.value === null ? (
-                      <span className="inline-block w-14 h-7 bg-zinc-800 rounded animate-pulse" />
+                      <span className="inline-block w-14 h-7 bg-slate-100 rounded animate-pulse" />
                     ) : (
                       card.value
                     )}
                   </p>
-                  <p className="relative text-zinc-600 text-[12px]">
+                  <p className="relative text-slate-400 text-[12px]">
                     {card.sub}
                   </p>
                 </div>
@@ -445,20 +445,20 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-6">
             {/* Recent activity */}
             <Reveal direction="left" className="lg:col-span-3">
-              <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden h-full flex flex-col">
-                <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-800/60">
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden h-full flex flex-col">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
                   <div>
-                    <h2 className="text-[15px] font-semibold text-white tracking-tight">
+                    <h2 className="text-[15px] font-semibold text-slate-900 tracking-tight">
                       Recent activity
                     </h2>
-                    <p className="text-zinc-500 text-[12px] mt-0.5">
+                    <p className="text-slate-500 text-[12px] mt-0.5">
                       Your latest conversations
                     </p>
                   </div>
                   {!loading && stats && stats.recent.length > 0 && (
                     <Link
                       href="/dashboard/conversations"
-                      className="text-[13px] text-zinc-400 hover:text-white transition-colors inline-flex items-center gap-1"
+                      className="text-[13px] text-slate-500 hover:text-slate-900 transition-colors inline-flex items-center gap-1"
                     >
                       View all
                       <Arrow />
@@ -467,54 +467,54 @@ export default function DashboardPage() {
                 </div>
 
                 {loading ? (
-                  <div className="divide-y divide-zinc-800/40">
+                  <div className="divide-y divide-slate-200">
                     {[1, 2, 3].map((i) => (
                       <div
                         key={i}
                         className="flex items-center gap-3 px-5 py-3.5"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-zinc-800 animate-pulse shrink-0" />
+                        <div className="w-8 h-8 rounded-lg bg-slate-100 animate-pulse shrink-0" />
                         <div className="flex-1 space-y-2">
                           <div
-                            className="h-3 bg-zinc-800 rounded animate-pulse"
+                            className="h-3 bg-slate-100 rounded animate-pulse"
                             style={{ width: `${50 + i * 10}%` }}
                           />
-                          <div className="h-2.5 bg-zinc-800/60 rounded animate-pulse w-1/4" />
+                          <div className="h-2.5 bg-slate-100 rounded animate-pulse w-1/4" />
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : stats && stats.recent.length > 0 ? (
-                  <div className="divide-y divide-zinc-800/40 flex-1">
+                  <div className="divide-y divide-slate-200 flex-1">
                     {stats.recent.map((c) => (
                       <Link
                         key={c.id}
                         href="/dashboard/conversations"
-                        className="flex items-center gap-3 px-5 py-3.5 hover:bg-zinc-800/30 transition-colors group"
+                        className="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50 transition-colors group"
                       >
                         <div
-                          className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${c.lead_email ? "bg-emerald-500/10 border-emerald-500/20" : "bg-zinc-800 border-zinc-700/60"}`}
+                          className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${c.lead_email ? "bg-emerald-500/10 border-emerald-500/20" : "bg-slate-100 border-slate-200"}`}
                         >
                           <div
-                            className={`w-1.5 h-1.5 rounded-full ${c.lead_email ? "bg-emerald-400" : "bg-zinc-500"}`}
+                            className={`w-1.5 h-1.5 rounded-full ${c.lead_email ? "bg-emerald-400" : "bg-slate-400"}`}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-zinc-200 text-[13px] font-medium truncate">
+                            <span className="text-slate-700 text-[13px] font-medium truncate">
                               {c.lead_email ?? "Anonymous visitor"}
                             </span>
                             {c.lead_email && (
-                              <span className="hidden sm:inline text-[10px] px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-emerald-400 shrink-0">
+                              <span className="hidden sm:inline text-[10px] px-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-emerald-600 shrink-0">
                                 Lead
                               </span>
                             )}
                           </div>
-                          <p className="text-zinc-500 text-[12px] truncate">
+                          <p className="text-slate-500 text-[12px] truncate">
                             {c.preview}
                           </p>
                         </div>
-                        <span className="text-zinc-600 text-[12px] shrink-0">
+                        <span className="text-slate-400 text-[12px] shrink-0">
                           {timeAgo(c.created_at)}
                         </span>
                       </Link>
@@ -522,7 +522,7 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center flex-1 py-12 px-4 text-center">
-                    <div className="w-10 h-10 rounded-xl bg-zinc-800/80 border border-zinc-700/50 flex items-center justify-center mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 flex items-center justify-center mb-3">
                       <svg
                         width="18"
                         height="18"
@@ -530,7 +530,7 @@ export default function DashboardPage() {
                         viewBox="0 0 24 24"
                       >
                         <path
-                          stroke="#52525b"
+                          stroke="#94a3b8"
                           strokeWidth="1.5"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -538,10 +538,10 @@ export default function DashboardPage() {
                         />
                       </svg>
                     </div>
-                    <p className="text-zinc-300 text-[13px] font-medium mb-1">
+                    <p className="text-slate-700 text-[13px] font-medium mb-1">
                       No conversations yet
                     </p>
-                    <p className="text-zinc-600 text-[12px] max-w-[240px]">
+                    <p className="text-slate-400 text-[12px] max-w-[240px]">
                       Once your widget is live, chats will appear here in real
                       time.
                     </p>
@@ -552,17 +552,17 @@ export default function DashboardPage() {
 
             {/* Getting started checklist */}
             <Reveal direction="right" delay={120} className="lg:col-span-2">
-              <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-5 h-full">
+              <div className="bg-white border border-slate-200 rounded-xl p-5 h-full">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-[15px] font-semibold text-white tracking-tight">
+                  <h2 className="text-[15px] font-semibold text-slate-900 tracking-tight">
                     {allDone ? "You're all set" : "Getting started"}
                   </h2>
-                  <span className="text-[12px] text-zinc-500 tabular-nums">
+                  <span className="text-[12px] text-slate-500 tabular-nums">
                     {completedSteps}/{checklist.length}
                   </span>
                 </div>
 
-                <div className="h-1 bg-zinc-800 rounded-full overflow-hidden mb-5">
+                <div className="h-1 bg-slate-100 rounded-full overflow-hidden mb-5">
                   <div
                     className="h-full bg-emerald-500 rounded-full transition-all duration-700"
                     style={{
@@ -576,20 +576,20 @@ export default function DashboardPage() {
                     <Link
                       key={step.label}
                       href={step.href}
-                      className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-zinc-800/40 transition-colors group"
+                      className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-lg hover:bg-slate-100 transition-colors group"
                     >
                       <div
-                        className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 border ${step.done ? "bg-emerald-500 border-emerald-500 text-white" : "border-zinc-700 text-transparent"}`}
+                        className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 border ${step.done ? "bg-emerald-500 border-emerald-500 text-white" : "border-slate-300 text-transparent"}`}
                       >
                         <Check className="w-3 h-3" />
                       </div>
                       <span
-                        className={`text-[13px] flex-1 ${step.done ? "text-zinc-500 line-through" : "text-zinc-300 group-hover:text-white"}`}
+                        className={`text-[13px] flex-1 ${step.done ? "text-slate-500 line-through" : "text-slate-700 group-hover:text-slate-900"}`}
                       >
                         {step.label}
                       </span>
                       {!step.done && (
-                        <span className="text-zinc-600 group-hover:text-zinc-400 transition-colors">
+                        <span className="text-slate-400 group-hover:text-slate-600 transition-colors">
                           <Arrow />
                         </span>
                       )}
@@ -623,24 +623,24 @@ export default function DashboardPage() {
               <Reveal key={item.href} delay={i * 90} direction="up">
                 <Link
                   href={item.href}
-                  className={`group relative block rounded-xl p-5 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 h-full ${item.urgent ? "bg-blue-950/30 border border-blue-500/30 hover:border-blue-500/50" : "bg-zinc-900/40 border border-zinc-800 hover:border-zinc-700"}`}
+                  className={`group relative block rounded-xl p-5 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 h-full ${item.urgent ? "bg-blue-950/30 border border-blue-500/30 hover:border-blue-500/50" : "bg-white border border-slate-200 hover:border-slate-300"}`}
                 >
                   {item.urgent && (
                     <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
                   )}
                   <p
-                    className={`text-[11px] tracking-[0.12em] font-medium uppercase mb-3 ${item.urgent ? "text-blue-400" : "text-zinc-600"}`}
+                    className={`text-[11px] tracking-[0.12em] font-medium uppercase mb-3 ${item.urgent ? "text-blue-600" : "text-slate-400"}`}
                   >
                     {item.label}
                   </p>
-                  <h3 className="text-[15px] font-semibold text-white mb-1.5">
+                  <h3 className="text-[15px] font-semibold text-slate-900 mb-1.5">
                     {item.title}
                   </h3>
-                  <p className="text-zinc-500 text-[13px] leading-relaxed mb-4">
+                  <p className="text-slate-500 text-[13px] leading-relaxed mb-4">
                     {item.desc}
                   </p>
                   <span
-                    className={`inline-flex items-center gap-1.5 text-[13px] font-medium group-hover:gap-2.5 transition-all ${item.urgent ? "text-blue-400" : "text-zinc-400 group-hover:text-white"}`}
+                    className={`inline-flex items-center gap-1.5 text-[13px] font-medium group-hover:gap-2.5 transition-all ${item.urgent ? "text-blue-600" : "text-slate-500 group-hover:text-slate-900"}`}
                   >
                     {item.cta}
                     <Arrow />
@@ -653,10 +653,10 @@ export default function DashboardPage() {
           {/* Tips / resources */}
           <div className="mb-12">
             <Reveal className="flex items-center gap-4 mb-5">
-              <h2 className="text-[15px] font-semibold text-zinc-300 shrink-0">
+              <h2 className="text-[15px] font-semibold text-slate-700 shrink-0">
                 Tips to close more
               </h2>
-              <div className="h-px flex-1 bg-zinc-800/60" />
+              <div className="h-px flex-1 bg-slate-100" />
             </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {[
@@ -674,11 +674,11 @@ export default function DashboardPage() {
                 },
               ].map((tip, i) => (
                 <Reveal key={tip.title} delay={i * 80} direction="up">
-                  <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-4 h-full">
-                    <h3 className="text-zinc-200 text-[13px] font-medium mb-1.5">
+                  <div className="bg-white border border-slate-200 rounded-xl p-4 h-full">
+                    <h3 className="text-slate-700 text-[13px] font-medium mb-1.5">
                       {tip.title}
                     </h3>
-                    <p className="text-zinc-500 text-[12px] leading-relaxed">
+                    <p className="text-slate-500 text-[12px] leading-relaxed">
                       {tip.desc}
                     </p>
                   </div>
@@ -691,16 +691,16 @@ export default function DashboardPage() {
           <Reveal>
             <div className="mb-8 text-center">
               <div className="flex items-center gap-4 mb-7">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-zinc-800/60" />
-                <span className="text-zinc-500 text-[11px] tracking-[0.15em] uppercase font-medium">
+                <div className="h-px flex-1 bg-gradient-to-r from-transparent to-slate-200" />
+                <span className="text-slate-500 text-[11px] tracking-[0.15em] uppercase font-medium">
                   Upgrade
                 </span>
-                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-zinc-800/60" />
+                <div className="h-px flex-1 bg-gradient-to-l from-transparent to-slate-200" />
               </div>
               <h2 className="text-xl sm:text-2xl font-semibold tracking-tight mb-2 leading-tight">
                 Less than one lost deal a month
               </h2>
-              <p className="text-zinc-500 text-sm max-w-md mx-auto">
+              <p className="text-slate-500 text-sm max-w-md mx-auto">
                 Capture one extra lead a month and Saim pays for itself many
                 times over.
               </p>
@@ -708,6 +708,7 @@ export default function DashboardPage() {
                 <CurrencyToggle
                   value={currency}
                   onChange={setCurrency}
+                  theme="light"
                   className="mt-5"
                 />
               )}
@@ -730,7 +731,7 @@ export default function DashboardPage() {
                   </div>
                 )}
                 <div
-                  className={`relative bg-[#0d0f17]/80 backdrop-blur-xl border rounded-[28px] p-6 sm:p-7 h-full flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-[-12px_-12px_36px_rgba(255,255,255,0.02),16px_16px_45px_rgba(0,0,0,0.85)] ${plan.popular ? "border-blue-500/40 shadow-[0_0_50px_rgba(37,99,235,0.18)]" : "border-white/[0.08]"}`}
+                  className={`relative bg-white backdrop-blur-xl border rounded-[28px] p-6 sm:p-7 h-full flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-1 shadow-[0_1px_2px_rgba(15,23,42,0.05),0_8px_24px_-14px_rgba(15,23,42,0.18)] ${plan.popular ? "border-blue-500/40 shadow-[0_0_50px_rgba(37,99,235,0.18)]" : "border-slate-200"}`}
                 >
                   {plan.popular && (
                     <>
@@ -739,29 +740,29 @@ export default function DashboardPage() {
                     </>
                   )}
                   <div className="relative mb-5">
-                    <p className="text-zinc-400 text-[11px] font-semibold tracking-[0.14em] uppercase mb-3">
+                    <p className="text-slate-500 text-[11px] font-semibold tracking-[0.14em] uppercase mb-3">
                       {plan.name}
                     </p>
                     <div className="flex items-end gap-1 mb-2">
-                      <span className="text-[38px] leading-none font-semibold tracking-tight text-white">
+                      <span className="text-[38px] leading-none font-semibold tracking-tight text-slate-900">
                         {formatPlanPrice(PLANS[plan.key], currency)}
                       </span>
-                      <span className="text-zinc-400 text-sm mb-1 font-normal">
+                      <span className="text-slate-500 text-sm mb-1 font-normal">
                         {plan.period}
                       </span>
                     </div>
-                    <p className="text-zinc-400 text-[13px] leading-relaxed">
+                    <p className="text-slate-500 text-[13px] leading-relaxed">
                       {plan.desc}
                     </p>
                   </div>
-                  <div className="h-px bg-zinc-800/80 mb-5" />
+                  <div className="h-px bg-slate-100 mb-5" />
                   <ul className="space-y-3 flex-1 mb-6">
                     {plan.features.map((f) => (
                       <li
                         key={f}
-                        className="flex items-start gap-2.5 text-[13px] text-zinc-200"
+                        className="flex items-start gap-2.5 text-[13px] text-slate-700"
                       >
-                        <span className="text-emerald-400 mt-0.5 shrink-0">
+                        <span className="text-emerald-600 mt-0.5 shrink-0">
                           <Check className="w-4 h-4" />
                         </span>
                         {f}
@@ -770,7 +771,7 @@ export default function DashboardPage() {
                   </ul>
                   <Link
                     href="/dashboard/billing"
-                    className={`w-full py-3.5 rounded-full text-sm font-medium transition-all duration-200 active:scale-[0.98] text-center block shadow-md border ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white border-blue-500/40 shadow-[0_0_24px_rgba(37,99,235,0.4)]" : "bg-[#161824] hover:bg-[#1c1f2e] text-white border-white/[0.08]"}`}
+                    className={`w-full py-3.5 rounded-full text-sm font-medium transition-all duration-200 active:scale-[0.98] text-center block shadow-md border ${plan.popular ? "bg-blue-600 hover:bg-blue-500 text-white border-blue-500/40 shadow-[0_0_24px_rgba(37,99,235,0.4)]" : "bg-white hover:bg-slate-50 text-slate-900 border-slate-200"}`}
                   >
                     {plan.cta}
                   </Link>
@@ -787,8 +788,8 @@ export default function DashboardPage() {
                 "Cancel anytime",
               ].map((text) => (
                 <div key={text} className="flex items-center gap-1.5">
-                  <Check className="w-3 h-3 text-zinc-600" />
-                  <span className="text-zinc-600 text-[12px]">{text}</span>
+                  <Check className="w-3 h-3 text-slate-400" />
+                  <span className="text-slate-400 text-[12px]">{text}</span>
                 </div>
               ))}
             </div>

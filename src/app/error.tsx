@@ -16,7 +16,7 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="bg-[#060608] text-white min-h-screen flex items-center justify-center px-4">
+      <body className="bg-[#f7f8fc] text-slate-900 min-h-screen flex items-center justify-center px-4">
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-red-600/5 rounded-full blur-[120px]" />
           <div
@@ -42,16 +42,16 @@ export default function GlobalError({
             </svg>
           </div>
 
-          <h1 className="text-2xl font-black text-white mb-2">
+          <h1 className="text-2xl font-black text-slate-900 mb-2">
             Something went wrong
           </h1>
-          <p className="text-zinc-500 text-sm leading-relaxed mb-8">
+          <p className="text-slate-500 text-sm leading-relaxed mb-8">
             An unexpected error occurred. This has been logged and we&apos;re
             looking into it.
           </p>
 
           {error.digest && (
-            <p className="text-zinc-700 text-xs font-mono mb-6">
+            <p className="text-slate-300 text-xs font-mono mb-6">
               Error ID: {error.digest}
             </p>
           )}
@@ -59,7 +59,7 @@ export default function GlobalError({
           <div className="flex items-center justify-center gap-3">
             <button
               onClick={reset}
-              className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600 text-white text-sm font-semibold rounded-xl transition-all active:scale-95"
+              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 hover:border-slate-400 text-slate-900 text-sm font-semibold rounded-xl transition-all active:scale-95"
             >
               Try again
             </button>

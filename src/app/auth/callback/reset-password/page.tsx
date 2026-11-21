@@ -47,7 +47,7 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060608] text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f7f8fc] text-slate-900 flex items-center justify-center px-4">
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-600/8 rounded-full blur-[140px]" />
         <div
@@ -79,15 +79,15 @@ export default function ResetPasswordPage() {
           <span className="font-black text-lg tracking-tight">Saim</span>
         </Link>
 
-        <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-8 backdrop-blur-sm shadow-2xl shadow-black/40">
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 backdrop-blur-sm shadow-2xl shadow-slate-900/10">
           <h1 className="text-xl font-black mb-1">Set new password</h1>
-          <p className="text-zinc-500 text-xs mb-6">
+          <p className="text-slate-500 text-xs mb-6">
             Enter your new password below.
           </p>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
                 New Password
               </label>
               <div className="relative">
@@ -96,12 +96,12 @@ export default function ResetPasswordPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-zinc-800/80 border border-zinc-700 focus:border-blue-500/60 rounded-xl px-4 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors focus:bg-zinc-800"
+                  className="w-full bg-slate-100 border border-slate-300 focus:border-blue-500/60 rounded-xl px-4 py-2.5 pr-10 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:bg-white"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900 transition-colors"
                 >
                   {showPassword ? (
                     <svg width="16" height="16" fill="none" viewBox="0 0 24 24">
@@ -136,10 +136,10 @@ export default function ResetPasswordPage() {
                   {[1, 2, 3, 4].map((i) => (
                     <div
                       key={i}
-                      className={`h-1 flex-1 rounded-full transition-all ${password.length >= i * 3 ? (i <= 1 ? "bg-red-500" : i <= 2 ? "bg-amber-500" : i <= 3 ? "bg-blue-500" : "bg-emerald-500") : "bg-zinc-700"}`}
+                      className={`h-1 flex-1 rounded-full transition-all ${password.length >= i * 3 ? (i <= 1 ? "bg-red-500" : i <= 2 ? "bg-amber-500" : i <= 3 ? "bg-blue-500" : "bg-emerald-500") : "bg-slate-200"}`}
                     />
                   ))}
-                  <span className="text-xs text-zinc-600 ml-1">
+                  <span className="text-xs text-slate-400 ml-1">
                     {password.length < 4
                       ? "Weak"
                       : password.length < 7
@@ -153,7 +153,7 @@ export default function ResetPasswordPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-zinc-400 mb-1.5">
+              <label className="block text-xs font-semibold text-slate-500 mb-1.5">
                 Confirm Password
               </label>
               <input
@@ -162,17 +162,17 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleReset()}
                 placeholder="••••••••"
-                className={`w-full bg-zinc-800/80 border rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-zinc-600 outline-none transition-colors focus:bg-zinc-800 ${confirmPassword && confirmPassword !== password ? "border-red-500/60" : confirmPassword && confirmPassword === password ? "border-emerald-500/60" : "border-zinc-700 focus:border-blue-500/60"}`}
+                className={`w-full bg-slate-100 border rounded-xl px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition-colors focus:bg-white ${confirmPassword && confirmPassword !== password ? "border-red-500/60" : confirmPassword && confirmPassword === password ? "border-emerald-500/60" : "border-slate-300 focus:border-blue-500/60"}`}
               />
               {confirmPassword && confirmPassword === password && (
-                <p className="text-emerald-400 text-xs mt-1">
+                <p className="text-emerald-600 text-xs mt-1">
                   ✓ Passwords match
                 </p>
               )}
             </div>
 
             {error && (
-              <div className="flex items-start gap-2.5 text-red-400 bg-red-500/8 border border-red-500/20 rounded-xl px-4 py-3">
+              <div className="flex items-start gap-2.5 text-red-600 bg-red-500/8 border border-red-500/20 rounded-xl px-4 py-3">
                 <svg
                   width="14"
                   height="14"
@@ -191,7 +191,7 @@ export default function ResetPasswordPage() {
               </div>
             )}
             {success && (
-              <div className="flex items-start gap-2.5 text-emerald-400 bg-emerald-500/8 border border-emerald-500/20 rounded-xl px-4 py-3">
+              <div className="flex items-start gap-2.5 text-emerald-600 bg-emerald-500/8 border border-emerald-500/20 rounded-xl px-4 py-3">
                 <svg
                   width="14"
                   height="14"
