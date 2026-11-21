@@ -8,6 +8,8 @@ import {
   type Currency,
 } from "@/lib/plans";
 
+const CURRENCY_EVENT = "saim-currency-change";
+
 function readCookie(): Currency | null {
   if (typeof document === "undefined") return null;
   const match = document.cookie.match(
@@ -50,9 +52,20 @@ export function useCurrency(initial?: Currency) {
     };
   }, [initial]);
 
+  // Keep every price on the page in sync when one toggle changes.
+  useEffect(() => {
+    const onChange = (e: Event) => {
+      const next = (e as CustomEvent<Currency>).detail;
+      if (isCurrency(next)) setCurrencyState(next);
+    };
+    window.addEventListener(CURRENCY_EVENT, onChange);
+    return () => window.removeEventListener(CURRENCY_EVENT, onChange);
+  }, []);
+
   const setCurrency = useCallback((next: Currency) => {
     writeCookie(next);
     setCurrencyState(next);
+    window.dispatchEvent(new CustomEvent(CURRENCY_EVENT, { detail: next }));
   }, []);
 
   return [currency, setCurrency] as const;
