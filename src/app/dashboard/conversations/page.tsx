@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import DashboardNav from "@/app/components/DashboardNav";
 import Reveal from "@/app/components/Reveal";
+import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
+import { hasFeature, planFor } from "@/lib/plans";
 
 interface Message {
   role: "user" | "assistant";
@@ -130,6 +132,7 @@ function ConversationDrawer({
 
 export default function ConversationsPage() {
   const [businessId, setBusinessId] = useState<string | null>(null);
+  const [plan, setPlan] = useState<string>("free");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Conversation | null>(null);
@@ -145,10 +148,14 @@ export default function ConversationsPage() {
       if (!session?.user) return;
       const { data } = await sb
         .from("businesses")
-        .select("id")
+        .select("id, plan")
         .eq("user_id", session.user.id)
         .maybeSingle();
-      if (data) setBusinessId((data as { id: string }).id);
+      if (data) {
+        const biz = data as { id: string; plan: string | null };
+        setPlan(biz.plan || "free");
+        setBusinessId(biz.id);
+      }
     }
     load();
   }, []);
@@ -183,6 +190,32 @@ export default function ConversationsPage() {
   });
 
   const totalLeads = conversations.filter((c) => c.lead_email).length;
+  const canExport = hasFeature(plan, "export");
+
+  /** Downloads every captured lead as a CSV file (opens in Excel, Sheets or any CRM). */
+  const exportLeads = () => {
+    const cell = (v: string) => `"${v.replace(/"/g, '""').replace(/\r?\n/g, " ")}"`;
+    const rows = conversations
+      .filter((c) => c.lead_email)
+      .map((c) => {
+        const firstVisitorMsg = c.messages.find((m) => m.role === "user")?.content ?? "";
+        return [
+          c.lead_email ?? "",
+          new Date(c.created_at).toISOString(),
+          String(c.messages.length),
+          firstVisitorMsg,
+          c.messages.map((m) => `${m.role === "user" ? "Visitor" : "Agent"}: ${m.content}`).join(" | "),
+        ].map(cell).join(",");
+      });
+    const header = ["Email", "Date", "Messages", "First question", "Transcript"].map(cell).join(",");
+    const blob = new Blob(["\uFEFF" + [header, ...rows].join("\r\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `saim-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   const totalMessages = conversations.reduce(
     (sum, c) => sum + c.messages.length,
     0,
@@ -206,14 +239,37 @@ export default function ConversationsPage() {
 
         <div className="max-w-5xl mx-auto px-5 sm:px-6 lg:px-8 py-8 sm:py-10">
           {/* Header */}
-          <Reveal distance={20} className="mb-7">
-            <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-slate-900 mb-1">
-              Conversations
-            </h1>
-            <p className="text-slate-500 text-sm leading-relaxed">
-              Every chat your agent has had. Browse history, review leads, read
-              full transcripts.
-            </p>
+          <Reveal distance={20} className="mb-7 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <h1 className="text-[22px] sm:text-2xl font-semibold tracking-tight text-slate-900 mb-1">
+                Conversations
+              </h1>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Every chat your agent has had. Browse history, review leads, read
+                full transcripts.
+              </p>
+            </div>
+            {canExport ? (
+              <button
+                type="button"
+                onClick={exportLeads}
+                disabled={totalLeads === 0}
+                className="shrink-0 inline-flex items-center gap-2 bg-white border border-slate-300 hover:border-slate-400 text-slate-800 text-[13px] font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                ⬇ Export leads (CSV)
+              </button>
+            ) : (
+              <Link
+                href="/dashboard/billing"
+                className="shrink-0 inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-500 hover:text-slate-800 text-[13px] font-medium px-4 py-2 rounded-lg transition-colors"
+                title={`CSV export is on the ${planFor("export").name} plan`}
+              >
+                🔒 Export leads
+                <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 rounded-full px-2 py-0.5">
+                  {planFor("export").name}
+                </span>
+              </Link>
+            )}
           </Reveal>
 
           {/* Stats row */}

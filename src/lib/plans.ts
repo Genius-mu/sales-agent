@@ -112,10 +112,10 @@ export const PLANS: Record<string, PlanConfig> = {
     badge: "Most popular",
     features: [
       "1,200 conversations/month",
-      "Lead capture + CRM export",
-      "Advanced analytics dashboard",
+      "Lead capture + CSV export for your CRM",
+      "Analytics dashboard",
       "Up to 5 site embeds",
-      "Custom agent persona",
+      "Write your own agent personality",
       "Priority support",
     ],
     cta: "Upgrade to Pro",
@@ -139,8 +139,8 @@ export const PLANS: Record<string, PlanConfig> = {
     features: [
       "3,000 conversations/month",
       "Unlimited site embeds",
-      "White-label widget",
-      "Custom AI persona per client",
+      "White-label widget (no Saim branding)",
+      "Everything in Pro",
       "Dedicated account support",
       "Priority API access",
     ],
@@ -185,4 +185,29 @@ export function formatPlanPrice(plan: PlanConfig, currency: Currency): string {
   return currency === "USD"
     ? `$${plan.priceUSD.toLocaleString("en-US")}`
     : `₦${plan.priceNGN.toLocaleString("en-US")}`;
+}
+
+/* ─────────────────────────── Plan features ───────────────────────────
+   One source of truth for what each plan unlocks. Used by the dashboard
+   (to show or lock features) and by the API (to enforce them). */
+
+export type Feature = "analytics" | "export" | "customPersona" | "whiteLabel";
+
+const FEATURES: Record<PlanConfig["key"], Feature[]> = {
+  free: [],
+  starter: [],
+  pro: ["analytics", "export", "customPersona"],
+  scale: ["analytics", "export", "customPersona", "whiteLabel"],
+};
+
+export function hasFeature(plan: string | null | undefined, feature: Feature): boolean {
+  const key = (plan && plan in FEATURES ? plan : "free") as PlanConfig["key"];
+  return FEATURES[key].includes(feature);
+}
+
+/** Cheapest plan that unlocks a feature (for "Upgrade to …" prompts). */
+export function planFor(feature: Feature): PlanConfig {
+  const order: PlanConfig["key"][] = ["starter", "pro", "scale"];
+  const key = order.find((k) => FEATURES[k].includes(feature)) ?? "scale";
+  return PLANS[key];
 }

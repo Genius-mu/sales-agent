@@ -19,7 +19,7 @@ const PAIN_POINTS = [
     desc: "That's just a few traffic days. If your site gets real visitors, you'll hit the limit before the month ends.",
   },
   {
-    title: "No analytics on free",
+    title: "No analytics until Pro",
     desc: "You can't see what visitors are asking, which questions convert, or where leads drop off.",
   },
 ];
@@ -33,10 +33,11 @@ const COMPARISON = [
     scale: "3,000",
   },
   { feature: "Lead capture", free: true, starter: true, pro: true, scale: true },
-  { feature: "CRM export", free: false, starter: false, pro: true, scale: true },
+  { feature: "CSV export for your CRM", free: false, starter: false, pro: true, scale: true },
   { feature: "Analytics dashboard", free: false, starter: false, pro: true, scale: true },
   { feature: "Site embeds", free: "1", starter: "1", pro: "5", scale: "Unlimited" },
-  { feature: "Custom agent name", free: false, starter: false, pro: true, scale: true },
+  { feature: "Write your own personality", free: false, starter: false, pro: true, scale: true },
+  { feature: "White-label widget", free: false, starter: false, pro: false, scale: true },
   { feature: "Priority support", free: false, starter: false, pro: true, scale: true },
 ];
 
