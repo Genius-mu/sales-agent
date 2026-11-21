@@ -6,7 +6,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = new URL(req.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  // Only allow same-site paths ("/dashboard"), never "//evil.com" or "@evil.com"
+  const rawNext = searchParams.get("next") ?? "/dashboard";
+  const next = /^\/(?![\/\\])/.test(rawNext) ? rawNext : "/dashboard";
   const error = searchParams.get("error");
   const error_description = searchParams.get("error_description");
 
@@ -67,29 +69,16 @@ export async function GET(req: NextRequest) {
         .single();
 
       if (!existing) {
-        // Check for unclaimed business (manually created rows)
-        const { data: unclaimed } = await adminSupabase
-          .from("businesses")
-          .select("id")
-          .is("user_id", null)
-          .limit(1)
-          .single();
-
-        if (unclaimed) {
-          await adminSupabase
-            .from("businesses")
-            .update({ user_id: userId })
-            .eq("id", unclaimed.id);
-        } else {
-          // Create fresh business row for new user
-          await adminSupabase.from("businesses").insert({
-            user_id: userId,
-            name: email.split("@")[0],
-            plan: "free",
-            subscription_status: "inactive",
-          });
-        }
+        // Always give a new user their own fresh business. (Never hand out an
+        // ownerless row: it could contain someone else's conversations.)
+        await adminSupabase.from("businesses").insert({
+          user_id: userId,
+          name: email.split("@")[0],
+          plan: "free",
+          subscription_status: "inactive",
+        });
       }
+
     }
   }
 

@@ -10,6 +10,17 @@ export interface Tag {
 }
 
 const PILL_H = 52;
+/** Share of the box the tags may cover; more than this and they jam and never settle. */
+const FILL_RATIO = 0.42;
+/** Hard stop for the simulation (ms), as a safety net for battery life. */
+const MAX_RUN_MS = 12000;
+
+/** A pill looks identical turned 180°, so keep labels the right way up. */
+function uprightAngle(a: number) {
+  while (a > Math.PI / 2) a -= Math.PI;
+  while (a < -Math.PI / 2) a += Math.PI;
+  return a;
+}
 
 /**
  * Tags that drop in and pile up with real physics when the section scrolls
@@ -23,7 +34,7 @@ export default function PhysicsTags({ tags, className = "" }: { tags: Tag[]; cla
   useEffect(() => {
     const box = boxRef.current;
     if (!box) return;
-    const els = pillRefs.current.filter((e): e is HTMLDivElement => !!e);
+    let els = pillRefs.current.filter((e): e is HTMLDivElement => !!e);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let world: World | null = null;
@@ -31,13 +42,14 @@ export default function PhysicsTags({ tags, className = "" }: { tags: Tag[]; cla
     let frame = 0;
     let calm = 0;
     let started = false;
+    let wokeAt = 0;
 
     const render = () => {
       if (!world) return;
       world.pills.forEach((p, i) => {
         const el = els[i];
         const { x, y, angle } = pose(p);
-        el.style.transform = `translate3d(${x - el.offsetWidth / 2}px, ${y - PILL_H / 2}px, 0) rotate(${angle}rad)`;
+        el.style.transform = `translate3d(${x - el.offsetWidth / 2}px, ${y - PILL_H / 2}px, 0) rotate(${uprightAngle(angle)}rad)`;
       });
     };
 
@@ -46,11 +58,13 @@ export default function PhysicsTags({ tags, className = "" }: { tags: Tag[]; cla
       const motion = step(world, drag);
       render();
       calm = !drag && motion < world.pills.length * 0.15 ? calm + 1 : 0;
-      frame = calm > 45 ? 0 : requestAnimationFrame(loop);
+      const timedOut = !drag && performance.now() - wokeAt > MAX_RUN_MS;
+      frame = calm > 45 || timedOut ? 0 : requestAnimationFrame(loop);
     };
 
     const wake = () => {
       calm = 0;
+      wokeAt = performance.now();
       if (!frame) frame = requestAnimationFrame(loop);
     };
 
@@ -59,6 +73,17 @@ export default function PhysicsTags({ tags, className = "" }: { tags: Tag[]; cla
       started = true;
       const W = box.clientWidth;
       const H = box.clientHeight;
+      // Only drop as many tags as fit comfortably (fewer on phones)
+      let area = 0;
+      const budget = W * H * FILL_RATIO;
+      const fitting = els.filter((el) => {
+        area += Math.min(el.offsetWidth, W - 8) * PILL_H;
+        return area <= budget;
+      });
+      els.forEach((el) => {
+        if (!fitting.includes(el)) el.style.display = "none";
+      });
+      els = fitting;
       const pills = els.map((el, i) => {
         const w = Math.min(el.offsetWidth, W - 8);
         const x = w / 2 + ((i * 0.618034 * W) % Math.max(1, W - w));

@@ -28,7 +28,9 @@ export async function GET(req: NextRequest) {
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    // Server-only key: the widget only ever gets these three fields back,
+    // so the businesses table doesn't need to be readable by the public.
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   );
 
   // .maybeSingle() returns null instead of throwing on 0 or multiple rows,

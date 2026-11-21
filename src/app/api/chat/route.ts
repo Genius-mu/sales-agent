@@ -12,6 +12,23 @@ const corsHeaders = {
   "Access-Control-Max-Age": "86400",
 };
 
+const MAX_MESSAGE_CHARS = 2000;
+const MAX_HISTORY_FOR_MODEL = 20;
+const MAX_STORED_MESSAGES = 200;
+
+/** Sender for outgoing emails. Set RESEND_FROM_EMAIL to an address on a domain verified in Resend. */
+const EMAIL_FROM = process.env.RESEND_FROM_EMAIL || "Saim <onboarding@resend.dev>";
+
+/** Escapes text before putting it into email HTML (visitor input is untrusted). */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200, headers: corsHeaders });
 }
@@ -29,7 +46,7 @@ async function sendLimitEmail(
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Saim <noreply@adegbitemustapha73@gmail.com>",
+        from: EMAIL_FROM,
         to: businessEmail,
         subject:
           "You've reached your conversation limit — upgrade to keep going",
@@ -41,7 +58,7 @@ async function sendLimitEmail(
               </div>
               <h1 style="font-size:22px;font-weight:700;color:#18181b;margin:0 0 8px;">You've hit your monthly limit</h1>
               <p style="color:#71717a;font-size:14px;line-height:1.6;margin:0;">
-                Hi there — your Saim agent for <strong style="color:#18181b;">${businessName}</strong> has reached its conversation limit this month. Your widget is now paused until you upgrade.
+                Hi there — your Saim agent for <strong style="color:#18181b;">${escapeHtml(businessName)}</strong> has reached its conversation limit this month. Your widget is now paused until you upgrade.
               </p>
             </div>
             <div style="background:#f4f4f5;border-radius:12px;padding:20px;margin-bottom:24px;">
@@ -85,7 +102,7 @@ async function sendLeadEmail(
       .slice(-6)
       .map(
         (m) =>
-          `<p style="margin:0 0 8px;"><strong style="color:${m.role === "user" ? "#2563eb" : "#18181b"};">${m.role === "user" ? "Visitor" : "Agent"}:</strong> <span style="color:#52525b;">${m.content.replace(/</g, "&lt;")}</span></p>`,
+          `<p style="margin:0 0 8px;"><strong style="color:${m.role === "user" ? "#2563eb" : "#18181b"};">${m.role === "user" ? "Visitor" : "Agent"}:</strong> <span style="color:#52525b;">${escapeHtml(m.content)}</span></p>`,
       )
       .join("");
 
@@ -96,9 +113,9 @@ async function sendLeadEmail(
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Saim <onboarding@resend.dev>",
+        from: EMAIL_FROM,
         to: ownerEmail,
-        subject: `🎯 New lead captured on ${businessName}`,
+        subject: `🎯 New lead captured on ${businessName.replace(/[\r\n]+/g, " ").slice(0, 80)}`,
         html: `
           <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;padding:40px 24px;background:#fff;">
             <div style="margin-bottom:24px;">
@@ -107,13 +124,13 @@ async function sendLeadEmail(
               </div>
               <h1 style="font-size:22px;font-weight:800;color:#18181b;margin:0 0 8px;">You captured a new lead! 🎯</h1>
               <p style="color:#71717a;font-size:14px;line-height:1.6;margin:0;">
-                Your Saim agent on <strong style="color:#18181b;">${businessName}</strong> just captured a lead. Here are the details:
+                Your Saim agent on <strong style="color:#18181b;">${escapeHtml(businessName)}</strong> just captured a lead. Here are the details:
               </p>
             </div>
 
             <div style="background:#eff6ff;border:1px solid #dbeafe;border-radius:12px;padding:18px;margin-bottom:20px;">
               <p style="color:#71717a;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin:0 0 6px;">Lead email</p>
-              <a href="mailto:${leadEmail}" style="color:#2563eb;font-size:18px;font-weight:700;text-decoration:none;">${leadEmail}</a>
+              <a href="mailto:${encodeURIComponent(leadEmail)}" style="color:#2563eb;font-size:18px;font-weight:700;text-decoration:none;">${escapeHtml(leadEmail)}</a>
             </div>
 
             <div style="background:#f9fafb;border:1px solid #f0f0f0;border-radius:12px;padding:18px;margin-bottom:24px;">
@@ -165,12 +182,26 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { message, sessionId, businessId } = await req.json();
+  let body: { message?: unknown; sessionId?: unknown; businessId?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400, headers: corsHeaders });
+  }
+  const message = typeof body.message === "string" ? body.message.trim() : "";
+  const sessionId = typeof body.sessionId === "string" ? body.sessionId : "";
+  const businessId = typeof body.businessId === "string" ? body.businessId : "";
 
   if (!message || !sessionId || !businessId) {
     return NextResponse.json(
       { error: "message, sessionId, and businessId are required" },
       { status: 400, headers: corsHeaders },
+    );
+  }
+  if (message.length > MAX_MESSAGE_CHARS || sessionId.length > 100 || businessId.length > 100) {
+    return NextResponse.json(
+      { error: `Messages can be up to ${MAX_MESSAGE_CHARS} characters.` },
+      { status: 413, headers: corsHeaders },
     );
   }
 
@@ -228,6 +259,7 @@ export async function POST(req: NextRequest) {
           .from("conversations")
           .select("id")
           .eq("session_id", sessionId)
+          .eq("business_id", businessId)
           .maybeSingle();
 
         if (!existingConvo) {
@@ -276,6 +308,7 @@ export async function POST(req: NextRequest) {
     .from("conversations")
     .select("messages")
     .eq("session_id", sessionId)
+    .eq("business_id", businessId)
     .maybeSingle();
 
   const history: { role: "user" | "assistant"; content: string }[] =
@@ -324,7 +357,7 @@ ${knowledge}
   ];
 
   try {
-    const geminiContents = updatedHistory.map((m) => ({
+    const geminiContents = updatedHistory.slice(-MAX_HISTORY_FOR_MODEL).map((m) => ({
       role: m.role === "user" ? "user" : "model",
       parts: [{ text: m.content }],
     }));
@@ -369,12 +402,13 @@ ${knowledge}
     const finalHistory = [
       ...updatedHistory,
       { role: "assistant" as const, content: cleanReply },
-    ];
+    ].slice(-MAX_STORED_MESSAGES);
 
     const { data: existing } = await supabase
       .from("conversations")
       .select("id, lead_email")
       .eq("session_id", sessionId)
+    .eq("business_id", businessId)
       .maybeSingle();
 
     const leadAlreadyExisted = !!existing?.lead_email;

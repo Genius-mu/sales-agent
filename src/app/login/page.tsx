@@ -129,6 +129,9 @@ export default function LoginPage() {
       const { data, error: e } = await getSupabase().auth.signUp({
         email,
         password,
+        // Confirmation link goes through our callback, which creates the
+        // user's business (same route Google sign-in already uses).
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
       });
       setLoading(false);
       if (e) {

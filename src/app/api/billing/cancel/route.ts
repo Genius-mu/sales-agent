@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase-server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { disablePaystackSubscription } from "@/lib/paystack";
 
 export async function POST(req: NextRequest) {
   try {
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
 
     const { data: business, error: bizError } = await adminSupabase
       .from("businesses")
-      .select("id, user_id, subscription_id, paystack_subscription_code, paystack_email_token")
+      .select("id, user_id, subscription_id, paystack_subscription_code")
       .eq("id", businessId)
       .single();
 
@@ -46,34 +47,15 @@ export async function POST(req: NextRequest) {
     const subscriptionCode =
       business.paystack_subscription_code || business.subscription_id;
 
-    const secretKey = process.env.PAYSTACK_SECRET_KEY;
-
-    if (subscriptionCode && secretKey && subscriptionCode.startsWith("SUB_")) {
-      try {
-        const disableBody: Record<string, string> = { code: subscriptionCode };
-        if (business.paystack_email_token) {
-          disableBody.token = business.paystack_email_token;
-        }
-
-        const res = await fetch("https://api.paystack.co/subscription/disable", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${secretKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(disableBody),
-        });
-
-        const paystackData = await res.json();
-        if (!paystackData.status) {
-          console.warn(
-            "Paystack disable subscription returned notice:",
-            paystackData.message,
-          );
-        }
-      } catch (err) {
-        console.error("Paystack subscription disable call failed:", err);
-      }
+    // Stop billing on Paystack FIRST. If that fails, don't downgrade:
+    // otherwise the customer would be on Free but still charged monthly.
+    const stopped = await disablePaystackSubscription(subscriptionCode);
+    if (!stopped.ok) {
+      console.error("Paystack subscription disable failed:", stopped.message);
+      return NextResponse.json(
+        { error: "We couldn't stop your Paystack subscription. Please try again in a minute." },
+        { status: 502 },
+      );
     }
 
     // Update local business status to cancelled

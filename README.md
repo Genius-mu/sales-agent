@@ -4,7 +4,7 @@ An AI-powered sales assistant that engages website visitors, answers questions a
 
 ## Features
 
-- **AI-Powered Chat**: Uses Anthropic's Claude Sonnet 4-6 for intelligent conversations
+- **AI-Powered Chat**: Uses Google Gemini for intelligent conversations
 - **Website Scraping**: Automatically scrapes your website to provide the AI with context about your business
 - **Lead Qualification**: AI naturally qualifies visitors by understanding their needs, budget, and timeline
 - **Email Capture**: Automatically captures leads and stores them in Supabase
@@ -16,7 +16,7 @@ An AI-powered sales assistant that engages website visitors, answers questions a
 
 - **Framework**: [Next.js 16](https://nextjs.org) (App Router)
 - **UI**: React 19, Tailwind CSS
-- **AI**: [Anthropic Claude](https://www.anthropic.com) (Claude Sonnet 4-6)
+- **AI**: [Google Gemini](https://ai.google.dev) via `@google/genai`
 - **Database**: [Supabase](https://supabase.com)
 - **Scraping**: Cheerio
 
@@ -168,7 +168,7 @@ json
 1. **Business Setup**: Create a business record in Supabase with your company name and website URL
 2. **Content Scraping**: Call the `/api/scrape` endpoint to fetch and store your website content
 3. **Visitor Engagement**: Visitors chat with the AI assistant on your website
-4. **AI Processing**: Claude processes the conversation using:
+4. **AI Processing**: Gemini processes the conversation using:
    - Your business context (scraped content)
    - Custom persona instructions
    - Conversation history
@@ -236,3 +236,15 @@ NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_USD=PLN_xxx
 ```
 
 Once all three USD codes are set, the currency toggle appears on the dashboard and billing pages and USD checkout works.
+
+## Email (Resend)
+
+Lead alerts and limit warnings are sent with [Resend](https://resend.com). Resend's test sender (`onboarding@resend.dev`) only delivers to your own Resend account email, so for real customers:
+
+1. Verify a domain in Resend (e.g. `saim.ng`).
+2. Set in Vercel:
+
+```env
+RESEND_API_KEY=re_xxx
+RESEND_FROM_EMAIL="Saim <alerts@yourdomain.com>"
+```
