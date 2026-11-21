@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { getSupabase } from "@/lib/supabase";
 import Link from "next/link";
 import Logo from "@/app/components/Logo";
+import HeroOrb from "@/app/components/HeroOrb";
+import Tilt3D from "@/app/components/Tilt3D";
 
 type Mode = "login" | "signup" | "forgot";
 
@@ -57,6 +59,8 @@ export default function LoginPage() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("mode");
+    if (requested === "signup" || requested === "forgot") setMode(requested);
     setTimeout(() => setVisible(true), 50);
     async function checkSession() {
       const {
@@ -182,18 +186,18 @@ export default function LoginPage() {
 
   const titles = {
     login: {
-      h: "Log in",
-      sub: "Log in to your account and seamlessly continue managing your projects, ideas, and progress just where you left off.",
+      h: "Welcome back",
+      sub: "Your leads are waiting. Log in to see who your agent spoke to.",
       btn: "Log in",
     },
     signup: {
-      h: "Sign up",
-      sub: "Create your account to get started and enjoy a simple, secure, and personalized experience.",
-      btn: "Sign up",
+      h: "Create your free sales agent",
+      sub: "Free plan, no card needed. Your agent can be live on your website in 5 minutes.",
+      btn: "Create free account",
     },
     forgot: {
-      h: "Reset password",
-      sub: "Enter your email address and we'll send a reset link directly to your inbox.",
+      h: "Reset your password",
+      sub: "Enter your email and we'll send a reset link straight to your inbox.",
       btn: "Send reset link",
     },
   };
@@ -219,8 +223,10 @@ export default function LoginPage() {
         <div className="absolute top-1/4 right-1/4 w-[350px] h-[350px] bg-indigo-600/[0.06] rounded-full blur-[110px]" />
       </div>
 
+      <div className="relative z-10 w-full max-w-6xl my-auto grid lg:grid-cols-2 gap-12 items-center">
+      <AuthShowcase />
       <div
-        className="relative z-10 w-full max-w-[460px] my-auto"
+        className="relative w-full max-w-[460px] mx-auto"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(16px)",
@@ -242,6 +248,28 @@ export default function LoginPage() {
           {/* Subtle Neumorphic Top Highlight Edge */}
           <div className="absolute inset-0 rounded-[32px] pointer-events-none border border-white/[0.04] shadow-[inset_1px_1px_2px_rgba(255,255,255,0.1)]" />
 
+          {/* Log in / Sign up tabs */}
+          {mode !== "forgot" && (
+            <div className="relative grid grid-cols-2 p-1 mb-8 rounded-full bg-[#0b0c12] border border-zinc-900 shadow-[inset_3px_3px_8px_rgba(0,0,0,0.8)]">
+              <span
+                className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#1a1d2b] border border-white/[0.07] shadow-[0_4px_14px_rgba(0,0,0,0.6)] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                style={{ transform: mode === "signup" ? "translateX(calc(100% + 0px))" : "translateX(0)", left: 4 }}
+                aria-hidden="true"
+              />
+              {(["login", "signup"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => switchMode(m)}
+                  className={`relative z-10 py-2.5 text-[13px] font-medium rounded-full transition-colors ${mode === m ? "text-white" : "text-zinc-500 hover:text-zinc-300"}`}
+                >
+                  {m === "login" ? "Log in" : "Sign up"}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div key={mode} className="form-swap">
           {/* Heading Section */}
           <div className="text-center mb-8">
             <h1 className="text-3xl font-medium tracking-tight text-white mb-3">
@@ -293,6 +321,10 @@ export default function LoginPage() {
               </div>
             )}
 
+            {mode === "signup" && password.length > 0 && password.length < 8 && (
+              <p className="text-zinc-500 text-xs px-4 -mt-2">At least 8 characters ({8 - password.length} more)</p>
+            )}
+
             {/* Confirm Password Input (Signup) */}
             {mode === "signup" && (
               <div className="space-y-2">
@@ -318,7 +350,7 @@ export default function LoginPage() {
                   </button>
                 </div>
                 {confirmPassword && confirmPassword !== password && (
-                  <p className="text-red-400 text-xs px-4">Passwords don't match</p>
+                  <p className="text-red-400 text-xs px-4">Passwords don&apos;t match</p>
                 )}
                 {confirmPassword && confirmPassword === password && (
                   <p className="text-emerald-400 text-xs px-4">Passwords match</p>
@@ -343,7 +375,7 @@ export default function LoginPage() {
                   onClick={() => switchMode("forgot")}
                   className="text-xs text-zinc-400 hover:text-white transition-colors"
                 >
-                  Forgot Password?
+                  Forgot password?
                 </button>
               </div>
             )}
@@ -385,7 +417,7 @@ export default function LoginPage() {
                   className="w-full flex items-center justify-center gap-3 py-3.5 px-6 rounded-full bg-[#11131c] hover:bg-[#171926] active:scale-[0.99] active:shadow-[inset_3px_3px_6px_rgba(0,0,0,0.8),inset_-2px_-2px_5px_rgba(255,255,255,0.02)] shadow-[5px_5px_14px_rgba(0,0,0,0.75),-4px_-4px_10px_rgba(255,255,255,0.025)] border border-white/[0.05] text-sm font-medium text-zinc-200 hover:text-white transition-all cursor-pointer"
                 >
                   <GoogleIcon />
-                  <span>Google</span>
+                  <span>Continue with Google</span>
                 </button>
               </div>
             )}
@@ -394,12 +426,12 @@ export default function LoginPage() {
             <div className="text-center pt-3 text-xs text-zinc-400">
               {mode === "login" && (
                 <p>
-                  Didn't have an account?{" "}
+                  Don't have an account?{" "}
                   <button
                     onClick={() => switchMode("signup")}
                     className="text-blue-400 hover:text-blue-300 font-medium hover:underline transition-colors"
                   >
-                    Sign up
+                    Sign up free
                   </button>
                 </p>
               )}
@@ -427,6 +459,7 @@ export default function LoginPage() {
               )}
             </div>
           </div>
+          </div>
         </div>
 
         <p className="text-center text-zinc-600 text-xs mt-6">
@@ -440,7 +473,57 @@ export default function LoginPage() {
           </span>
         </p>
       </div>
+      </div>
     </div>
   );
 }
 
+const SHOWCASE_BUBBLES = [
+  { text: "Do you deliver to Lekki? How much for 3 bedrooms?", from: "visitor", className: "top-[6%] left-[2%]" },
+  { text: "Yes! 3-bed packages start at ₦450k. When are you moving?", from: "agent", className: "top-[30%] right-[0%] auth-float-2" },
+  { text: "New lead · moving in 2 weeks · email captured", from: "lead", className: "bottom-[8%] left-[8%] auth-float-3" },
+] as const;
+
+function AuthShowcase() {
+  return (
+    <div className="hidden lg:block">
+      <div className="relative h-[360px] mb-8">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <HeroOrb />
+        </div>
+        {SHOWCASE_BUBBLES.map((b) => (
+          <div key={b.text} className={`absolute auth-float ${b.className}`}>
+            <Tilt3D max={10}>
+              <div
+                className={`max-w-[260px] px-4 py-3 rounded-2xl text-[13px] leading-relaxed backdrop-blur-md shadow-[0_20px_50px_-12px_rgba(0,0,0,0.8)] ${
+                  b.from === "visitor"
+                    ? "bg-zinc-900/80 border border-zinc-700/60 text-zinc-200 rounded-bl-sm"
+                    : b.from === "agent"
+                      ? "bg-blue-600/90 border border-blue-400/40 text-white rounded-br-sm"
+                      : "bg-emerald-500/10 border border-emerald-500/30 text-emerald-300"
+                }`}
+              >
+                {b.from === "lead" && <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2 animate-pulse align-middle" />}
+                {b.text}
+              </div>
+            </Tilt3D>
+          </div>
+        ))}
+      </div>
+      <h2 className="text-3xl font-semibold tracking-tight leading-tight mb-3 bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+        Every visitor answered.<br />Every lead captured.
+      </h2>
+      <p className="text-zinc-400 text-[15px] leading-relaxed max-w-md mb-6">
+        Saim talks to your website visitors day and night, learns what they need, and hands you their contact details.
+      </p>
+      <ul className="space-y-2.5">
+        {["Live on your site in 5 minutes", "Free plan, no card needed", "Read every conversation in your dashboard"].map((t) => (
+          <li key={t} className="flex items-center gap-2.5 text-zinc-300 text-[14px]">
+            <span className="w-5 h-5 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-[11px]">✓</span>
+            {t}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

@@ -38,6 +38,13 @@ export interface PlanConfig {
   cta: string;
 }
 
+/**
+ * Naira prices are the dollar prices converted at the CBN official (NFEM)
+ * rate, rounded to the nearest ₦500. Update both when the rate moves a lot.
+ */
+export const NGN_PER_USD = 1360;
+export const NGN_RATE_NOTE = "Naira prices use the CBN official rate (about ₦1,360 per $1, November 2026).";
+
 export const PLANS: Record<string, PlanConfig> = {
   free: {
     key: "free",
@@ -65,12 +72,13 @@ export const PLANS: Record<string, PlanConfig> = {
   starter: {
     key: "starter",
     name: "Starter",
-    priceNGN: 7500,
-    priceKobo: 750000,
-    priceUSD: 13,
-    priceUSDCents: 1300,
+    priceNGN: 15000,
+    priceKobo: 1500000,
+    priceUSD: 11,
+    priceUSDCents: 1100,
     monthlyLimit: 300,
-    paystackPlanCode: "PLN_l45c6u49b4rtphi",
+    paystackPlanCode:
+      process.env.NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_NGN || "PLN_l45c6u49b4rtphi",
     paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_USD || null,
     isFree: false,
     desc: "For founders ready to stop losing leads",
@@ -89,12 +97,13 @@ export const PLANS: Record<string, PlanConfig> = {
   pro: {
     key: "pro",
     name: "Pro",
-    priceNGN: 18000,
-    priceKobo: 1800000,
-    priceUSD: 29,
-    priceUSDCents: 2900,
+    priceNGN: 34000,
+    priceKobo: 3400000,
+    priceUSD: 25,
+    priceUSDCents: 2500,
     monthlyLimit: 1200,
-    paystackPlanCode: "PLN_mdtlpytqpous1zr",
+    paystackPlanCode:
+      process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_NGN || "PLN_mdtlpytqpous1zr",
     paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_PRO_USD || null,
     isFree: false,
     desc: "For businesses that can't afford to miss a sale",
@@ -114,12 +123,13 @@ export const PLANS: Record<string, PlanConfig> = {
   scale: {
     key: "scale",
     name: "Scale",
-    priceNGN: 40000,
-    priceKobo: 4000000,
-    priceUSD: 59,
-    priceUSDCents: 5900,
+    priceNGN: 66500,
+    priceKobo: 6650000,
+    priceUSD: 49,
+    priceUSDCents: 4900,
     monthlyLimit: 3000,
-    paystackPlanCode: "PLN_jw99ak49aljjjd4",
+    paystackPlanCode:
+      process.env.NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_NGN || "PLN_jw99ak49aljjjd4",
     paystackPlanCodeUSD: process.env.NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_USD || null,
     isFree: false,
     desc: "For agencies running multiple client sites",

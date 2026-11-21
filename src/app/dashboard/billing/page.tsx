@@ -427,7 +427,7 @@ function BillingContent() {
                 </p>
                 <p className="text-zinc-400 text-[13px] leading-relaxed max-w-lg">
                   If your average deal is worth{" "}
-                  {currency === "USD" ? "$50" : "₦20,000"}+, Pro pays for itself
+                  {currency === "USD" ? "$50" : "₦68,000"}+, Pro pays for itself
                   the moment it captures a single lead you&apos;d have missed.
                 </p>
               </div>

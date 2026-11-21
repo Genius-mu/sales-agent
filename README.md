@@ -202,16 +202,32 @@ MIT
 
 ## Pricing & currencies
 
-Prices live in one place: `src/lib/plans.ts` (`priceUSD` / `priceNGN`).
+Prices live in one place: `src/lib/plans.ts`.
+
+| Plan | USD | NGN |
+|---|---|---|
+| Starter | $11 | ₦15,000 |
+| Pro | $25 | ₦34,000 |
+| Scale | $49 | ₦66,500 |
+
+Naira prices are the dollar prices converted at the CBN official rate (about ₦1,360/$1 in November 2026), rounded to the nearest ₦500. If the rate moves a lot, update `NGN_PER_USD`, `NGN_RATE_NOTE` and the `priceNGN`/`priceKobo` values together.
 
 - **Landing page:** visitors in Nigeria see naira, everyone else sees dollars (via Vercel's `x-vercel-ip-country` header). A toggle lets anyone switch, and their choice is saved in a cookie.
 - **Dashboard & billing:** show naira only until USD billing is turned on, so the price shown always matches the price charged.
 
-To turn on USD billing:
+### Paystack plans
 
-1. Enable USD on your Paystack account.
-2. Create three monthly USD plans in Paystack ($13, $29, $59).
-3. Add their plan codes to your Vercel env vars:
+The amount on each Paystack plan **must match** `priceKobo` / `priceUSDCents`, or payment verification will reject the transaction.
+
+NGN plans: either edit the amounts on your existing Paystack plans (₦15,000 / ₦34,000 / ₦66,500), or create new plans and set:
+
+```env
+NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_NGN=PLN_xxx
+NEXT_PUBLIC_PAYSTACK_PLAN_PRO_NGN=PLN_xxx
+NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_NGN=PLN_xxx
+```
+
+USD plans (optional): enable USD on your Paystack account, create monthly plans for $11 / $25 / $49, then set:
 
 ```env
 NEXT_PUBLIC_PAYSTACK_PLAN_STARTER_USD=PLN_xxx
@@ -219,4 +235,4 @@ NEXT_PUBLIC_PAYSTACK_PLAN_PRO_USD=PLN_xxx
 NEXT_PUBLIC_PAYSTACK_PLAN_SCALE_USD=PLN_xxx
 ```
 
-Once all three are set, the currency toggle appears on the dashboard and billing pages and USD checkout works.
+Once all three USD codes are set, the currency toggle appears on the dashboard and billing pages and USD checkout works.

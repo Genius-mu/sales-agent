@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Boldonse&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Bungee&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Port+Lligat+Sans&family=Stack+Sans+Headline:wght@200..700&family=Stack+Sans+Notch:wght@200..700&family=Stick+No+Bills:wght@200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -134,4 +134,138 @@ h3 {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ───────────────────────── Saim motion system ─────────────────────────
+   Everything below animates only transform/opacity (GPU-friendly) and is
+   switched off for visitors who prefer reduced motion. */
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Cursor spotlight */
+.cursor-spotlight {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 30%), rgba(59, 130, 246, 0.07), transparent 60%);
+}
+
+/* 3D tilt cards */
+.tilt-3d { perspective: 1000px; height: 100%; }
+.tilt-3d-inner {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+.tilt-3d[data-active="true"] .tilt-3d-inner { transition-duration: 0.12s; }
+.tilt-3d-glare {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(400px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.07), transparent 55%);
+}
+.tilt-3d[data-active="true"] .tilt-3d-glare { opacity: 1; }
+
+/* Hero orb (pure CSS 3D) */
+.orb-scene { perspective: 900px; width: 220px; height: 220px; }
+.orb-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--orb-rx, 0deg)) rotateY(var(--orb-ry, 0deg));
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: orbFloat 7s ease-in-out infinite;
+}
+.orb-core {
+  position: absolute;
+  inset: 32%;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95), rgba(147, 197, 253, 0.9) 18%, rgba(37, 99, 235, 0.95) 45%, rgba(30, 27, 75, 1) 80%);
+  box-shadow: 0 0 60px 10px rgba(59, 130, 246, 0.45), 0 0 120px 30px rgba(34, 211, 238, 0.15), inset -10px -14px 30px rgba(0, 0, 0, 0.5);
+  animation: orbPulse 4s ease-in-out infinite;
+}
+.orb-ring {
+  position: absolute;
+  inset: 6%;
+  border-radius: 9999px;
+  border: 1px solid rgba(147, 197, 253, 0.28);
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.15), inset 0 0 18px rgba(59, 130, 246, 0.1);
+  transform-style: preserve-3d;
+}
+.orb-ring-1 { animation: ring1 9s linear infinite; }
+.orb-ring-2 { inset: 14%; border-color: rgba(103, 232, 249, 0.25); animation: ring2 12s linear infinite; }
+.orb-ring-3 { inset: 0%; border-color: rgba(110, 231, 183, 0.18); animation: ring3 16s linear infinite; }
+.orb-dot {
+  position: absolute;
+  top: -4px;
+  left: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: #93c5fd;
+  box-shadow: 0 0 12px 3px rgba(147, 197, 253, 0.8);
+}
+.orb-dot-cyan { background: #67e8f9; box-shadow: 0 0 12px 3px rgba(103, 232, 249, 0.8); }
+.orb-dot-emerald { background: #6ee7b7; box-shadow: 0 0 12px 3px rgba(110, 231, 183, 0.8); }
+
+@keyframes ring1 { from { transform: rotateX(70deg) rotateZ(0deg); } to { transform: rotateX(70deg) rotateZ(360deg); } }
+@keyframes ring2 { from { transform: rotateY(65deg) rotateZ(0deg); } to { transform: rotateY(65deg) rotateZ(-360deg); } }
+@keyframes ring3 { from { transform: rotateX(-55deg) rotateY(30deg) rotateZ(0deg); } to { transform: rotateX(-55deg) rotateY(30deg) rotateZ(360deg); } }
+@keyframes orbFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
+@keyframes orbPulse { 0%, 100% { scale: 1; } 50% { scale: 1.06; } }
+
+/* Chat bubbles popping in */
+.chat-pop { animation: chatPop 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes chatPop { from { opacity: 0; transform: translateY(8px) scale(0.96); } to { opacity: 1; transform: none; } }
+
+/* Infinite marquee */
+.marquee { mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.marquee-track { display: flex; width: max-content; gap: 0.75rem; animation: marquee 32s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marquee { to { transform: translateX(-50%); } }
+
+/* Rotating hero word */
+.word-swap { display: inline-grid; }
+.word-swap > span { grid-area: 1 / 1; animation: wordSwap 12s infinite; opacity: 0; }
+.word-swap > span:nth-child(2) { animation-delay: 3s; }
+.word-swap > span:nth-child(3) { animation-delay: 6s; }
+.word-swap > span:nth-child(4) { animation-delay: 9s; }
+@keyframes wordSwap {
+  0% { opacity: 0; transform: translateY(0.4em) rotateX(-60deg); }
+  4%, 21% { opacity: 1; transform: none; }
+  25%, 100% { opacity: 0; transform: translateY(-0.4em) rotateX(60deg); }
+}
+
+/* ROI sliders */
+.roi-range { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 9999px; background: linear-gradient(90deg, #3b82f6 0%, #22d3ee var(--pct, 50%), #27272a var(--pct, 50%)); outline: none; cursor: pointer; }
+.roi-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 9999px; background: #fff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25), 0 2px 8px rgba(0, 0, 0, 0.6); transition: transform 0.15s ease; }
+.roi-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.roi-range::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 9999px; background: #fff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25); }
+.roi-range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.5); }
+
+/* Login: floating 3D chat cards */
+.auth-float { animation: authFloat 8s ease-in-out infinite; }
+.auth-float-2 { animation-delay: -3s; }
+.auth-float-3 { animation-delay: -5s; }
+@keyframes authFloat { 0%, 100% { translate: 0 0; } 50% { translate: 0 -12px; } }
+
+/* Auth form step swap */
+.form-swap { animation: formSwap 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes formSwap { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .orb-stage, .orb-core, .orb-ring, .chat-pop, .marquee-track, .auth-float, .form-swap { animation: none !important; }
+  .word-swap > span { animation: none; opacity: 0; }
+  .word-swap > span:first-child { opacity: 1; }
+  .tilt-3d-inner { transform: none !important; }
 }
