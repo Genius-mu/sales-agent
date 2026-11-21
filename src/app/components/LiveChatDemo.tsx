@@ -65,27 +65,27 @@ export default function LiveChatDemo() {
   }, [count, typing]);
 
   return (
-    <div ref={ref} className="relative rounded-2xl overflow-hidden shadow-2xl shadow-blue-500/10 border border-zinc-800 ring-1 ring-white/5 bg-[#0a0b0d]">
-      <div className="bg-zinc-900 border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
+    <div ref={ref} className="relative rounded-3xl overflow-hidden border-2 border-slate-900 bg-white shadow-[5px_6px_0_#0f172a]">
+      <div className="bg-blue-600 border-b-2 border-slate-900 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="relative">
-            <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-[12px] font-semibold">S</div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-zinc-900" />
+            <div className="w-8 h-8 rounded-full bg-yellow-300 border-2 border-slate-900 flex items-center justify-center text-[15px]">🤖</div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 rounded-full border-2 border-blue-600" />
           </div>
           <div>
-            <p className="text-white text-[13px] font-medium leading-none">Sales Assistant</p>
-            <p className="text-zinc-500 text-[11px] mt-0.5">Online · replies instantly</p>
+            <p className="text-white text-[14px] font-bold leading-none">Saim</p>
+            <p className="text-blue-100 text-[11px] mt-0.5">Online · replies instantly</p>
           </div>
         </div>
-        <span className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">Example chat</span>
+        <span className="text-[10px] uppercase tracking-[0.14em] text-blue-100 font-semibold">Example</span>
       </div>
 
-      <div ref={scrollRef} className="p-4 space-y-2.5 h-[330px] overflow-y-auto no-scrollbar">
+      <div ref={scrollRef} className="p-4 space-y-2.5 h-[330px] overflow-y-auto no-scrollbar bg-[#f8fafc]">
         {SCRIPT.slice(0, count).map((msg, i) =>
           msg.from === "lead" ? (
             <div key={i} className="chat-pop flex justify-center pt-1">
-              <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[12px] px-3 py-2 rounded-xl">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="flex items-center gap-2 bg-green-200 border-2 border-slate-900 text-slate-900 font-semibold text-[12px] px-3 py-2 rounded-xl shadow-[2px_2px_0_#0f172a]">
+                <span>🎉</span>
                 {msg.text}
               </div>
             </div>
@@ -94,8 +94,8 @@ export default function LiveChatDemo() {
               <div
                 className={`max-w-[85%] px-3.5 py-2.5 rounded-2xl text-[13px] leading-relaxed ${
                   msg.from === "user"
-                    ? "bg-blue-600 text-white rounded-br-sm"
-                    : "bg-zinc-800/80 text-zinc-200 rounded-bl-sm border border-zinc-700/50"
+                    ? "bg-blue-600 text-white rounded-br-sm border-2 border-slate-900"
+                    : "bg-white text-slate-800 rounded-bl-sm border-2 border-slate-900"
                 }`}
               >
                 {msg.text}
@@ -105,18 +105,18 @@ export default function LiveChatDemo() {
         )}
         {typing && (
           <div className="chat-pop flex justify-start">
-            <div className="bg-zinc-800/80 border border-zinc-700/50 px-3.5 py-3 rounded-2xl rounded-bl-sm flex items-center gap-1">
+            <div className="bg-white border-2 border-slate-900 px-3.5 py-3 rounded-2xl rounded-bl-sm flex items-center gap-1">
               {[0, 150, 300].map((delay) => (
-                <div key={delay} className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />
+                <div key={delay} className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: `${delay}ms` }} />
               ))}
             </div>
           </div>
         )}
       </div>
 
-      <div className="bg-zinc-900 border-t border-zinc-800 px-3 py-3 flex gap-2">
-        <div className="flex-1 bg-zinc-800/60 border border-zinc-700/40 rounded-lg px-3 py-2 text-[12px] text-zinc-600">Type a message…</div>
-        <div className="bg-blue-600 text-white text-[12px] px-4 py-2 rounded-lg font-medium">Send</div>
+      <div className="bg-white border-t-2 border-slate-900 px-3 py-3 flex gap-2">
+        <div className="flex-1 bg-slate-100 border-2 border-slate-200 rounded-xl px-3 py-2 text-[12px] text-slate-400">Type a message…</div>
+        <div className="bg-blue-600 text-white text-[12px] px-4 py-2 rounded-xl font-bold border-2 border-slate-900">Send</div>
       </div>
     </div>
   );
