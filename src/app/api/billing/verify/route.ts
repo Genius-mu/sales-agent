@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient as createServerClient } from "@/lib/supabase-server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { PLANS, getPlanCharge } from "@/lib/plans";
+import { disablePaystackSubscription } from "@/lib/paystack";
 
 export async function POST(req: NextRequest) {
   try {
@@ -114,7 +115,7 @@ export async function POST(req: NextRequest) {
 
     const { data: business, error: bizError } = await adminSupabase
       .from("businesses")
-      .select("id, user_id")
+      .select("id, user_id, subscription_id, paystack_subscription_code")
       .eq("id", businessId)
       .single();
 
@@ -176,6 +177,13 @@ export async function POST(req: NextRequest) {
         { error: "Failed to activate subscription" },
         { status: 500 },
       );
+    }
+
+    // Switching plans: stop the old subscription so they aren't billed twice
+    const previousCode = business.paystack_subscription_code || business.subscription_id;
+    if (previousCode && realSubscriptionCode && previousCode !== realSubscriptionCode) {
+      const stopped = await disablePaystackSubscription(previousCode);
+      if (!stopped.ok) console.error("Failed to stop previous subscription", previousCode, stopped.message);
     }
 
     return NextResponse.json({

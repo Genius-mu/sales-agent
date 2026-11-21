@@ -103,7 +103,8 @@ export default function ScrollStack() {
   useEffect(() => {
     const cards = cardRefs.current.filter((c): c is HTMLDivElement => !!c);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const wide = window.matchMedia("(min-width: 768px)");
+    if (reduced || !wide.matches) return;
     let frame = 0;
 
     const update = () => {
@@ -147,7 +148,9 @@ export default function ScrollStack() {
           ref={(el) => {
             cardRefs.current[i] = el;
           }}
-          className="sticky mb-6 last:mb-0"
+          // Stack on tablets/desktops; on phones cards are taller than the
+          // screen, so they show as a normal list instead.
+          className="md:sticky mb-6 last:mb-0"
           style={{ top: STICKY_TOP + i * STEP, zIndex: i + 1 }}
         >
           <div

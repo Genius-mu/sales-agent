@@ -22,14 +22,14 @@ export const metadata: Metadata = {
     template: "%s | Saim",
   },
   description:
-    "Deploy an AI sales agent on your website in minutes. Trained on your business, it qualifies leads, answers questions, and captures emails 24/7 — powered by Claude AI.",
+    "Deploy an AI sales agent on your website in minutes. Trained on your business, it qualifies leads, answers questions, and captures emails 24/7.",
   keywords: [
     "AI sales agent",
     "website chatbot",
     "lead generation",
     "AI lead capture",
     "sales automation",
-    "Claude AI",
+    "Gemini AI",
     "embeddable chat widget",
     "B2B sales tool",
   ],
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Saim — AI Sales Agent for Your Website",
     description:
-      "Deploy an AI sales agent on your website in minutes. Powered by Claude AI.",
+      "Deploy an AI sales agent on your website in minutes.",
     images: ["/og-image.png"],
   },
   robots: {

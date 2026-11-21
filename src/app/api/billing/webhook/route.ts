@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createClient } from "@supabase/supabase-js";
 import { PLANS, getPlanByPaystackCode } from "@/lib/plans";
+import { disablePaystackSubscription } from "@/lib/paystack";
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
@@ -142,7 +143,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!bizId && customerEmail) {
-      const { data: authData } = await supabase.auth.admin.listUsers();
+      const { data: authData } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
       const user = authData?.users?.find((u) => u.email === customerEmail);
       if (user) {
         const { data: biz } = await supabase
@@ -155,6 +156,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (bizId) {
+      const { data: current } = await supabase
+        .from("businesses")
+        .select("paystack_subscription_code")
+        .eq("id", bizId)
+        .maybeSingle();
+      const previousCode: string | null = current?.paystack_subscription_code ?? null;
+
       const updateData: Record<string, any> = {
         plan: planKey,
         subscription_status: "active",
@@ -172,44 +180,44 @@ export async function POST(req: NextRequest) {
 
       if (error) console.error("Webhook activation DB error:", error);
       else console.log(`Activated business ${bizId} on plan ${planKey}`);
+
+      // Plan switch: stop the old subscription so the customer isn't billed twice
+      if (!error && previousCode && realSubscriptionCode && previousCode !== realSubscriptionCode) {
+        const stopped = await disablePaystackSubscription(previousCode);
+        if (!stopped.ok) console.error("Failed to stop previous subscription", previousCode, stopped.message);
+      }
     } else {
       console.warn("Could not find matching business for webhook:", customerEmail);
     }
   }
 
-  // 4. Handle Subscription Cancellation / Non-Renewal
+  // 4. Subscription ending.
+  //    - subscription.not_renew: customer cancelled, but they've paid until the
+  //      end of this period, so keep their plan and just mark it non-renewing.
+  //    - subscription.disable: the subscription has ended -> back to Free.
+  //    Only the business whose CURRENT subscription matches is touched, so
+  //    stopping an old subscription during a plan switch can't downgrade them.
   if (
     eventType === "subscription.disable" ||
     eventType === "subscription.not_renew"
   ) {
-    const subscriptionCode = data.subscription_code || data.code;
-    const customerCode = data.customer?.customer_code;
-    const businessId = data.metadata?.business_id;
+    const subscriptionCode: string | undefined = data.subscription_code || data.code;
+    const update =
+      eventType === "subscription.not_renew"
+        ? { subscription_status: "non_renewing" }
+        : { plan: "free", subscription_status: "cancelled" };
 
-    if (businessId) {
+    if (subscriptionCode) {
       const { error } = await supabase
         .from("businesses")
-        .update({ plan: "free", subscription_status: "cancelled" })
-        .eq("id", businessId);
-
-      if (error) console.error("Webhook downgrade DB error by businessId:", error);
-    } else if (subscriptionCode) {
-      const { error } = await supabase
-        .from("businesses")
-        .update({ plan: "free", subscription_status: "cancelled" })
+        .update(update)
         .or(
           `subscription_id.eq.${subscriptionCode},paystack_subscription_code.eq.${subscriptionCode}`,
         );
-
-      if (error) console.error("Webhook downgrade DB error by subscriptionCode:", error);
-      else console.log(`Downgraded subscription ${subscriptionCode} to free`);
-    } else if (customerCode) {
-      const { error } = await supabase
-        .from("businesses")
-        .update({ plan: "free", subscription_status: "cancelled" })
-        .eq("paystack_customer_code", customerCode);
-
-      if (error) console.error("Webhook downgrade DB error by customerCode:", error);
+      if (error) console.error(`Webhook ${eventType} DB error:`, error);
+      else console.log(`Handled ${eventType} for ${subscriptionCode}`);
+    } else {
+      console.warn(`${eventType} without a subscription code; ignored`);
     }
   }
 

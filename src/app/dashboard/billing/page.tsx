@@ -208,7 +208,7 @@ function BillingContent() {
 
   const handleCancelSubscription = async () => {
     if (!businessId) return;
-    if (!confirm("Are you sure you want to cancel your subscription? Your plan will return to Free.")) {
+    if (!confirm("Cancel your subscription? Billing stops immediately and your plan goes back to Free right away.")) {
       return;
     }
 
@@ -238,7 +238,10 @@ function BillingContent() {
   const isActive = subscriptionStatus === "active";
   const isPastDue = subscriptionStatus === "past_due";
   const isCancelled = subscriptionStatus === "cancelled";
-  const isFree = currentPlanKey === "free" || !isActive;
+  // Cancelled via Paystack: paid until the end of this period, then Free
+  const isNonRenewing = subscriptionStatus === "non_renewing";
+  // The server grants features by plan; past-due and non-renewing plans are still paid plans
+  const isFree = currentPlanKey === "free" || !(isActive || isPastDue || isNonRenewing);
 
   const planList: PlanConfig[] = [PLANS.starter, PLANS.pro, PLANS.scale];
 
@@ -347,7 +350,7 @@ function BillingContent() {
                     className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium border flex items-center gap-1.5 ${
                       isActive
                         ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
-                        : isPastDue
+                        : isPastDue || isNonRenewing
                           ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
                           : isCancelled
                             ? "bg-slate-100 text-slate-500 border-slate-300"
@@ -361,7 +364,9 @@ function BillingContent() {
                       ? "Active"
                       : isPastDue
                         ? "Payment past due"
-                        : isCancelled
+                        : isNonRenewing
+                          ? "Ends this billing period"
+                          : isCancelled
                           ? "Cancelled"
                           : "Free tier"}
                   </span>
@@ -374,7 +379,7 @@ function BillingContent() {
                 </p>
               )}
             </div>
-            {isActive && !isFree && (
+            {(isActive || isPastDue) && !isFree && (
               <button
                 onClick={handleCancelSubscription}
                 disabled={cancelling}
